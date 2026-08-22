@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://33bgmrf4f172"]
+
+[ext_resource type="Script" uid="uid://dhe6qwesvqls4" path="res://scripts/ScrapWagon.cs" id="1_ddhlo"]
+[ext_resource type="PackedScene" uid="uid://cyak3g54vejeo" path="res://assets/3d assets/scrap_wagon/scrap_wagon.blend" id="2_6vjae"]
+
+[node name="ScrapWagon" type="Node3D" unique_id=1124135962]
+script = ExtResource("1_ddhlo")
+
+[node name="model" parent="." unique_id=1421698982 instance=ExtResource("2_6vjae")]

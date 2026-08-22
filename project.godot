@@ -11,10 +11,10 @@ config_version=5
 [application]
 
 config/name="Trainwrecked"
+config/tags=PackedStringArray("prealpha")
 run/main_scene="uid://c58gckeg4226m"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 config/icon="res://icon.svg"
-config/tags=PackedStringArray("prealpha")
 
 [autoload]
 
@@ -22,6 +22,8 @@ Debug="*uid://deitrokuoubwr"
 
 [display]
 
+window/size/viewport_width=1920
+window/size/viewport_height=1080
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 

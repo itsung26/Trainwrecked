@@ -3,6 +3,8 @@ using System;
 
 public partial class Debug : Node
 {
+
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -18,8 +20,13 @@ public partial class Debug : Node
 	}
 
 	// Log a message to the console. Intended to replace Print().
-	public void Log<T>(T message)
+	public static void Log<T>(T message)
 	{
 		GD.Print(message);
+	}
+
+	public static void LogWarn<T>(T warning)
+	{
+		GD.PushWarning(warning.ToString());
 	}
 }

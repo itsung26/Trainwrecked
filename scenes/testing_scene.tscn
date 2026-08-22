@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://c58gckeg4226m"]
 
 [ext_resource type="PackedScene" uid="uid://bnhq8tk5or7vo" path="res://scenes/player.tscn" id="1_ifns1"]
+[ext_resource type="Texture2D" uid="uid://vpwu4vq6nyke" path="res://assets/2d assets/textures/prototype textures/Light/texture_07.png" id="2_2j2p2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ifns1"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -14,7 +15,12 @@ background_mode = 2
 sky = SubResource("Sky_2j2p2")
 glow_enabled = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g2els"]
+albedo_texture = ExtResource("2_2j2p2")
+uv1_scale = Vector3(6.38, 6.38, 6.38)
+
 [sub_resource type="PlaneMesh" id="PlaneMesh_dehhp"]
+material = SubResource("StandardMaterial3D_g2els")
 size = Vector2(50, 50)
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_365ag"]

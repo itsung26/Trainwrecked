@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://bnhq8tk5or7vo"]
 
 [ext_resource type="Script" uid="uid://661qb43faa2x" path="res://scripts/Player.cs" id="1_3vyb7"]
+[ext_resource type="Script" uid="uid://caukf1woktv0s" path="res://scripts/PlayerCamera.cs" id="2_g2els"]
+[ext_resource type="PackedScene" uid="uid://cm87c22qdh8v6" path="res://scenes/player_hud.tscn" id="3_qhqgy"]
+[ext_resource type="Script" uid="uid://bhsg271e1lvlh" path="res://scripts/StateMachine.cs" id="4_qlg0r"]
+[ext_resource type="Script" uid="uid://d13b5kdgkflx4" path="res://scripts/State.cs" id="5_tuyoq"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_dehhp"]
 
@@ -8,6 +12,7 @@
 
 [node name="Player" type="CharacterBody3D" unique_id=320653181]
 script = ExtResource("1_3vyb7")
+MouseSensitivity = 0.1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=716433429]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -18,6 +23,30 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_u8vuu")
 
 [node name="PlayerCameraPivot" type="Node3D" parent="." unique_id=39234166]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5192211, 0)
 
 [node name="PlayerCamera" type="Camera3D" parent="PlayerCameraPivot" unique_id=1218769642]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5110751, 0)
+script = ExtResource("2_g2els")
+
+[node name="PlayerHud" parent="." unique_id=1268189311 instance=ExtResource("3_qhqgy")]
+
+[node name="LocomotionStateMachine" type="Node" parent="." unique_id=19474488]
+script = ExtResource("4_qlg0r")
+LoggingDebug = true
+metadata/_custom_type_script = "uid://bhsg271e1lvlh"
+
+[node name="IdleState" type="Node" parent="LocomotionStateMachine" unique_id=862784180]
+script = ExtResource("5_tuyoq")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="MovingState" type="Node" parent="LocomotionStateMachine" unique_id=747398177]
+script = ExtResource("5_tuyoq")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="SprintingState" type="Node" parent="LocomotionStateMachine" unique_id=865804520]
+script = ExtResource("5_tuyoq")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="FallingState" type="Node" parent="LocomotionStateMachine" unique_id=153880968]
+script = ExtResource("5_tuyoq")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
