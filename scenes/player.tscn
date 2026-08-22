@@ -35,11 +35,7 @@ script = ExtResource("4_qlg0r")
 LoggingDebug = true
 metadata/_custom_type_script = "uid://bhsg271e1lvlh"
 
-[node name="IdleState" type="Node" parent="LocomotionStateMachine" unique_id=862784180]
-script = ExtResource("5_tuyoq")
-metadata/_custom_type_script = "uid://d13b5kdgkflx4"
-
-[node name="MovingState" type="Node" parent="LocomotionStateMachine" unique_id=747398177]
+[node name="GroundedState" type="Node" parent="LocomotionStateMachine" unique_id=747398177]
 script = ExtResource("5_tuyoq")
 metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 

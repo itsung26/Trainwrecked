@@ -69,7 +69,8 @@ public partial class StateMachine : Node
 		// enter the new state
 		StateToEnter.OnEnter();
 
-		Debug.Log<String>("Entered state: " + StateToEnter.Name + "from previous state: " + PreviousState.Name);
+		String PreviousName = PreviousState != null ? PreviousState.Name : "None";
+		Debug.Log("Entered state: " + StateToEnter.Name + " from previous state: " + PreviousName);
 	}
 
 	// Enters the state with the given name.
@@ -78,8 +79,6 @@ public partial class StateMachine : Node
 		if (StateName == null) return;
 		State StateToEnter = GetStateByName(StateName);
 		EnterState(StateToEnter);
-
-		Debug.Log<String>("Entered state: " + StateToEnter.Name + "from previous state: " + PreviousState.Name);
 	}
 
 	// Returns the child state with the given name.

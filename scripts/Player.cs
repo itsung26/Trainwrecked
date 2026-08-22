@@ -7,6 +7,10 @@ public partial class Player : CharacterBody3D
 	private Node3D PlayerCameraPivot;
 	private Camera3D PlayerCamera;
 	private StateMachine LocomotionStateMachine;
+	
+	#endregion
+
+	#region Regular Variables
 
 	#endregion
 
@@ -14,6 +18,7 @@ public partial class Player : CharacterBody3D
 	[Export] public float Speed = 5.0f;
 	[Export] public float JumpVelocity = 4.5f;
 	[Export] public float MouseSensitivity = 1.0f;
+	[Export] public float SprintSpeedMultiplier = 1.5f;
 
 	#endregion
 
@@ -26,7 +31,7 @@ public partial class Player : CharacterBody3D
 		{
 			LocomotionStateMachine.EnterState("FallingState");
 		} else {
-			LocomotionStateMachine.EnterState("IdleState");
+			LocomotionStateMachine.EnterState("GroundedState");
 		}
     }
 
@@ -46,23 +51,28 @@ public partial class Player : CharacterBody3D
             PlayerCameraPivot.Rotation = new Vector3(Math.Clamp(NewCameraPivotRotation, -1.5f, 1.5f), PlayerCameraPivot.Rotation.Y, PlayerCameraPivot.Rotation.Z);
 
         }
-
-		if (NewEvent is InputEventKey)
-		{
-			// pass
-		}
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		Vector3 velocity = Velocity;
+
 		String CurrentLocomotionStateName = LocomotionStateMachine.CurrentState.Name;
 
-		if (!IsOnFloor()) {
+		if (!IsOnFloor())
+		{
 			LocomotionStateMachine.EnterState("FallingState");
-		} else if (velocity == Vector3.Zero && IsOnFloor()) {
-			LocomotionStateMachine.EnterState("IdleState");
 		}
+		else if (Input.IsActionPressed("Sprint"))
+		{
+			LocomotionStateMachine.EnterState("SprintingState");
+		}
+		else
+		{
+			LocomotionStateMachine.EnterState("GroundedState");
+		}
+
+
 
 		#region Locomotion State Logic
 		if (CurrentLocomotionStateName == "FallingState")
@@ -70,7 +80,7 @@ public partial class Player : CharacterBody3D
 			velocity += GetGravity() * (float)delta;
 		}
 
-		if (CurrentLocomotionStateName == "MovingState") {
+		if (CurrentLocomotionStateName == "GroundedState") {
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
 			Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 			if (direction != Vector3.Zero)
@@ -83,6 +93,34 @@ public partial class Player : CharacterBody3D
 				velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
 				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
 			}
+			
+			// Handle jump AFTER lateral movement to avoid b-hopping.
+			if (Input.IsActionJustPressed("Jump"))
+			{
+				velocity.Y = JumpVelocity;
+			}
+		}
+
+		if (CurrentLocomotionStateName == "SprintingState") 
+		{
+			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
+			Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
+			if (direction != Vector3.Zero)
+			{
+				velocity.X = direction.X * (Speed * SprintSpeedMultiplier);
+				velocity.Z = direction.Z * (Speed * SprintSpeedMultiplier);
+			}
+			else
+			{
+				velocity.X = Mathf.MoveToward(Velocity.X, 0, (Speed * SprintSpeedMultiplier));
+				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, (Speed * SprintSpeedMultiplier));
+			}
+			
+			// Handle jump AFTER lateral movement to avoid b-hopping.
+			if (Input.IsActionJustPressed("Jump"))
+			{
+				velocity.Y = JumpVelocity;
+			}
 		}
 
 		#endregion
@@ -90,10 +128,6 @@ public partial class Player : CharacterBody3D
 
 		Velocity = velocity;
 		MoveAndSlide();
-
-		if (Velocity == Vector3.Zero) {
-			LocomotionStateMachine.EnterState("IdleState");
-		}
 	}
 
 	private void InitRefs()
