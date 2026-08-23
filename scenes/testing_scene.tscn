@@ -5,8 +5,8 @@
 [ext_resource type="Texture2D" uid="uid://vpwu4vq6nyke" path="res://assets/2d assets/textures/prototype textures/Light/texture_07.png" id="2_2j2p2"]
 [ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="3_dh6dg"]
 [ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="3_v6rby"]
-[ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://scenes/model_train_pickupable.tscn" id="5_ejtda"]
-[ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://scenes/model_train_pickupable_red_loco.tscn" id="7_lg35i"]
+[ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://assets/TrainwreckedEntities/model_train_pickupable.tscn" id="5_ejtda"]
+[ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://assets/TrainwreckedEntities/model_train_pickupable_red_loco.tscn" id="7_lg35i"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iraov"]
 shader = ExtResource("1_srtiu")

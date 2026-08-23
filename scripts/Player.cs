@@ -38,9 +38,10 @@ public partial class Player : CharacterBody3D
 		get {return _HeldBody;}
 		private set
 		{
-			SetHeldBody(value);
+			SetHeldBody(value, _HeldBody);
 		}
 	}
+	public float GlobalSpeedModifier = 1.0f;
 
 	#endregion
 
@@ -89,15 +90,23 @@ public partial class Player : CharacterBody3D
         }
 		else if (NewEvent is InputEventKey NewKeyEvent)
 		{
-			if (Input.IsActionJustPressed("Interact"))
+			if (Input.IsActionJustPressed("Interact") && (HeldBody == null))
 			{
 				TryPickupPickupableBody();
+			}
+			else if (Input.IsActionJustPressed("Interact") && !(HeldBody == null))
+			{
+				DropHeldBody();
 			}
 		}
 	}
 
 	public override void _Process(double delta)
 	{
+		if (HeldBody != null)
+		{
+			Debug.Log(HeldBody);
+		}
 		TrySelectInteractable();
 	}
 
@@ -135,17 +144,18 @@ public partial class Player : CharacterBody3D
 		}
 
 		if (CurrentLocomotionStateName == "GroundedState") {
+			float GroundedSpeed = Speed * GlobalSpeedModifier;
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
 			Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 			if (direction != Vector3.Zero)
 			{
-				velocity.X = direction.X * Speed;
-				velocity.Z = direction.Z * Speed;
+				velocity.X = direction.X * GroundedSpeed;
+				velocity.Z = direction.Z * GroundedSpeed;
 			}
 			else
 			{
-				velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
-				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, Speed);
+				velocity.X = Mathf.MoveToward(Velocity.X, 0, GroundedSpeed);
+				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, GroundedSpeed);
 			}
 			
 			// Handle jump AFTER lateral movement to avoid b-hopping.
@@ -157,17 +167,18 @@ public partial class Player : CharacterBody3D
 
 		if (CurrentLocomotionStateName == "SprintingState") 
 		{
+			float SprintSpeed = Speed * SprintSpeedMultiplier * GlobalSpeedModifier;
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
 			Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 			if (direction != Vector3.Zero)
 			{
-				velocity.X = direction.X * (Speed * SprintSpeedMultiplier);
-				velocity.Z = direction.Z * (Speed * SprintSpeedMultiplier);
+				velocity.X = direction.X * SprintSpeed;
+				velocity.Z = direction.Z * SprintSpeed;
 			}
 			else
 			{
-				velocity.X = Mathf.MoveToward(Velocity.X, 0, (Speed * SprintSpeedMultiplier));
-				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, (Speed * SprintSpeedMultiplier));
+				velocity.X = Mathf.MoveToward(Velocity.X, 0, SprintSpeed);
+				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, SprintSpeed);
 			}
 			
 			// Handle jump AFTER lateral movement to avoid b-hopping.
@@ -244,16 +255,21 @@ public partial class Player : CharacterBody3D
 		EmitSignal(SignalName.SelectedInteractableChanged, _SelectedInteractable);
 	}
 
-	private void SetHeldBody(PickupableBody Value)
+	private void SetHeldBody(PickupableBody Value, PickupableBody PreviousHeldBody)
 	{
 		_HeldBody = Value;
 
 		// If the held body is null, the body is being dropped.
 		if (_HeldBody == null)
 		{
+			PreviousHeldBody.IsHeld = false;
+			PreviousHeldBody.CanBeSelected = true;
+			PreviousHeldBody.HoldTarget = null;
+			
 			return;
 		}
 		
+		// Otherwise, the body is being picked up.
 		_HeldBody.CanBeSelected = false;
 		_HeldBody.IsHeld = true;
 	}
@@ -291,7 +307,7 @@ public partial class Player : CharacterBody3D
 
 	// Attempts to pickup a pickupable body from the interactable raycast.
 	// Returns immidiately if the player is already holding a body, or if the interactable is not a pickupable body.
-	private void TryPickupPickupableBody()
+	public void TryPickupPickupableBody()
 	{
 		// If the player is already holding a body, do nothing.
 		if (HeldBody != null)
@@ -311,5 +327,18 @@ public partial class Player : CharacterBody3D
 			HeldBody.HoldTarget = PickupableBodyTarget;
 		}
 
+	}
+
+	public void DropHeldBody()
+	{
+		Debug.Log("foo");
+		// if held body is already null, return.
+		if (HeldBody == null)
+		{
+			return;
+		}
+
+		// otherwise, set the held body to null.
+		HeldBody = null;
 	}
 }

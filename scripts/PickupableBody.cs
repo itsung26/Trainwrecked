@@ -30,6 +30,7 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 		get {return _HoldTarget;}
 		set {SetHoldTarget(value);}
 	}
+	public Player HoldingPlayer {set; get;} = null;
 
 	#endregion
 
@@ -78,9 +79,16 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 
 	public override void _Ready()
 	{
+		CanSleep = false;
 		OutlineVisible = false;
 		UpdateDebugLabels();
 	}
+
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+    }
+
 
     public override void _IntegrateForces(PhysicsDirectBodyState3D State)
     {
@@ -90,6 +98,12 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 		}
 		else
 		{
+			if (State.Transform.Origin.DistanceTo(HoldTarget.GlobalPosition) >= MaxHoldDistance)
+			{
+				HoldTarget = null;
+				CanBeSelected = true;
+				IsHeld = false;
+			}
 			Vector3 ToTargetVector = HoldTarget.GlobalPosition - State.Transform.Origin;
 			State.LinearVelocity = ToTargetVector * HoldSpring;
 		}
