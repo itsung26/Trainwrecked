@@ -97,7 +97,6 @@ public partial class Player : CharacterBody3D
 	public override void _Process(double delta)
 	{
 		TrySelectInteractable();
-		Debug.Log(HeldBody.Name);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -193,6 +192,8 @@ public partial class Player : CharacterBody3D
 		PrivateReferences.Add(LocomotionStateMachine);
 		InteractRaycast = PlayerCamera.GetNode<RayCast3D>("InteractRaycast");
 		PrivateReferences.Add(InteractRaycast);
+		PickupableBodyTarget = PlayerCamera.GetNode<Node3D>("PickupableBodyTarget");
+		PrivateReferences.Add(PickupableBodyTarget);
 
 		if (LoggingDebug)
 		{
@@ -202,7 +203,7 @@ public partial class Player : CharacterBody3D
 				if (ReferenceToValidate == null)
 				{
 					AllValidated = false;
-					Debug.Log("Failed to validate object reference: null");
+					Debug.LogError("Failed to validate object reference: null");
 				}
 			}
 			if (AllValidated)
@@ -245,7 +246,12 @@ public partial class Player : CharacterBody3D
 	{
 		_HeldBody = Value;
 
+		if (_HeldBody == null)
+		{
+			return;
+		}
 		
+		_HeldBody.CanBeSelected = false;
 	}
 
 	// Checks for an interactable object in the player's line of sight and selects it if found.

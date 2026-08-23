@@ -29,4 +29,9 @@ public partial class Debug : Node
 	{
 		GD.PushWarning(warning.ToString());
 	}
+
+	public static void LogError<T>(T error)
+	{
+		GD.PushError(error.ToString());
+	}
 }

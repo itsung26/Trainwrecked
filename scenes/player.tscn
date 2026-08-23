@@ -33,6 +33,9 @@ script = ExtResource("2_g2els")
 [node name="InteractRaycast" type="RayCast3D" parent="PlayerCameraPivot/PlayerCamera" unique_id=2084647628]
 target_position = Vector3(0, 0, -2.08)
 
+[node name="PickupableBodyTarget" type="Marker3D" parent="PlayerCameraPivot/PlayerCamera" unique_id=869740125]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.2)
+
 [node name="PlayerHud" parent="." unique_id=1268189311 instance=ExtResource("3_qhqgy")]
 
 [node name="LocomotionStateMachine" type="Node" parent="." unique_id=19474488]
