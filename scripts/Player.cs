@@ -92,7 +92,10 @@ public partial class Player : CharacterBody3D
 		{
 			if (Input.IsActionJustPressed("Interact") && (HeldBody == null))
 			{
-				TryPickupPickupableBody();
+				if (GetInteractableFromRaycast() is PickupableBody BodyToPickup)
+				{
+					TryPickupPickupableBody(BodyToPickup);
+				}
 			}
 			else if (Input.IsActionJustPressed("Interact") && !(HeldBody == null))
 			{
@@ -265,6 +268,8 @@ public partial class Player : CharacterBody3D
 			PreviousHeldBody.IsHeld = false;
 			PreviousHeldBody.CanBeSelected = true;
 			PreviousHeldBody.HoldTarget = null;
+			PreviousHeldBody.HoldingPlayer = null;
+			GlobalSpeedModifier = 1.0f;
 			
 			return;
 		}
@@ -272,6 +277,8 @@ public partial class Player : CharacterBody3D
 		// Otherwise, the body is being picked up.
 		_HeldBody.CanBeSelected = false;
 		_HeldBody.IsHeld = true;
+		_HeldBody.HoldingPlayer = this;
+		GlobalSpeedModifier = _HeldBody.PlayerSpeedMultiplier;
 	}
 
 	// Checks for an interactable object in the player's line of sight and selects it if found.
@@ -305,28 +312,30 @@ public partial class Player : CharacterBody3D
 		return InteractRaycast.GetCollider() as Node3D;
 	}
 
-	// Attempts to pickup a pickupable body from the interactable raycast.
-	// Returns immidiately if the player is already holding a body, or if the interactable is not a pickupable body.
-	public void TryPickupPickupableBody()
+	// Attempts to pick up the given pickupable body.
+	// Returns immediately if the player is already holding a body, the body is null,
+	// or the body is farther than its max hold distance.
+	public void TryPickupPickupableBody(PickupableBody BodyToPickup)
 	{
-		// If the player is already holding a body, do nothing.
+		// If the player is already holding a body, return.
 		if (HeldBody != null)
 		{
 			return;
 		}
-		// If the interactable is not a pickupable body, do nothing.
-		else if (!(GetInteractableFromRaycast() is PickupableBody))
+		// If there is no body to pick up, return.
+		if (BodyToPickup == null)
 		{
 			return;
 		}
-		// If the interactable is a Pickupable body, set the HeldBody to it and
-		// set the body's HoldTarget to the player's respective marker.
-		else if (GetInteractableFromRaycast() is PickupableBody NewPickupableBody)
+		// If the body is farther than its max hold distance, return.
+		if (PickupableBodyTarget.GlobalPosition.DistanceTo(BodyToPickup.GlobalPosition) > BodyToPickup.MaxHoldDistance)
 		{
-			HeldBody = NewPickupableBody;
-			HeldBody.HoldTarget = PickupableBodyTarget;
+			return;
 		}
 
+		// Set the HeldBody to it and the body's HoldTarget to the player's hold marker.
+		HeldBody = BodyToPickup;
+		HeldBody.HoldTarget = PickupableBodyTarget;
 	}
 
 	public void DropHeldBody()

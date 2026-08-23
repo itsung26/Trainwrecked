@@ -88,15 +88,18 @@ points = PackedVector3Array(-0.5065097, 0.14187208, 0.2629013, 0.5063808, 0.1418
 [sub_resource type="BoxShape3D" id="BoxShape3D_dehhp"]
 size = Vector3(0.30395508, 0.16444397, 0.5686035)
 
-[node name="ModelTrainPickupableRedLoco" type="RigidBody3D" unique_id=1511877849 node_paths=PackedStringArray("InvertedHullMeshes", "DebugLabel1", "DebugLabel2", "DebugLabel3")]
+[node name="ModelTrainPickupableRedLoco" type="RigidBody3D" unique_id=1511877849 node_paths=PackedStringArray("InvertedHullMeshes", "DebugLabel1", "DebugLabel2", "DebugLabel3", "DebugLabel4")]
 script = ExtResource("1_j64iu")
 InvertedHullMeshes = [NodePath("train-locomotive-b/train-locomotive-b/wheel/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_1/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_2/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_3/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheels-front/IH"), NodePath("train-locomotive-b/train-locomotive-b/IH")]
 InteractableDisplayName = "Steam Locomotive Plush"
 HoldSpring = 4.3
-MaxHoldDistance = 1.0
+RotationTorque = 28.865
+MaxHoldDistance = 1.5
+FacePlayerAxis = 1
 DebugLabel1 = NodePath("Label3D")
 DebugLabel2 = NodePath("Label3D2")
 DebugLabel3 = NodePath("Label3D3")
+DebugLabel4 = NodePath("Label3D4")
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
 
 [node name="train-locomotive-b" parent="." unique_id=2036816041 instance=ExtResource("2_tutl6")]
@@ -150,6 +153,12 @@ font_size = 15
 
 [node name="Label3D3" type="Label3D" parent="." unique_id=223413172]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7081626, 0)
+billboard = 1
+text = "can be selected: false"
+font_size = 15
+
+[node name="Label3D4" type="Label3D" parent="." unique_id=888479091]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.81493205, 0)
 billboard = 1
 text = "can be selected: false"
 font_size = 15

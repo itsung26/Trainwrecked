@@ -2,6 +2,14 @@ using Godot;
 using System;
 using Godot.Collections;
 
+public enum HoldFaceAxis
+{
+	PositiveX,
+	NegativeX,
+	PositiveZ,
+	NegativeZ
+}
+
 [GlobalClass]
 public partial class PickupableBody : RigidBody3D, IInteractable
 {
@@ -66,13 +74,19 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 	[Export] public string InteractableDisplayName {get; set;}
 	// How tightly the body will follow the player's hand when picked up.
 	[Export] public float HoldSpring = 0.5f;
+	// How tightly the body will rotate to face the chosen axis when picked up.
+	[Export] public float RotationTorque = 1.0f;
 	// The maximum distance the body will be allowed to be from the player's hand when picked up.
 	[Export] public float MaxHoldDistance = 0.5f;
+	// Which local axis of the body should face the player while held.
+	[Export] public HoldFaceAxis FacePlayerAxis = HoldFaceAxis.NegativeZ;
+	
 	// How much the player's speed will be scaled by when holding a body.
 	[Export] public float PlayerSpeedMultiplier = 1.0f;
 	[Export] public Label3D DebugLabel1;
 	[Export] public Label3D DebugLabel2;
 	[Export] public Label3D DebugLabel3;
+	[Export] public Label3D DebugLabel4;
 
 	#endregion
 
@@ -86,7 +100,7 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 
     public override void _Process(double delta)
     {
-        base._Process(delta);
+		UpdateDebugLabels();
     }
 
 
@@ -96,18 +110,19 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 		{
 			return;
 		}
-		else
+
+		if (State.Transform.Origin.DistanceTo(HoldTarget.GlobalPosition) >= MaxHoldDistance)
 		{
-			if (State.Transform.Origin.DistanceTo(HoldTarget.GlobalPosition) >= MaxHoldDistance)
+			if (HoldingPlayer != null)
 			{
-				HoldTarget = null;
-				CanBeSelected = true;
-				IsHeld = false;
+				HoldingPlayer.DropHeldBody();
 			}
-			Vector3 ToTargetVector = HoldTarget.GlobalPosition - State.Transform.Origin;
-			State.LinearVelocity = ToTargetVector * HoldSpring;
+			return;
 		}
 
+		Vector3 ToTargetVector = HoldTarget.GlobalPosition - State.Transform.Origin;
+		State.LinearVelocity = ToTargetVector * HoldSpring;
+		ApplyFacePlayerTorque(State);
     }
 
 	public void SetIsSelected(bool Value)
@@ -120,6 +135,11 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 	public void SetIsHeld(bool Value)
 	{
 		_IsHeld = Value;
+		if (_IsHeld)
+		{
+			LockRotation = false;
+			Sleeping = false;
+		}
 		UpdateDebugLabels();
 	}
 
@@ -142,6 +162,97 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 		if (DebugLabel3 != null)
 		{
 			DebugLabel3.Text = "can be selected: " + _CanBeSelected;
+		}
+		if (DebugLabel4 != null)
+		{
+			if (HoldTarget == null)
+			{
+				DebugLabel4.Text = "hold distance: none";
+			}
+			else
+			{
+				float Distance = GlobalPosition.DistanceTo(HoldTarget.GlobalPosition);
+				DebugLabel4.Text = "hold distance: " + Distance.ToString("0.00");
+			}
+		}
+	}
+
+	private void ApplyFacePlayerTorque(PhysicsDirectBodyState3D State)
+	{
+		Vector3 FaceTowardPosition = GetFaceTowardPosition();
+		Vector3 DesiredFaceDirection = FaceTowardPosition - State.Transform.Origin;
+		if (DesiredFaceDirection.LengthSquared() < 0.0001f)
+		{
+			return;
+		}
+
+		Quaternion TargetRotation = GetHeldTargetRotation(DesiredFaceDirection.Normalized());
+		Quaternion CurrentRotation = State.Transform.Basis.GetRotationQuaternion();
+		Quaternion DeltaRotation = TargetRotation * CurrentRotation.Inverse();
+		if (DeltaRotation.W < 0.0f)
+		{
+			DeltaRotation = -DeltaRotation;
+		}
+
+		Vector3 RotationAxis = new Vector3(DeltaRotation.X, DeltaRotation.Y, DeltaRotation.Z);
+		float Angle = 2.0f * Mathf.Acos(Mathf.Clamp(DeltaRotation.W, -1.0f, 1.0f));
+		if (RotationAxis.LengthSquared() < 0.000001f)
+		{
+			State.AngularVelocity = Vector3.Zero;
+			return;
+		}
+
+		State.AngularVelocity = RotationAxis.Normalized() * Angle * RotationTorque;
+	}
+
+	private Quaternion GetHeldTargetRotation(Vector3 DesiredFaceDirection)
+	{
+		Vector3 LocalFaceAxis = GetLocalFaceAxis();
+		Quaternion FaceAlign = new Quaternion(LocalFaceAxis, DesiredFaceDirection);
+		Vector3 RotatedUp = FaceAlign * Vector3.Up;
+		Vector3 DesiredUp = Vector3.Up - DesiredFaceDirection * DesiredFaceDirection.Dot(Vector3.Up);
+		Vector3 RotatedUpOnFacePlane = RotatedUp - DesiredFaceDirection * DesiredFaceDirection.Dot(RotatedUp);
+
+		if (DesiredUp.LengthSquared() < 0.0001f || RotatedUpOnFacePlane.LengthSquared() < 0.0001f)
+		{
+			return FaceAlign;
+		}
+
+		DesiredUp = DesiredUp.Normalized();
+		RotatedUpOnFacePlane = RotatedUpOnFacePlane.Normalized();
+		float TwistAngle = RotatedUpOnFacePlane.SignedAngleTo(DesiredUp, DesiredFaceDirection);
+		Quaternion UpAlign = new Quaternion(DesiredFaceDirection, TwistAngle);
+		return UpAlign * FaceAlign;
+	}
+
+	private Vector3 GetFaceTowardPosition()
+	{
+		if (HoldingPlayer != null)
+		{
+			Camera3D PlayerCamera = HoldingPlayer.GetViewport().GetCamera3D();
+			if (PlayerCamera != null)
+			{
+				return PlayerCamera.GlobalPosition;
+			}
+
+			return HoldingPlayer.GlobalPosition;
+		}
+
+		return HoldTarget.GlobalPosition;
+	}
+
+	private Vector3 GetLocalFaceAxis()
+	{
+		switch (FacePlayerAxis)
+		{
+			case HoldFaceAxis.PositiveX:
+				return Vector3.Right;
+			case HoldFaceAxis.NegativeX:
+				return Vector3.Left;
+			case HoldFaceAxis.PositiveZ:
+				return Vector3.Back;
+			default:
+				return Vector3.Forward;
 		}
 	}
 
