@@ -85,11 +85,14 @@ _surfaces = [{
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_opjlc"]
 points = PackedVector3Array(-0.5065097, 0.14187208, 0.2629013, 0.5063808, 0.14187208, 0.2629013, -0.5065097, 0.14187208, 0.6627252, -0.6581663, 0.29339713, 0.2629013, -0.5065097, 0.24779105, -0.78055996, -0.4784204, 0.25937825, -1.0877447, -0.28359908, 0.26814294, -1.3000001, -0.28359908, 0.25937825, -1.200235, 0.6581663, 0.29339713, 0.2629013, 0.5063808, 0.14187208, 0.6627252, 0.2834702, 0.25937825, -1.200235, 0.2834702, 0.26814294, -1.3000001, 0.4782915, 0.25937825, -1.0877447, 0.5063808, 0.24779105, -0.78055996, -0.6581663, 0.29339713, 0.6627252, -0.28359908, 0.15940145, 1.1999804, -0.4784204, 0.15940145, 1.0874902, -0.6406427, 1.3750185, -1.1002154, -0.6522392, 0.39352247, -0.78055996, -0.55006105, 0.55945724, -1.0500784, -0.37482494, 0.35935506, -1.3000001, -0.34815297, 0.29488266, -1.3000001, 0.6581663, 0.29339713, 0.6627252, 0.65211034, 0.39352247, -0.78055996, 0.6405138, 1.3750185, -1.1002154, 0.4782915, 0.15940145, 1.0874902, 0.2834702, 0.15940145, 1.1999804, 0.34802413, 0.29488266, -1.3000001, 0.37469602, 0.35935506, -1.3000001, 0.54993224, 0.55945724, -1.0500784, -0.50006723, 0.35935506, 1.0999609, -0.50006723, 0.45948043, 1.0999609, -0.40007955, 1.0627581, 1.0498239, -0.6406427, 1.3750185, -0.20003915, -0.28359908, 0.16816613, 1.3000001, -0.34815297, 0.19490585, 1.3000001, -0.37482494, 0.25937825, 1.3000001, -0.56255955, 1.4375596, -1.200235, -0.34815297, 0.42397603, -1.3000001, 0.39995062, 1.0627581, 1.0498239, 0.49993837, 0.45948043, 1.0999609, 0.49993837, 0.35935506, 1.0999609, 0.6405138, 1.3750185, -0.20003915, 0.5624306, 1.4375596, -1.200235, 0.37469602, 0.25937825, 1.3000001, 0.34802413, 0.19490585, 1.3000001, 0.2834702, 0.16816613, 1.3000001, 0.34802413, 0.42397603, -1.3000001, -0.3500857, 1.0318588, 1.0999609, 0, 1.4913362, 0.98467124, -0.15062577, 1.4913362, 0.8976313, -0.56255955, 1.4375596, -0.100019574, -0.34815297, 0.32399923, 1.3000001, -0.28514528, 1.6594993, -1.200235, -0.28359908, 0.45071575, -1.3000001, 0.1504969, 1.4913362, 0.8976313, 0.34995687, 1.0318588, 1.0999609, 0.5624306, 1.4375596, -0.100019574, 0.28501642, 1.6594993, -1.200235, 0.34802413, 0.32399923, 1.3000001, 0.2834702, 0.45071575, -1.3000001, -0.18825, 1.1128207, 1.0999609, -0.32083675, 0.73341393, 1.1999804, 0.28501642, 1.6594993, -0.100019574, -0.28514528, 1.6594993, -0.100019574, 0.18812114, 1.1128207, 1.0999609, -0.28359908, 0.35073894, 1.3000001, 0.32070786, 0.73341393, 1.1999804, 0.2834702, 0.35073894, 1.3000001, -0.25009805, 0.7626791, 1.1999804, 0.24996918, 0.7626791, 1.1999804)
 
-[node name="ModelTrainPickupableRedLoco" type="RigidBody3D" unique_id=1511877849 node_paths=PackedStringArray("InvertedHullMeshes")]
+[node name="ModelTrainPickupableRedLoco" type="RigidBody3D" unique_id=1511877849 node_paths=PackedStringArray("InvertedHullMeshes", "DebugLabel1", "DebugLabel2", "DebugLabel3")]
 mass = 1.3
 script = ExtResource("1_j64iu")
 InvertedHullMeshes = [NodePath("train-locomotive-b/train-locomotive-b/wheel/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_1/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_2/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_3/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheels-front/IH"), NodePath("train-locomotive-b/train-locomotive-b/IH")]
-InteractableDisplayName = "Red Steam Plush"
+InteractableDisplayName = "Steam Locomotive Plush"
+DebugLabel1 = NodePath("Label3D")
+DebugLabel2 = NodePath("Label3D2")
+DebugLabel3 = NodePath("Label3D3")
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
 
 [node name="train-locomotive-b" parent="." unique_id=2036816041 instance=ExtResource("2_tutl6")]
@@ -128,5 +131,23 @@ surface_material_override/0 = ExtResource("3_tutl6")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=958314524]
 transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_opjlc")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=780822637]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.44279265, 0)
+billboard = 1
+text = "is held: false"
+font_size = 15
+
+[node name="Label3D2" type="Label3D" parent="." unique_id=11094989]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.57969654, 0)
+billboard = 1
+text = "is selected: false"
+font_size = 15
+
+[node name="Label3D3" type="Label3D" parent="." unique_id=223413172]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7081626, 0)
+billboard = 1
+text = "can be selected: false"
+font_size = 15
 
 [editable path="train-locomotive-b"]

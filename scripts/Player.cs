@@ -15,6 +15,8 @@ public partial class Player : CharacterBody3D
 	private StateMachine LocomotionStateMachine;
 	// The raycast that is used to check for interactable objects.
 	private RayCast3D InteractRaycast;
+	// The target that the pickupable body is being held at.
+	private Node3D PickupableBodyTarget;
 	
 	#endregion
 
@@ -246,12 +248,14 @@ public partial class Player : CharacterBody3D
 	{
 		_HeldBody = Value;
 
+		// If the held body is null, the body is being dropped.
 		if (_HeldBody == null)
 		{
 			return;
 		}
 		
 		_HeldBody.CanBeSelected = false;
+		_HeldBody.IsHeld = true;
 	}
 
 	// Checks for an interactable object in the player's line of sight and selects it if found.
@@ -299,9 +303,12 @@ public partial class Player : CharacterBody3D
 		{
 			return;
 		}
+		// If the interactable is a Pickupable body, set the HeldBody to it and
+		// set the body's HoldTarget to the player's respective marker.
 		else if (GetInteractableFromRaycast() is PickupableBody NewPickupableBody)
 		{
 			HeldBody = NewPickupableBody;
+			HeldBody.HoldTarget = PickupableBodyTarget;
 		}
 
 	}

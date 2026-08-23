@@ -43,7 +43,7 @@ public partial class PlayerHud : Control
 
 	public void _on_player_selected_interactable_changed(Node3D NewInteractable)
 	{
-		if (NewInteractable is IInteractable Interactable)
+		if ((NewInteractable is IInteractable Interactable) && (Interactable.CanBeSelected == true))
 		{
 			InteractableNameLabel.Visible = true;
 			InteractKeybindVisualLabel.Visible = true;

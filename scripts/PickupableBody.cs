@@ -2,31 +2,41 @@ using Godot;
 using System;
 using Godot.Collections;
 
-[Tool]
 [GlobalClass]
 public partial class PickupableBody : RigidBody3D, IInteractable
 {
 	#region Regular Variables
-	public bool IsHeld {get; private set;} = false;
+	private bool _IsHeld = false;
+	public bool IsHeld
+	{
+		get { return _IsHeld; }
+		set {SetIsHeld(value);}
+	}
 	private bool _IsSelected = false;
 	public bool IsSelected
 	{
 		get { return _IsSelected; }
-		set
-		{
-			_IsSelected = value;
-			OutlineVisible = _IsSelected;
-		}
+		set {SetIsSelected(value);}
 	}
-	public bool CanBeSelected {get; set;} = true;
+	private bool _CanBeSelected = true;
+	public bool CanBeSelected
+	{
+		get { return _CanBeSelected; }
+		set {SetCanBeSelected(value);}
+	}
+	private Node3D _HoldTarget = null;
+	public Node3D HoldTarget
+	{
+		get {return _HoldTarget;}
+		set {SetHoldTarget(value);}
+	}
 
 	#endregion
 
 	#region Exported Variables
 	// When true, the InvertedHullMeshes will be visible.
 	private bool _OutlineVisible = false;
-	[Export]
-	public bool OutlineVisible
+	[Export] public bool OutlineVisible
 	{
 		get { return _OutlineVisible; }
 		set
@@ -59,6 +69,9 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 	[Export] public float MaxHoldDistance = 0.5f;
 	// How much the player's speed will be scaled by when holding a body.
 	[Export] public float PlayerSpeedMultiplier = 1.0f;
+	[Export] public Label3D DebugLabel1;
+	[Export] public Label3D DebugLabel2;
+	[Export] public Label3D DebugLabel3;
 
 	#endregion
 
@@ -66,6 +79,61 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 	public override void _Ready()
 	{
 		OutlineVisible = false;
+		UpdateDebugLabels();
+	}
+
+    public override void _IntegrateForces(PhysicsDirectBodyState3D State)
+    {
+        if (!IsHeld || HoldTarget == null)
+		{
+			return;
+		}
+		else
+		{
+			Vector3 ToTargetVector = HoldTarget.GlobalPosition - State.Transform.Origin;
+			State.LinearVelocity = ToTargetVector * HoldSpring;
+		}
+
+    }
+
+	public void SetIsSelected(bool Value)
+	{
+		_IsSelected = Value;
+		OutlineVisible = _IsSelected;
+		UpdateDebugLabels();
+	}
+
+	public void SetIsHeld(bool Value)
+	{
+		_IsHeld = Value;
+		UpdateDebugLabels();
+	}
+
+	public void SetCanBeSelected(bool Value)
+	{
+		_CanBeSelected = Value;
+		UpdateDebugLabels();
+	}
+
+	private void UpdateDebugLabels()
+	{
+		if (DebugLabel1 != null)
+		{
+			DebugLabel1.Text = "is held: " + _IsHeld;
+		}
+		if (DebugLabel2 != null)
+		{
+			DebugLabel2.Text = "is selected: " + _IsSelected;
+		}
+		if (DebugLabel3 != null)
+		{
+			DebugLabel3.Text = "can be selected: " + _CanBeSelected;
+		}
+	}
+
+	public void SetHoldTarget(Node3D Value)
+	{
+		_HoldTarget = Value;
 	}
 
 	public override string ToString()
