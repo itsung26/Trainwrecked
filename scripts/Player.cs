@@ -4,9 +4,14 @@ using System;
 public partial class Player : CharacterBody3D
 {
 	#region Private References
+	// The node that is used to turn the camera.
 	private Node3D PlayerCameraPivot;
+	// The camera that is used to view the world.
 	private Camera3D PlayerCamera;
+	// The state machine that is used to control the player's locomotion.
 	private StateMachine LocomotionStateMachine;
+	// The raycast that is used to check for interactable objects.
+	private RayCast3D InteractRaycast;
 	
 	#endregion
 
@@ -55,6 +60,11 @@ public partial class Player : CharacterBody3D
             PlayerCameraPivot.Rotation = new Vector3(Math.Clamp(NewCameraPivotRotation, -1.5f, 1.5f), PlayerCameraPivot.Rotation.Y, PlayerCameraPivot.Rotation.Z);
 
         }
+	}
+
+	public override void _Process(double delta)
+	{
+		Debug.Log(SelectedInteractable.Name);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -139,5 +149,13 @@ public partial class Player : CharacterBody3D
 		PlayerCameraPivot = GetNode<Node3D>("PlayerCameraPivot");
 		PlayerCamera = PlayerCameraPivot.GetNode<Camera3D>("PlayerCamera");
 		LocomotionStateMachine = GetNode<StateMachine>("LocomotionStateMachine");
+		InteractRaycast = GetNode<RayCast3D>("InteractRaycast");
 	}
+
+	private void CheckForInteractableSelection()
+	{
+
+	}
+
+	
 }

@@ -23,8 +23,14 @@ public partial class PickupableBody : RigidBody3D
 			UpdateOutlineVisibility();
 		}
 	}
+	// The meshes that consist of the inverted hull outline of the body.
 	[Export] public Array<MeshInstance3D> InvertedHullMeshes = new Array<MeshInstance3D>();
-	[Export(PropertyHint.Range, "0.001, 1000.0, 0.001")] public float Mass = 1.0f;
+	// How tightly the body will follow the player's hand when picked up.
+	[Export] public float HoldSpring = 0.5f;
+	// The maximum distance the body will be allowed to be from the player's hand when picked up.
+	[Export] public float MaxHoldDistance = 0.5f;
+	// How much the player's speed will be scaled by when holding a body.
+	[Export] public float PlayerSpeedMultiplier = 1.0f;
 
 	#endregion
 
@@ -50,6 +56,18 @@ public partial class PickupableBody : RigidBody3D
 			}
 			InvertedHullMesh.Visible = _OutlineVisible;
 		}
+	}
+
+	// Called immidiately when the player picks up the body.
+	public void OnPickedUp()
+	{
+		
+	}
+
+	// Called immidiately when the player drops the body.
+	public void OnDropped()
+	{
+		
 	}
 
 }

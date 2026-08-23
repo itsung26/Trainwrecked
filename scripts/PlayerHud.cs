@@ -5,6 +5,8 @@ public partial class PlayerHud : Control
 {
 	[Export] public TextureRect DotCrosshair;
 	[Export] public TextureRect SprintCrosshair;
+	[ExportCategory("Debug Text Box")]
+	[Export] public Label CurrentSelectedLabel;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()

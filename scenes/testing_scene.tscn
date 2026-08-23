@@ -1,17 +1,45 @@
 [gd_scene format=3 uid="uid://c58gckeg4226m"]
 
 [ext_resource type="PackedScene" uid="uid://bnhq8tk5or7vo" path="res://scenes/player.tscn" id="1_ifns1"]
+[ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://shaders/procedural_sky.gdshader" id="1_srtiu"]
 [ext_resource type="Texture2D" uid="uid://vpwu4vq6nyke" path="res://assets/2d assets/textures/prototype textures/Light/texture_07.png" id="2_2j2p2"]
 [ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="3_dh6dg"]
 [ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="3_v6rby"]
 [ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://scenes/model_train_pickupable.tscn" id="5_ejtda"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ifns1"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_iraov"]
+shader = ExtResource("1_srtiu")
+shader_parameter/day_top_color = Color(0.6269943, 0.45844406, 0.117892645, 1)
+shader_parameter/day_bottom_color = Color(0.52278095, 0.30031046, 0.17298615, 1)
+shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
+shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
+shader_parameter/night_bottom_color = Color(0.1, 0, 0.2, 1)
+shader_parameter/horizon_color = Color(0, 0.7, 0.8, 1)
+shader_parameter/horizon_blur = 0.05
+shader_parameter/sun_color = Color(10, 8, 1, 1)
+shader_parameter/sun_sunset_color = Color(10, 0, 0, 1)
+shader_parameter/sun_size = 0.2
+shader_parameter/sun_blur = 10.0
+shader_parameter/moon_color = Color(1, 0.95, 0.7, 1)
+shader_parameter/moon_size = 0.06
+shader_parameter/moon_blur = 0.1
+shader_parameter/clouds_edge_color = Color(0.9577505, 0.77992535, 0.6423334, 1)
+shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
+shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
+shader_parameter/clouds_speed = 2.0
+shader_parameter/clouds_direction = 0.2
+shader_parameter/clouds_scale = 1.0
+shader_parameter/clouds_cutoff = 0.43999999016512
+shader_parameter/clouds_fuzziness = 1.06999997608336
+shader_parameter/clouds_weight = 0.0
+shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_speed = 1.0
+shader_parameter/overwritten_time = 0.0
 
 [sub_resource type="Sky" id="Sky_2j2p2"]
-sky_material = SubResource("ProceduralSkyMaterial_ifns1")
+sky_material = SubResource("ShaderMaterial_iraov")
 
 [sub_resource type="Environment" id="Environment_v6rby"]
 background_mode = 2
@@ -78,4 +106,3 @@ metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 
 [node name="ModelTrainPickupable" parent="." unique_id=1554800455 instance=ExtResource("5_ejtda")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3382738, 0.99168885, 0.0021985471)
-linear_velocity = Vector3(0, 2.5, 0)
