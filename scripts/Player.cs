@@ -11,6 +11,10 @@ public partial class Player : CharacterBody3D
 	#endregion
 
 	#region Regular Variables
+	// The interactable that the player is currently looking at. Can be a button, a holdable object, etc.
+	public Node3D SelectedInteractable = null;
+	// The physical body that the player is currently holding. Can be null.
+	public PickupableBody HeldBody {get; private set;} = null;
 
 	#endregion
 

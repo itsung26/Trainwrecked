@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://b03lakkjqddss"]
+
+[node name="WheelHardpoint" type="Node3D" unique_id=1188971491]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1474719166]
+light_color = Color(1, 1, 0, 1)
+light_energy = 0.0
+omni_range = 0.83238345
+
+[node name="Marker3D" type="Marker3D" parent="." unique_id=1645731290]

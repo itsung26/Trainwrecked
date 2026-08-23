@@ -1,22 +1,66 @@
 [gd_scene format=3 uid="uid://c8vgfw3v1amg5"]
 
 [ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="1_broj0"]
+[ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://shaders/track_gen_testing_scene.gdshader" id="1_vdocq"]
 [ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="2_6yrld"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_58cwd"]
+shader = ExtResource("1_vdocq")
+shader_parameter/day_top_color = Color(0.1, 0.6, 1, 1)
+shader_parameter/day_bottom_color = Color(0.4, 0.8, 1, 1)
+shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
+shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
+shader_parameter/night_bottom_color = Color(0.1, 0, 0.2, 1)
+shader_parameter/horizon_color = Color(0, 0.7, 0.8, 1)
+shader_parameter/horizon_blur = 0.71999998390656
+shader_parameter/sun_color = Color(10, 8, 1, 1)
+shader_parameter/sun_sunset_color = Color(10, 0, 0, 1)
+shader_parameter/sun_size = 0.2
+shader_parameter/sun_blur = 10.0
+shader_parameter/moon_color = Color(1, 0.95, 0.7, 1)
+shader_parameter/moon_size = 0.06
+shader_parameter/moon_blur = 0.1
+shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
+shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
+shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
+shader_parameter/clouds_speed = 2.0
+shader_parameter/clouds_direction = 0.2
+shader_parameter/clouds_scale = 1.0
+shader_parameter/clouds_cutoff = 0.3
+shader_parameter/clouds_fuzziness = 0.5
+shader_parameter/clouds_weight = 0.0
+shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_speed = 1.0
+shader_parameter/overwritten_time = 0.0
+
+[sub_resource type="Sky" id="Sky_dehhp"]
+sky_material = SubResource("ShaderMaterial_58cwd")
+
+[sub_resource type="Environment" id="Environment_xoefy"]
+background_mode = 2
+sky = SubResource("Sky_dehhp")
+glow_enabled = true
 
 [sub_resource type="Curve3D" id="Curve3D_8t0km"]
 _data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 10, 0.24962473, -0.11567712, 3.2497883, -0.24962473, 0.11567712, -3.2497883, -3.189879, 5.2323456, 3.5572815, -2.0147247, 0.7548094, 2.7253208, 2.0147247, -0.7548094, -2.7253208, -2.3209653, 4.0272646, -3.5964618, 0, 0, 0, 0, 0, 0, 0, 0, -10),
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 7.909743, 0, 16.56903, -0.4218855, -0.115722656, 3.3299003, 0.4218855, 0.115722656, -3.3299003, 2.4559898, 0, 5.4694734, 0.708169, 0.09753418, 2.0642362, -0.708169, -0.09753418, -2.0642362, 2.501192, 0, -0.602697, 0.836853, 0, 7.4655285, -0.836853, 0, -7.4655285, 0, 0, -10),
 "tilts": PackedFloat32Array(0, 0, 0, 0)
 }
 point_count = 4
 
 [node name="TrackGenTestingScene" type="Node3D" unique_id=909668701]
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1355606243]
+environment = SubResource("Environment_xoefy")
+
 [node name="TrackPath" type="Path3D" parent="." unique_id=814821275]
 curve = SubResource("Curve3D_8t0km")
 debug_custom_color = Color(1, 0, 0, 1)
 script = ExtResource("1_broj0")
 TrackScene = ExtResource("2_6yrld")
-TrackCount = 27
-TrackSpacing = 0.945
+TrackCount = 15
+TrackSpacing = 2.32
+TrackMeshScale = 2.875
 metadata/_custom_type_script = "uid://tvuqi8gn8gx1"

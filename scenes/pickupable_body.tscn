@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bg71qkqwmr6qr"]
+
+[ext_resource type="Script" uid="uid://kq8cnnut7xs5" path="res://scripts/PickupableBody.cs" id="1_g3q73"]
+
+[node name="PickupableBody" type="RigidBody3D" unique_id=286929183]
+script = ExtResource("1_g3q73")

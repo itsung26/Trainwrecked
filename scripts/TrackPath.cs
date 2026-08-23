@@ -39,6 +39,21 @@ public partial class TrackPath : Path3D
 		}
 	}
 
+	private float _trackMeshScale = 1.0f;
+	[Export]
+	public float TrackMeshScale
+	{
+		get { return _trackMeshScale; }
+		set
+		{
+			_trackMeshScale = value;
+			if (IsNodeReady())
+			{
+				RebuildTracks();
+			}
+		}
+	}
+
 	public override void _Ready()
 	{
 		CurveChanged += _on_curve_changed;
@@ -68,6 +83,7 @@ public partial class TrackPath : Path3D
 			Track.SetMeta(GeneratedTrackMeta, true);
 			AddChild(Track);
 			Track.Transform = Curve.SampleBakedWithRotation(Offset);
+			Track.Scale = new Vector3(TrackMeshScale, TrackMeshScale, TrackMeshScale);
 		}
 	}
 
