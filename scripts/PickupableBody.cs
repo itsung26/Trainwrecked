@@ -179,14 +179,13 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 
 	private void ApplyFacePlayerTorque(PhysicsDirectBodyState3D State)
 	{
-		Vector3 FaceTowardPosition = GetFaceTowardPosition();
-		Vector3 DesiredFaceDirection = FaceTowardPosition - State.Transform.Origin;
+		Vector3 DesiredFaceDirection = GetHorizontalFaceDirection(State.Transform.Origin);
 		if (DesiredFaceDirection.LengthSquared() < 0.0001f)
 		{
 			return;
 		}
 
-		Quaternion TargetRotation = GetHeldTargetRotation(DesiredFaceDirection.Normalized());
+		Quaternion TargetRotation = GetHeldTargetRotation(DesiredFaceDirection);
 		Quaternion CurrentRotation = State.Transform.Basis.GetRotationQuaternion();
 		Quaternion DeltaRotation = TargetRotation * CurrentRotation.Inverse();
 		if (DeltaRotation.W < 0.0f)
@@ -225,20 +224,37 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 		return UpAlign * FaceAlign;
 	}
 
-	private Vector3 GetFaceTowardPosition()
+	private Vector3 GetHorizontalFaceDirection(Vector3 BodyOrigin)
 	{
+		Vector3 FaceTowardPosition = HoldTarget.GlobalPosition;
+		if (HoldingPlayer != null)
+		{
+			Camera3D PlayerCamera = HoldingPlayer.GetViewport().GetCamera3D();
+			FaceTowardPosition = PlayerCamera != null ? PlayerCamera.GlobalPosition : HoldingPlayer.GlobalPosition;
+		}
+
+		Vector3 DesiredFaceDirection = FaceTowardPosition - BodyOrigin;
+		DesiredFaceDirection.Y = 0.0f;
+		if (DesiredFaceDirection.LengthSquared() >= 0.0001f)
+		{
+			return DesiredFaceDirection.Normalized();
+		}
+
 		if (HoldingPlayer != null)
 		{
 			Camera3D PlayerCamera = HoldingPlayer.GetViewport().GetCamera3D();
 			if (PlayerCamera != null)
 			{
-				return PlayerCamera.GlobalPosition;
+				Vector3 CameraForward = -PlayerCamera.GlobalTransform.Basis.Z;
+				CameraForward.Y = 0.0f;
+				if (CameraForward.LengthSquared() >= 0.0001f)
+				{
+					return CameraForward.Normalized();
+				}
 			}
-
-			return HoldingPlayer.GlobalPosition;
 		}
 
-		return HoldTarget.GlobalPosition;
+		return Vector3.Zero;
 	}
 
 	private Vector3 GetLocalFaceAxis()

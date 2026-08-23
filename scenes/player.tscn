@@ -9,6 +9,7 @@
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_dehhp"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u8vuu"]
+radius = 0.109375
 
 [node name="Player" type="CharacterBody3D" unique_id=320653181]
 collision_layer = 2
