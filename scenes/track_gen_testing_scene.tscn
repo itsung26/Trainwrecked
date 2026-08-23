@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://c8vgfw3v1amg5"]
+
+[ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="1_broj0"]
+[ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="2_6yrld"]
+
+[sub_resource type="Curve3D" id="Curve3D_8t0km"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 10, 0.24962473, -0.11567712, 3.2497883, -0.24962473, 0.11567712, -3.2497883, -3.189879, 5.2323456, 3.5572815, -2.0147247, 0.7548094, 2.7253208, 2.0147247, -0.7548094, -2.7253208, -2.3209653, 4.0272646, -3.5964618, 0, 0, 0, 0, 0, 0, 0, 0, -10),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+
+[node name="TrackGenTestingScene" type="Node3D" unique_id=909668701]
+
+[node name="TrackPath" type="Path3D" parent="." unique_id=814821275]
+curve = SubResource("Curve3D_8t0km")
+debug_custom_color = Color(1, 0, 0, 1)
+script = ExtResource("1_broj0")
+TrackScene = ExtResource("2_6yrld")
+TrackCount = 27
+TrackSpacing = 0.945
+metadata/_custom_type_script = "uid://tvuqi8gn8gx1"

@@ -1,11 +1,12 @@
 [gd_scene format=3 uid="uid://cm87c22qdh8v6"]
 
 [ext_resource type="Script" uid="uid://dplket0gqymty" path="res://scripts/PlayerHud.cs" id="1_mlvnn"]
+[ext_resource type="Texture2D" uid="uid://bhbocmwoq7wxj" path="res://assets/2d assets/PNG crosshairs/Light/crosshair-063.png" id="2_iraov"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_qlg0r"]
 load_path = "res://.godot/imported/crosshair-000.png-1238134b19b9fef10d1f3dc6b811f553.ctex"
 
-[node name="PlayerHud" type="Control" unique_id=1268189311]
+[node name="PlayerHud" type="Control" unique_id=1268189311 node_paths=PackedStringArray("DotCrosshair", "SprintCrosshair")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,18 +14,36 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mlvnn")
+DotCrosshair = NodePath("DotCrosshair")
+SprintCrosshair = NodePath("SprintCrosshair")
 
-[node name="ColorRect" type="TextureRect" parent="." unique_id=1281572084]
+[node name="DotCrosshair" type="TextureRect" parent="." unique_id=1281572084]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -44.5
-offset_top = -44.5
-offset_right = 44.5
-offset_bottom = 44.5
+offset_left = -117.75
+offset_top = -117.75
+offset_right = 117.75
+offset_bottom = 117.75
 grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("CompressedTexture2D_qlg0r")
+
+[node name="SprintCrosshair" type="TextureRect" parent="." unique_id=2059131160]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -117.75
+offset_top = -117.75
+offset_right = 117.75
+offset_bottom = 117.75
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_iraov")

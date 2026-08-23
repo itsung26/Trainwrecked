@@ -12,6 +12,9 @@ public partial class StateMachine : Node
 	public State CurrentState = null;
 	public State PreviousState = null;
 
+	// Emitted when the state changes.
+	[Signal] public delegate void StateChangedEventHandler(State NewState, State OldState);
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -33,11 +36,14 @@ public partial class StateMachine : Node
 				States.Add(Child as State);
 			}
 		}
-		Debug.Log("Initialized " + States.Count + " states.");
-		for (int i = 0; i < States.Count; i++)
+		if (LoggingDebug)
 		{
-			State State = States[i];
-			Debug.Log("State: " + State.Name);
+			Debug.Log("Initialized " + States.Count + " states.");
+			for (int i = 0; i < States.Count; i++)
+			{
+				State State = States[i];
+				Debug.Log("State: " + State.Name);
+			}
 		}
 	}
 
@@ -70,7 +76,10 @@ public partial class StateMachine : Node
 		StateToEnter.OnEnter();
 
 		String PreviousName = PreviousState != null ? PreviousState.Name : "None";
-		Debug.Log("Entered state: " + StateToEnter.Name + " from previous state: " + PreviousName);
+		if (LoggingDebug) {
+			Debug.Log("Entered state: " + StateToEnter.Name + " from previous state: " + PreviousName);
+		}
+		EmitSignal(SignalName.StateChanged, StateToEnter, PreviousState);
 	}
 
 	// Enters the state with the given name.

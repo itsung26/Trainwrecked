@@ -32,7 +32,6 @@ script = ExtResource("2_g2els")
 
 [node name="LocomotionStateMachine" type="Node" parent="." unique_id=19474488]
 script = ExtResource("4_qlg0r")
-LoggingDebug = true
 metadata/_custom_type_script = "uid://bhsg271e1lvlh"
 
 [node name="GroundedState" type="Node" parent="LocomotionStateMachine" unique_id=747398177]
@@ -46,3 +45,7 @@ metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 [node name="FallingState" type="Node" parent="LocomotionStateMachine" unique_id=153880968]
 script = ExtResource("5_tuyoq")
 metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[connection signal="StateChanged" from="LocomotionStateMachine" to="PlayerHud" method="_on_locomotion_state_machine_state_changed"]
+
+[editable path="PlayerHud"]

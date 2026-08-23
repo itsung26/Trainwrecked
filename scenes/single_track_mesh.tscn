@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://du6gxi03wkppk"]
+
+[ext_resource type="PackedScene" uid="uid://cuyxblux4e03k" path="res://assets/3d assets/train_pack/track-single-detailed.fbx" id="1_nt81d"]
+
+[node name="SingleTrackMesh" type="Node3D" unique_id=1126361840]
+
+[node name="track-single-detailed" parent="." unique_id=1843596230 instance=ExtResource("1_nt81d")]
