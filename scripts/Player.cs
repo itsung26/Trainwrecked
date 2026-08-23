@@ -1,9 +1,12 @@
 using Godot;
 using System;
+using Godot.Collections;
 
 public partial class Player : CharacterBody3D
 {
 	#region Private References
+	// The array containing private references for validation.
+	private Array<Node> PrivateReferences = new Array<Node>();
 	// The node that is used to turn the camera.
 	private Node3D PlayerCameraPivot;
 	// The camera that is used to view the world.
@@ -17,13 +20,37 @@ public partial class Player : CharacterBody3D
 
 	#region Regular Variables
 	// The interactable that the player is currently looking at. Can be a button, a holdable object, etc.
-	public Node3D SelectedInteractable = null;
+	private Node3D _SelectedInteractable = null;
+	public Node3D SelectedInteractable
+	{
+		get { return _SelectedInteractable; }
+		private set
+		{
+			if (_SelectedInteractable == value)
+			{
+				return;
+			}
+
+			if (_SelectedInteractable is IInteractable OldInteractable)
+			{
+				OldInteractable.IsSelected = false;
+			}
+
+			_SelectedInteractable = value;
+
+			if (_SelectedInteractable is IInteractable NewInteractable)
+			{
+				NewInteractable.IsSelected = true;
+			}
+		}
+	}
 	// The physical body that the player is currently holding. Can be null.
 	public PickupableBody HeldBody {get; private set;} = null;
 
 	#endregion
 
 	#region Exported Variables
+	[Export] public bool LoggingDebug = false;
 	[Export] public float Speed = 5.0f;
 	[Export] public float JumpVelocity = 4.5f;
 	[Export] public float MouseSensitivity = 1.0f;
@@ -64,14 +91,20 @@ public partial class Player : CharacterBody3D
 
 	public override void _Process(double delta)
 	{
-		Debug.Log(SelectedInteractable.Name);
+		TrySelectInteractable();
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		Vector3 velocity = Velocity;
 
-		String CurrentLocomotionStateName = LocomotionStateMachine.CurrentState.Name;
+		State CurrentState = LocomotionStateMachine.CurrentState;
+		if (CurrentState == null)
+		{
+			return;
+		}
+
+		String CurrentLocomotionStateName = CurrentState.Name;
 
 		if (!IsOnFloor())
 		{
@@ -147,15 +180,60 @@ public partial class Player : CharacterBody3D
 	private void InitRefs()
 	{
 		PlayerCameraPivot = GetNode<Node3D>("PlayerCameraPivot");
+		PrivateReferences.Add(PlayerCameraPivot);
 		PlayerCamera = PlayerCameraPivot.GetNode<Camera3D>("PlayerCamera");
+		PrivateReferences.Add(PlayerCamera);
 		LocomotionStateMachine = GetNode<StateMachine>("LocomotionStateMachine");
-		InteractRaycast = GetNode<RayCast3D>("InteractRaycast");
+		PrivateReferences.Add(LocomotionStateMachine);
+		InteractRaycast = PlayerCamera.GetNode<RayCast3D>("InteractRaycast");
+		PrivateReferences.Add(InteractRaycast);
+
+		if (LoggingDebug)
+		{
+			bool AllValidated = true;
+			foreach (Node ReferenceToValidate in PrivateReferences)
+			{
+				if (ReferenceToValidate == null)
+				{
+					AllValidated = false;
+					Debug.Log("Failed to validate object reference: null");
+				}
+			}
+			if (AllValidated)
+			{
+				Debug.Log("All object references validated successfully.");
+			}
+		}
 	}
 
-	private void CheckForInteractableSelection()
+	// Checks for an interactable object in the player's line of sight and selects it if found.
+	private void TrySelectInteractable()
 	{
-
+		Node3D Hit = GetInteractableFromRaycast();
+		if (Hit is IInteractable Interactable && Interactable.CanBeSelected)
+		{
+			SelectedInteractable = Hit;
+		}
+		else
+		{
+			SelectedInteractable = null;
+		}
 	}
-
 	
+	// Returns the object the interactable checking raycast is colliding with.
+	// Returns null if no object or the object does not implement IInteractable.
+	private Node3D GetInteractableFromRaycast()
+	{
+		if (InteractRaycast == null || !InteractRaycast.IsColliding())
+		{
+			return null;
+		}
+
+		if (!(InteractRaycast.GetCollider() is IInteractable))
+		{
+			return null;
+		}
+
+		return InteractRaycast.GetCollider() as Node3D;
+	}
 }

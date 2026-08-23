@@ -1,7 +1,7 @@
 shader_type spatial;
 
-uniform float frequency;
-uniform vec3 color:source_color = vec3(0.0);
+uniform float frequency = 6.827;
+uniform vec3 color:source_color = vec3(0.86);
 uniform vec3 color_2:source_color = vec3(1.0);
 
 float sample_sine_function(float x) {

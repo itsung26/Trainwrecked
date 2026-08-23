@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="3_dh6dg"]
 [ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="3_v6rby"]
 [ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://scenes/model_train_pickupable.tscn" id="5_ejtda"]
+[ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://scenes/model_train_pickupable_red_loco.tscn" id="7_lg35i"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iraov"]
 shader = ExtResource("1_srtiu")
@@ -56,6 +57,9 @@ data = PackedVector3Array(-800, -12.5, 800, -800, -12.5, -800, -800, 12.5, -800,
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ejtda"]
 data = PackedVector3Array(-0.5, -0.70871735, 0.5, -0.5, -0.70871735, -0.5, -0.5, 0.70871735, -0.5, 0.5, -0.70871735, -0.5, -0.5, -0.70871735, -0.5, -0.5, -0.70871735, 0.5, -0.5, 0.70871735, -0.5, -0.5, -0.70871735, -0.5, 0.5, -0.70871735, -0.5, -0.5, 0.70871735, -0.5, -0.5, 0.70871735, 0.5, -0.5, -0.70871735, 0.5, -0.5, -0.70871735, 0.5, -0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, -0.5, 0.70871735, 0.5, -0.5, 0.70871735, -0.5, -0.5, -0.70871735, 0.5, 0.5, -0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, 0.70871735, 0.5, 0.5, -0.70871735, 0.5, -0.5, -0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, -0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, 0.70871735, -0.5, -0.5, 0.70871735, -0.5, -0.5, 0.70871735, -0.5, 0.5, 0.70871735, -0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, -0.5, 0.5, -0.70871735, -0.5)
 
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_8msnd"]
+data = PackedVector3Array(-0.5, -0.70871735, 0.5, -0.5, -0.70871735, -0.5, -0.5, 0.70871735, -0.5, 0.5, -0.70871735, -0.5, -0.5, -0.70871735, -0.5, -0.5, -0.70871735, 0.5, -0.5, 0.70871735, -0.5, -0.5, -0.70871735, -0.5, 0.5, -0.70871735, -0.5, -0.5, 0.70871735, -0.5, -0.5, 0.70871735, 0.5, -0.5, -0.70871735, 0.5, -0.5, -0.70871735, 0.5, -0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, -0.5, 0.70871735, 0.5, -0.5, 0.70871735, -0.5, -0.5, -0.70871735, 0.5, 0.5, -0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, 0.70871735, 0.5, 0.5, -0.70871735, 0.5, -0.5, -0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, -0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, 0.70871735, -0.5, -0.5, 0.70871735, -0.5, -0.5, 0.70871735, -0.5, 0.5, 0.70871735, -0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, -0.5, 0.5, -0.70871735, -0.5)
+
 [sub_resource type="Curve3D" id="Curve3D_dh6dg"]
 _data = {
 "points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 21.935669, 0, 0, 0, 0, 0, 0, 0, 0, 8.715668, 0, 0, 0, 0, 0, 0, 0, 0, -13.120897, 0, 0, 0, 0, 0, 0, 0, 0, -1.0596409),
@@ -73,7 +77,7 @@ transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545
 shadow_enabled = true
 
 [node name="Player" parent="." unique_id=320653181 instance=ExtResource("1_ifns1")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 4.5975895, 4.7683716e-07, 2.4189339)
 
 [node name="OneChunk" type="CSGBox3D" parent="." unique_id=878317186]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -12.5, 0)
@@ -82,6 +86,10 @@ material = SubResource("StandardMaterial3D_qlg0r")
 
 [node name="pedestal" type="CSGBox3D" parent="." unique_id=1436103879]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3687172, 0.28316307, 0.01147449)
+size = Vector3(1, 1.4174347, 1)
+
+[node name="pedestal2" type="CSGBox3D" parent="." unique_id=976794787]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3687172, 0.28316307, -1.1224885)
 size = Vector3(1, 1.4174347, 1)
 
 [node name="WorldCollider" type="StaticBody3D" parent="." unique_id=1984701233]
@@ -93,6 +101,10 @@ shape = SubResource("ConcavePolygonShape3D_2j2p2")
 [node name="CSGBakedCollisionShape3D2" type="CollisionShape3D" parent="WorldCollider" unique_id=1105099829]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3687172, 0.28316307, 0.01147449)
 shape = SubResource("ConcavePolygonShape3D_ejtda")
+
+[node name="CSGBakedCollisionShape3D3" type="CollisionShape3D" parent="WorldCollider" unique_id=1902379204]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3687172, 0.28316307, -1.1224885)
+shape = SubResource("ConcavePolygonShape3D_8msnd")
 
 [node name="TrackPath" type="Path3D" parent="." unique_id=1309963775]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.133974, 0, 0)
@@ -106,3 +118,7 @@ metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 
 [node name="ModelTrainPickupable" parent="." unique_id=1554800455 instance=ExtResource("5_ejtda")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3382738, 0.99168885, 0.0021985471)
+OutlineVisible = false
+
+[node name="ModelTrainPickupableRedLoco" parent="." unique_id=1511877849 instance=ExtResource("7_lg35i")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3749151, 1.0278907, -1.1323593)

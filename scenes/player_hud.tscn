@@ -6,7 +6,7 @@
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_qlg0r"]
 load_path = "res://.godot/imported/crosshair-000.png-1238134b19b9fef10d1f3dc6b811f553.ctex"
 
-[node name="PlayerHud" type="Control" unique_id=1268189311 node_paths=PackedStringArray("DotCrosshair", "SprintCrosshair", "CurrentSelectedLabel")]
+[node name="PlayerHud" type="Control" unique_id=1268189311 node_paths=PackedStringArray("DotCrosshair", "SprintCrosshair", "CurrentSelectedLabel", "InteractableNameLabel")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -17,6 +17,7 @@ script = ExtResource("1_mlvnn")
 DotCrosshair = NodePath("Crosshairs/DotCrosshair")
 SprintCrosshair = NodePath("Crosshairs/SprintCrosshair")
 CurrentSelectedLabel = NodePath("DebugTextBox/CurrentSelected")
+InteractableNameLabel = NodePath("Control/InteractableNameLabel")
 
 [node name="Crosshairs" type="Control" parent="." unique_id=2103398722]
 anchors_preset = 0
@@ -66,3 +67,35 @@ layout_mode = 2
 
 [node name="CurrentHeld" type="Label" parent="DebugTextBox" unique_id=2139926646]
 layout_mode = 2
+
+[node name="Control" type="Control" parent="." unique_id=669440856]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="InteractableNameLabel" type="Label" parent="Control" unique_id=540071132]
+layout_mode = 0
+anchor_top = 0.6944444
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_font_sizes/font_size = 45
+text = "'{INTERACTABLE}'"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Label2" type="Label" parent="Control" unique_id=1084428677]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.6259259
+anchor_right = 1.0
+anchor_bottom = 0.9314815
+theme_override_font_sizes/font_size = 45
+text = "E"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true

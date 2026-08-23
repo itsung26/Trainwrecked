@@ -7,10 +7,12 @@ public partial class PlayerHud : Control
 	[Export] public TextureRect SprintCrosshair;
 	[ExportCategory("Debug Text Box")]
 	[Export] public Label CurrentSelectedLabel;
+	[Export] public Label InteractableNameLabel;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		InteractableNameLabel.Text = "";
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -30,5 +32,10 @@ public partial class PlayerHud : Control
 			DotCrosshair.Visible = true;
 			SprintCrosshair.Visible = false;
 		}
+	}
+
+	public void SetInteractableName(string Name)
+	{
+		InteractableNameLabel.Text = Name;
 	}
 }

@@ -1,0 +1,10 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://uax7i7j5wmdu"]
+
+[ext_resource type="Shader" uid="uid://dt4cy8wqh7jhp" path="res://shaders/oscillating_glow.gdshader" id="1_xccal"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_xccal")
+shader_parameter/frequency = 6.827
+shader_parameter/color = Color(0.86, 0.86, 0.86, 1)
+shader_parameter/color_2 = Color(1, 1, 1, 1)

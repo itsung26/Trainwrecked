@@ -13,6 +13,7 @@
 [node name="Player" type="CharacterBody3D" unique_id=320653181]
 collision_layer = 2
 script = ExtResource("1_3vyb7")
+LoggingDebug = true
 MouseSensitivity = 0.015
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=716433429]
@@ -30,8 +31,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 script = ExtResource("2_g2els")
 
 [node name="InteractRaycast" type="RayCast3D" parent="PlayerCameraPivot/PlayerCamera" unique_id=2084647628]
-visible = false
-target_position = Vector3(0, 0, -1600)
+target_position = Vector3(0, 0, -2.08)
 
 [node name="PlayerHud" parent="." unique_id=1268189311 instance=ExtResource("3_qhqgy")]
 

@@ -4,27 +4,55 @@ using Godot.Collections;
 
 [Tool]
 [GlobalClass]
-public partial class PickupableBody : RigidBody3D
+public partial class PickupableBody : RigidBody3D, IInteractable
 {
 	#region Regular Variables
-	public bool IsHeld = false;
+	public bool IsHeld {get; private set;} = false;
+	private bool _IsSelected = false;
+	public bool IsSelected
+	{
+		get { return _IsSelected; }
+		set
+		{
+			_IsSelected = value;
+			OutlineVisible = _IsSelected;
+		}
+	}
+	public bool CanBeSelected {get; set;} = true;
 
 	#endregion
 
 	#region Exported Variables
 	// When true, the InvertedHullMeshes will be visible.
 	private bool _OutlineVisible = false;
-	[Export] public bool OutlineVisible
+	[Export]
+	public bool OutlineVisible
 	{
 		get { return _OutlineVisible; }
 		set
 		{
 			_OutlineVisible = value;
-			UpdateOutlineVisibility();
+
+			if (InvertedHullMeshes == null)
+			{
+				return;
+			}
+
+			for (int i = 0; i < InvertedHullMeshes.Count; i++)
+			{
+				MeshInstance3D InvertedHullMesh = InvertedHullMeshes[i];
+				if (InvertedHullMesh == null)
+				{
+					continue;
+				}
+				InvertedHullMesh.Visible = _OutlineVisible;
+			}
 		}
 	}
 	// The meshes that consist of the inverted hull outline of the body.
-	[Export] public Array<MeshInstance3D> InvertedHullMeshes = new Array<MeshInstance3D>();
+	[Export] public Array<MeshInstance3D> InvertedHullMeshes { get; set; } = new Array<MeshInstance3D>();
+	// The name of the body that will be displayed when it is selected.
+	[Export] public string InteractableDisplayName {get; set;}
 	// How tightly the body will follow the player's hand when picked up.
 	[Export] public float HoldSpring = 0.5f;
 	// The maximum distance the body will be allowed to be from the player's hand when picked up.
@@ -35,39 +63,14 @@ public partial class PickupableBody : RigidBody3D
 	#endregion
 
 
-    public override void _Ready()
-    {
-        OutlineVisible = false;
-    }
-
-	private void UpdateOutlineVisibility()
+	public override void _Ready()
 	{
-		if (InvertedHullMeshes == null)
-		{
-			return;
-		}
-
-		for (int i = 0; i < InvertedHullMeshes.Count; i++)
-		{
-			MeshInstance3D InvertedHullMesh = InvertedHullMeshes[i];
-			if (InvertedHullMesh == null)
-			{
-				continue;
-			}
-			InvertedHullMesh.Visible = _OutlineVisible;
-		}
+		OutlineVisible = false;
 	}
 
-	// Called immidiately when the player picks up the body.
-	public void OnPickedUp()
+	public override string ToString()
 	{
-		
-	}
-
-	// Called immidiately when the player drops the body.
-	public void OnDropped()
-	{
-		
+		return Name + "#" + GetInstanceId();
 	}
 
 }

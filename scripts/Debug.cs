@@ -22,11 +22,19 @@ public partial class Debug : Node
 	// Log a message to the console. Intended to replace Print().
 	public static void Log<T>(T message)
 	{
+		if (message == null)
+		{
+			GD.Print("null");
+		}
 		GD.Print(message);
 	}
 
 	public static void LogWarn<T>(T warning)
 	{
+		if (warning == null)
+		{
+			GD.PushWarning("null");
+		}
 		GD.PushWarning(warning.ToString());
 	}
 }
