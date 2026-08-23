@@ -51,6 +51,7 @@ metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 script = ExtResource("5_tuyoq")
 metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 
+[connection signal="SelectedInteractableChanged" from="." to="PlayerHud" method="_on_player_selected_interactable_changed"]
 [connection signal="StateChanged" from="LocomotionStateMachine" to="PlayerHud" method="_on_locomotion_state_machine_state_changed"]
 
 [editable path="PlayerHud"]

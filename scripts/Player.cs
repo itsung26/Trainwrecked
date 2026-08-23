@@ -26,26 +26,19 @@ public partial class Player : CharacterBody3D
 		get { return _SelectedInteractable; }
 		private set
 		{
-			if (_SelectedInteractable == value)
-			{
-				return;
-			}
-
-			if (_SelectedInteractable is IInteractable OldInteractable)
-			{
-				OldInteractable.IsSelected = false;
-			}
-
-			_SelectedInteractable = value;
-
-			if (_SelectedInteractable is IInteractable NewInteractable)
-			{
-				NewInteractable.IsSelected = true;
-			}
+			SetSelectedInteractable(value);
 		}
 	}
 	// The physical body that the player is currently holding. Can be null.
-	public PickupableBody HeldBody {get; private set;} = null;
+	private PickupableBody _HeldBody = null;
+	public PickupableBody HeldBody
+	{
+		get {return _HeldBody;}
+		private set
+		{
+			SetHeldBody(value);
+		}
+	}
 
 	#endregion
 
@@ -55,6 +48,11 @@ public partial class Player : CharacterBody3D
 	[Export] public float JumpVelocity = 4.5f;
 	[Export] public float MouseSensitivity = 1.0f;
 	[Export] public float SprintSpeedMultiplier = 1.5f;
+
+	#endregion
+
+	#region Signals
+	[Signal] public delegate void SelectedInteractableChangedEventHandler(Node3D NewInteractable);
 
 	#endregion
 
@@ -87,11 +85,19 @@ public partial class Player : CharacterBody3D
             PlayerCameraPivot.Rotation = new Vector3(Math.Clamp(NewCameraPivotRotation, -1.5f, 1.5f), PlayerCameraPivot.Rotation.Y, PlayerCameraPivot.Rotation.Z);
 
         }
+		else if (NewEvent is InputEventKey NewKeyEvent)
+		{
+			if (Input.IsActionJustPressed("Interact"))
+			{
+				TryPickupPickupableBody();
+			}
+		}
 	}
 
 	public override void _Process(double delta)
 	{
 		TrySelectInteractable();
+		Debug.Log(HeldBody.Name);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -206,6 +212,42 @@ public partial class Player : CharacterBody3D
 		}
 	}
 
+	// Updates the currently selected interactable and notifies listeners when it changes.
+	private void SetSelectedInteractable(Node3D Value)
+	{
+		// Prevent reselecting the same interactable.
+		// No change — skip deselect/select/emit.
+		if (_SelectedInteractable == Value)
+		{
+			return;
+		}
+
+		// Clear selection on the previous interactable, if any.
+		if (_SelectedInteractable is IInteractable OldInteractable)
+		{
+			OldInteractable.IsSelected = false;
+		}
+
+		// Store the new selection (may be null when looking at nothing).
+		_SelectedInteractable = Value;
+
+		// Mark the new interactable as selected, if any.
+		if (_SelectedInteractable is IInteractable NewInteractable)
+		{
+			NewInteractable.IsSelected = true;
+		}
+
+		// Notify listeners of the new selection (including null when cleared).
+		EmitSignal(SignalName.SelectedInteractableChanged, _SelectedInteractable);
+	}
+
+	private void SetHeldBody(PickupableBody Value)
+	{
+		_HeldBody = Value;
+
+		
+	}
+
 	// Checks for an interactable object in the player's line of sight and selects it if found.
 	private void TrySelectInteractable()
 	{
@@ -235,5 +277,26 @@ public partial class Player : CharacterBody3D
 		}
 
 		return InteractRaycast.GetCollider() as Node3D;
+	}
+
+	// Attempts to pickup a pickupable body from the interactable raycast.
+	// Returns immidiately if the player is already holding a body, or if the interactable is not a pickupable body.
+	private void TryPickupPickupableBody()
+	{
+		// If the player is already holding a body, do nothing.
+		if (HeldBody != null)
+		{
+			return;
+		}
+		// If the interactable is not a pickupable body, do nothing.
+		else if (!(GetInteractableFromRaycast() is PickupableBody))
+		{
+			return;
+		}
+		else if (GetInteractableFromRaycast() is PickupableBody NewPickupableBody)
+		{
+			HeldBody = NewPickupableBody;
+		}
+
 	}
 }
