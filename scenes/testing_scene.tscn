@@ -118,7 +118,6 @@ metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 
 [node name="ModelTrainPickupable" parent="." unique_id=1554800455 instance=ExtResource("5_ejtda")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3382738, 0.99168885, 0.0021985471)
-OutlineVisible = false
 
 [node name="ModelTrainPickupableRedLoco" parent="." unique_id=1511877849 instance=ExtResource("7_lg35i")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3749151, 1.0278907, -1.1323593)
