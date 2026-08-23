@@ -6,10 +6,15 @@ using Godot.Collections;
 [GlobalClass]
 public partial class PickupableBody : RigidBody3D
 {
+	#region Regular Variables
+	public bool IsHeld = false;
+
+	#endregion
+
+	#region Exported Variables
 	// When true, the InvertedHullMeshes will be visible.
 	private bool _OutlineVisible = false;
-	[Export]
-	public bool OutlineVisible
+	[Export] public bool OutlineVisible
 	{
 		get { return _OutlineVisible; }
 		set
@@ -19,7 +24,9 @@ public partial class PickupableBody : RigidBody3D
 		}
 	}
 	[Export] public Array<MeshInstance3D> InvertedHullMeshes = new Array<MeshInstance3D>();
-	public bool IsHeld = false;
+	[Export(PropertyHint.Range, "0.001, 1000.0, 0.001")] public float Mass = 1.0f;
+
+	#endregion
 
 
     public override void _Ready()
