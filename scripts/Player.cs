@@ -92,7 +92,7 @@ public partial class Player : CharacterBody3D
 		{
 			if (Input.IsActionJustPressed("Interact"))
 			{
-				Debug.Log(GetInteractableFromRaycast());
+				// Debug.Log(GetInteractableFromRaycast());
 
 				// If target is a pickupable
 				if (GetInteractableFromRaycast() is PickupableBody BodyToPickup)

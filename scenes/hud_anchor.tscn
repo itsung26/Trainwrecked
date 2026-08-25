@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dqsi5oqkvd8o7"]
+
+[ext_resource type="Script" uid="uid://cjswevrlybon" path="res://scripts/HudAnchor.cs" id="1_5kr75"]
+
+[node name="HudAnchor" type="Node3D" unique_id=1987864178]
+script = ExtResource("1_5kr75")

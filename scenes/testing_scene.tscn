@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://assets/TrainwreckedEntities/model_train_pickupable.tscn" id="5_ejtda"]
 [ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://assets/TrainwreckedEntities/model_train_pickupable_red_loco.tscn" id="7_lg35i"]
 [ext_resource type="PackedScene" uid="uid://4cw0uqimmt3h" path="res://scenes/button_interactable.tscn" id="8_8msnd"]
+[ext_resource type="Script" uid="uid://cjswevrlybon" path="res://scripts/HudAnchor.cs" id="9_ltgxd"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iraov"]
 shader = ExtResource("1_srtiu")
@@ -125,3 +126,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3749151, 1.0278907, -1.132
 
 [node name="ButtonInteractable" parent="." unique_id=751981149 instance=ExtResource("8_8msnd")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -2.3359458, 0.7029725, 0.54710466)
+
+[node name="HudAnchor" type="Node3D" parent="." unique_id=991748749]
+script = ExtResource("9_ltgxd")
+metadata/_custom_type_script = "uid://cjswevrlybon"
+
+[node name="Control" type="Control" parent="HudAnchor" unique_id=333895272]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TestLabel" type="Label" parent="HudAnchor/Control" unique_id=167973519]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "I am a test hud anchor"
