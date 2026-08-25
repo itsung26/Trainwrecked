@@ -106,10 +106,6 @@ public partial class Player : CharacterBody3D
 
 	public override void _Process(double delta)
 	{
-		if (HeldBody != null)
-		{
-			Debug.Log(HeldBody);
-		}
 		TrySelectInteractable();
 	}
 
@@ -340,7 +336,6 @@ public partial class Player : CharacterBody3D
 
 	public void DropHeldBody()
 	{
-		Debug.Log("foo");
 		// if held body is already null, return.
 		if (HeldBody == null)
 		{

@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://4cw0uqimmt3h"]
 
 [ext_resource type="PackedScene" uid="uid://dmukbx62jnj6q" path="res://assets/3d assets/button/button.blend" id="1_eupa5"]
+[ext_resource type="Script" uid="uid://c24bt24io4mwt" path="res://scripts/ButtonInteractable.cs" id="1_j0e45"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_eupa5"]
 _surfaces = [{
@@ -36,6 +37,7 @@ points = PackedVector3Array(1.1920929e-07, 0.39501664, -0.84479755, 1.1920929e-0
 
 [node name="ButtonInteractable" type="RigidBody3D" unique_id=751981149]
 mass = 0.5
+script = ExtResource("1_j0e45")
 
 [node name="button" parent="." unique_id=1405335387 instance=ExtResource("1_eupa5")]
 
