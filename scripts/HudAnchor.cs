@@ -10,18 +10,31 @@ public partial class HudAnchor : Node3D
 {
 	// If true, the hud elements will be scaled to simulate world depth.
 	[Export] public bool SimulateDepth { get; set; } = true;
+	public Vector2 UnprojectedPosition
+	{
+		get {}
+		private set;
+	}
 
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		if (Engine.IsEditorHint())
+		{
+			return;
+		}
 		ValidateChildren();
-		InitializeChildren();
+		InitializeChild();
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		if (Engine.IsEditorHint())
+		{
+			return;
+		}
 	}
 
 	public override string[] _GetConfigurationWarnings()
@@ -47,17 +60,20 @@ public partial class HudAnchor : Node3D
 		}
 	}
 
-	// Removes any non control children and ensures children are valid.
+	// Removes any non control children and extra children, keeping only the first Control.
 	public void ValidateChildren()
 	{
 		Array<Node> Children = GetChildren();
 		Array<Node> ChildrenToFree = new Array<Node>();
+		bool KeptFirst = false;
 		foreach (Node Child in Children)
 		{
-			if (Child is not Control)
+			if (!KeptFirst && Child is Control)
 			{
-				ChildrenToFree.Add(Child);
+				KeptFirst = true;
+				continue;
 			}
+			ChildrenToFree.Add(Child);
 		}
 		foreach (Node ChildToFree in ChildrenToFree)
 		{
@@ -65,9 +81,22 @@ public partial class HudAnchor : Node3D
 		}
 	}
 
-	// Precondition: all children are control nodes
-	public void InitializeChildren()
+	// Precondition: there is only one control node child
+	public void InitializeChild()
 	{
 		
+	}
+
+	// Returns this node's 3D position as a 2D point in the viewport. 
+	// Returns Vector2.Zero if the position is behind the camera.
+	public Vector2 GetUnprojectedPositionFromViewport()
+	{
+		Camera3D ActiveCamera = GetViewport().GetCamera3D();
+		if (ActiveCamera.IsPositionBehind(GlobalPosition))
+		{
+			return Vector2.Zero;
+		}
+
+		return ActiveCamera.UnprojectPosition(GlobalPosition);
 	}
 }
