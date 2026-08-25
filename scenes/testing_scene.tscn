@@ -124,4 +124,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3382738, 0.99168885, 0.002
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3749151, 1.0278907, -1.1323593)
 
 [node name="ButtonInteractable" parent="." unique_id=751981149 instance=ExtResource("8_8msnd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5306585, 0, 2.1438963)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -2.3359458, 0.7029725, 0.54710466)

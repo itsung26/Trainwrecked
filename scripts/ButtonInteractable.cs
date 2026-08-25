@@ -33,6 +33,7 @@ public partial class ButtonInteractable : RigidBody3D, IInteractable
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		Debug.Log(CanBeInteractedWith);
 	}
 
 	public void SetIsSelected(bool Value)
@@ -65,7 +66,19 @@ public partial class ButtonInteractable : RigidBody3D, IInteractable
 		{
 			CanBeInteractedWith = false;
 			ButtonAnimator.Play(InteractAnimationName);
+			ButtonAnimator.Connect(
+				AnimationPlayer.SignalName.AnimationFinished,
+				Callable.From<StringName>(OnInteractAnimationFinished),
+				(uint)ConnectFlags.OneShot
+			);
 		}
+	}
+
+	// Called when the interact animation finishes playing.
+	// When overriding, call the base method.
+	public virtual void OnInteractAnimationFinished(StringName AnimName)
+	{
+		CanBeInteractedWith = true;
 	}
 
     public override string ToString()

@@ -113,7 +113,16 @@ public partial class Player : CharacterBody3D
 				// If target is a button
 				else if (GetInteractableFromRaycast() is ButtonInteractable ButtonToInteract)
 				{
-					//
+					ButtonToInteract.InteractWithButton();
+				}
+				// If target is nothing
+				else if (GetInteractableFromRaycast() is null)
+				{
+					// if holding something, drop the held body
+					if (HeldBody is not null)
+					{
+						DropHeldBody();
+					}
 				}
 			}
 		}
