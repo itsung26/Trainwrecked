@@ -90,6 +90,7 @@ public partial class Player : CharacterBody3D
         }
 		else if (NewEvent is InputEventKey NewKeyEvent)
 		{
+			Debug.Log(GetInteractableFromRaycast());
 			if (Input.IsActionJustPressed("Interact") && (HeldBody == null))
 			{
 				if (GetInteractableFromRaycast() is PickupableBody BodyToPickup)

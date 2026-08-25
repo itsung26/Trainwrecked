@@ -29,6 +29,6 @@ public partial class State : Node
 
 	public override String ToString()
 	{
-		return Name + "#" + GetInstanceId();
+		return Debug.GenerateInstanceToString(this);
 	}
 }

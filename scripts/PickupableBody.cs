@@ -279,7 +279,7 @@ public partial class PickupableBody : RigidBody3D, IInteractable
 
 	public override string ToString()
 	{
-		return Name + "#" + GetInstanceId();
+		return Debug.GenerateInstanceToString(this);
 	}
 
 }

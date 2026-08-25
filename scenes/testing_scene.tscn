@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="3_v6rby"]
 [ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://assets/TrainwreckedEntities/model_train_pickupable.tscn" id="5_ejtda"]
 [ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://assets/TrainwreckedEntities/model_train_pickupable_red_loco.tscn" id="7_lg35i"]
+[ext_resource type="PackedScene" uid="uid://4cw0uqimmt3h" path="res://scenes/button_interactable.tscn" id="8_8msnd"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iraov"]
 shader = ExtResource("1_srtiu")
@@ -121,3 +122,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3382738, 0.99168885, 0.002
 
 [node name="ModelTrainPickupableRedLoco" parent="." unique_id=1511877849 instance=ExtResource("7_lg35i")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3749151, 1.0278907, -1.1323593)
+
+[node name="ButtonInteractable" parent="." unique_id=751981149 instance=ExtResource("8_8msnd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5306585, 0, 2.1438963)

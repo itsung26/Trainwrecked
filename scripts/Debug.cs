@@ -34,4 +34,14 @@ public partial class Debug : Node
 	{
 		GD.PushError(error.ToString());
 	}
+
+	// Returns a generated string in the form of <NODENAME#INSTANCEID>
+	public static String GenerateInstanceToString(Node WhichNode)
+	{
+		if (WhichNode is null)
+		{
+			return "";
+		}
+		return '<' + WhichNode.Name + '#' + WhichNode.GetInstanceId() + '>';
+	}
 }
