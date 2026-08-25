@@ -2,6 +2,7 @@ using Godot;
 using System;
 using Godot.Collections;
 
+[GlobalClass]
 public partial class ButtonInteractable : RigidBody3D, IInteractable
 {
 	[Export] public string InteractableDisplayName { get; set; }
@@ -19,6 +20,9 @@ public partial class ButtonInteractable : RigidBody3D, IInteractable
 		set {SetOutlineVisible(value);}
 	}
 	[Export] public bool CanBeSelected { get; set; } = true;
+	[Export] public bool CanBeInteractedWith { get; set; } = true;
+	[Export] public AnimationPlayer ButtonAnimator { get; set; } = new AnimationPlayer();
+	[Export] public String InteractAnimationName { get; set; }
 
 
 	// Called when the node enters the scene tree for the first time.
@@ -46,6 +50,21 @@ public partial class ButtonInteractable : RigidBody3D, IInteractable
 			{
 				InvertedHullMesh.Visible = Value;
 			}
+		}
+	}
+
+	// Called when the button is interacted with.
+	// When overriding, call the base method.
+	public virtual void InteractWithButton()
+	{
+		if (!CanBeInteractedWith)
+		{
+			return;
+		}
+		else if (CanBeInteractedWith)
+		{
+			CanBeInteractedWith = false;
+			ButtonAnimator.Play(InteractAnimationName);
 		}
 	}
 

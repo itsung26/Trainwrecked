@@ -90,17 +90,31 @@ public partial class Player : CharacterBody3D
         }
 		else if (NewEvent is InputEventKey NewKeyEvent)
 		{
-			Debug.Log(GetInteractableFromRaycast());
-			if (Input.IsActionJustPressed("Interact") && (HeldBody == null))
+			if (Input.IsActionJustPressed("Interact"))
 			{
+				Debug.Log(GetInteractableFromRaycast());
+
+				// If target is a pickupable
 				if (GetInteractableFromRaycast() is PickupableBody BodyToPickup)
 				{
-					TryPickupPickupableBody(BodyToPickup);
+					// If holding nothing
+					if (HeldBody is null)
+					{
+						// attempt to hold the new body
+						TryPickupPickupableBody(BodyToPickup);
+					}
+					// if holding something
+					else if (HeldBody is not null)
+					{
+						// drop the held thing
+						DropHeldBody();
+					}
 				}
-			}
-			else if (Input.IsActionJustPressed("Interact") && !(HeldBody == null))
-			{
-				DropHeldBody();
+				// If target is a button
+				else if (GetInteractableFromRaycast() is ButtonInteractable ButtonToInteract)
+				{
+					//
+				}
 			}
 		}
 	}
