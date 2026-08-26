@@ -10,11 +10,17 @@ public partial class HudAnchor : Node3D
 {
 	// If true, the hud elements will be scaled to simulate world depth.
 	[Export] public bool SimulateDepth { get; set; } = true;
+	private Vector2 _UnprojectedPosition;
 	public Vector2 UnprojectedPosition
 	{
-		get {}
-		private set;
+		get {return GetUnprojectedPositionFromViewport();}
+		private set
+		{
+			_UnprojectedPosition = value;
+		}
 	}
+	// The Control child displayed at this node's unprojected screen position.
+	private Control Child;
 
 
 	// Called when the node enters the scene tree for the first time.
@@ -34,6 +40,16 @@ public partial class HudAnchor : Node3D
 		if (Engine.IsEditorHint())
 		{
 			return;
+		}
+
+		Child.GlobalPosition = UnprojectedPosition;
+		if (!IsNodeVisible())
+		{
+			Child.Visible = false;
+		}
+		else if (IsNodeVisible())
+		{
+			Child.Visible = true;
 		}
 	}
 
@@ -84,7 +100,8 @@ public partial class HudAnchor : Node3D
 	// Precondition: there is only one control node child
 	public void InitializeChild()
 	{
-		
+		Child = GetChild<Control>(0);
+		Child.GlobalPosition = UnprojectedPosition;
 	}
 
 	// Returns this node's 3D position as a 2D point in the viewport. 
@@ -98,5 +115,18 @@ public partial class HudAnchor : Node3D
 		}
 
 		return ActiveCamera.UnprojectPosition(GlobalPosition);
+	}
+
+	// Returns true if the anchor node is visible on camera.
+	public bool IsNodeVisible()
+	{
+		Camera3D ActiveCamera = GetViewport().GetCamera3D();
+
+		if (ActiveCamera.IsPositionBehind(GlobalPosition))
+		{
+			return false;
+		}
+
+		return true;
 	}
 }
