@@ -25,17 +25,6 @@ public partial class ButtonInteractable : RigidBody3D, IInteractable
 	[Export] public String InteractAnimationName { get; set; }
 
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-		Debug.Log(CanBeInteractedWith);
-	}
-
 	public void SetIsSelected(bool Value)
 	{
 		_IsSelected = Value;

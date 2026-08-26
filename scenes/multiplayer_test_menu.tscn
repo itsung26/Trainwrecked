@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://d2yf5mblx8uq8"]
 
 [ext_resource type="Script" uid="uid://dahq2a5wi8bpu" path="res://scripts/MultiplayerTestMenu.cs" id="1_f520i"]
+[ext_resource type="PackedScene" uid="uid://c58gckeg4226m" path="res://scenes/testing_scene.tscn" id="2_7esnj"]
 
 [node name="MultiplayerTestMenu" type="Control" unique_id=1974264911]
 layout_mode = 3
@@ -10,3 +11,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_f520i")
+LevelToLoad = ExtResource("2_7esnj")
+
+[node name="Button" type="Button" parent="." unique_id=980111863]
+layout_mode = 0
+anchor_left = 0.19583334
+anchor_top = 0.6425926
+anchor_right = 0.31770834
+anchor_bottom = 0.7268519
+offset_bottom = -6.1035156e-05
+metadata/_edit_use_anchors_ = true

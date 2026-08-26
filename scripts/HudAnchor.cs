@@ -1,10 +1,7 @@
 using Godot;
-using System;
 using Godot.Collections;
-using System.Linq;
 
 // Displays 2D UI at a position in 3D space.
-[Tool]
 [GlobalClass]
 public partial class HudAnchor : Node3D
 {
@@ -28,10 +25,6 @@ public partial class HudAnchor : Node3D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		if (Engine.IsEditorHint())
-		{
-			return;
-		}
 		ValidateChildren();
 		InitializeChild();
 	}
@@ -39,11 +32,6 @@ public partial class HudAnchor : Node3D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		if (Engine.IsEditorHint())
-		{
-			return;
-		}
-
 		Child.GlobalPosition = UnprojectedPosition;
 		UpdateChildScale();
 		if (!IsNodeVisible())
@@ -53,29 +41,6 @@ public partial class HudAnchor : Node3D
 		else if (IsNodeVisible())
 		{
 			Child.Visible = true;
-		}
-	}
-
-	public override string[] _GetConfigurationWarnings()
-	{
-		if (GetChildCount() == 0)
-		{
-			return ["HudAnchor has no UI child."];
-		}
-
-		if (GetChildCount() > 1)
-		{
-			return ["HudAnchor has more than one child."];
-		}
-
-		return System.Array.Empty<string>();
-	}
-
-	public override void _Notification(int What)
-	{
-		if (What == NotificationChildOrderChanged)
-		{
-			UpdateConfigurationWarnings();
 		}
 	}
 
