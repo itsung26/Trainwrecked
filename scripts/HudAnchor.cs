@@ -21,6 +21,8 @@ public partial class HudAnchor : Node3D
 	}
 	// The Control child displayed at this node's unprojected screen position.
 	private Control Child;
+	// The Control child's scale before depth simulation is applied.
+	private Vector2 BaseChildScale = Vector2.One;
 
 
 	// Called when the node enters the scene tree for the first time.
@@ -43,6 +45,7 @@ public partial class HudAnchor : Node3D
 		}
 
 		Child.GlobalPosition = UnprojectedPosition;
+		UpdateChildScale();
 		if (!IsNodeVisible())
 		{
 			Child.Visible = false;
@@ -101,7 +104,24 @@ public partial class HudAnchor : Node3D
 	public void InitializeChild()
 	{
 		Child = GetChild<Control>(0);
+		BaseChildScale = Child.Scale;
 		Child.GlobalPosition = UnprojectedPosition;
+		UpdateChildScale();
+	}
+
+	// Scales the child to match world depth, or restores its authored scale.
+	public void UpdateChildScale()
+	{
+		if (!SimulateDepth)
+		{
+			Child.Scale = BaseChildScale;
+			return;
+		}
+
+		Camera3D ActiveCamera = GetViewport().GetCamera3D();
+		float Distance = Mathf.Max(ActiveCamera.GlobalPosition.DistanceTo(GlobalPosition), 0.001f);
+		float ScaleFactor = 1.0f / Distance;
+		Child.Scale = BaseChildScale * ScaleFactor;
 	}
 
 	// Returns this node's 3D position as a 2D point in the viewport. 
