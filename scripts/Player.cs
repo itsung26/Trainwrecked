@@ -17,6 +17,8 @@ public partial class Player : CharacterBody3D
 	private RayCast3D InteractRaycast;
 	// The target that the pickupable body is being held at.
 	private Node3D PickupableBodyTarget;
+	// The unique multiplayer ID label.
+	private Label3D PlayerIdLabel;
 	
 	#endregion
 
@@ -230,6 +232,8 @@ public partial class Player : CharacterBody3D
 		PrivateReferences.Add(InteractRaycast);
 		PickupableBodyTarget = PlayerCamera.GetNode<Node3D>("PickupableBodyTarget");
 		PrivateReferences.Add(PickupableBodyTarget);
+		PlayerIdLabel = GetNode<Label3D>("PlayerIdLabel");
+		PrivateReferences.Add(PlayerIdLabel);
 
 		if (LoggingDebug)
 		{

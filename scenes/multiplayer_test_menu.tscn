@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dahq2a5wi8bpu" path="res://scripts/MultiplayerTestMenu.cs" id="1_f520i"]
 [ext_resource type="PackedScene" uid="uid://c58gckeg4226m" path="res://scenes/testing_scene.tscn" id="2_7esnj"]
 
-[node name="MultiplayerTestMenu" type="Control" unique_id=1974264911]
+[node name="MultiplayerTestMenu" type="Control" unique_id=1974264911 node_paths=PackedStringArray("HostButton", "JoinButton", "HostOrClientLabel", "ClientCountLabel")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,12 +12,53 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_f520i")
 LevelToLoad = ExtResource("2_7esnj")
+HostButton = NodePath("HostButton")
+JoinButton = NodePath("JoinButton")
+HostOrClientLabel = NodePath("HostOrClientLabel")
+ClientCountLabel = NodePath("ClientCountLabel")
 
-[node name="Button" type="Button" parent="." unique_id=980111863]
-layout_mode = 0
-anchor_left = 0.19583334
-anchor_top = 0.6425926
-anchor_right = 0.31770834
-anchor_bottom = 0.7268519
+[node name="HostButton" type="Button" parent="." unique_id=980111863]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = 0.6287037
+anchor_right = 0.321875
+anchor_bottom = 0.71296304
 offset_bottom = -6.1035156e-05
+text = "Host"
 metadata/_edit_use_anchors_ = true
+
+[node name="JoinButton" type="Button" parent="." unique_id=890958431]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.6692708
+anchor_top = 0.63148147
+anchor_right = 0.79114586
+anchor_bottom = 0.7157408
+offset_bottom = -6.1035156e-05
+text = "Join"
+metadata/_edit_use_anchors_ = true
+
+[node name="HostOrClientLabel" type="Label" parent="." unique_id=174781305]
+layout_mode = 0
+anchor_left = 0.26510417
+anchor_top = 0.33888888
+anchor_right = 0.7828125
+anchor_bottom = 0.4462963
+theme_override_font_sizes/font_size = 85
+text = "Host or client: UNKOWN"
+metadata/_edit_use_anchors_ = true
+
+[node name="ClientCountLabel" type="Label" parent="." unique_id=1844592858]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.26510417
+anchor_top = 0.44444445
+anchor_right = 0.7828125
+anchor_bottom = 0.55185187
+theme_override_font_sizes/font_size = 85
+text = "# of clients connected: "
+metadata/_edit_use_anchors_ = true
+
+[connection signal="pressed" from="HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="pressed" from="JoinButton" to="." method="_on_join_button_pressed"]
