@@ -39,6 +39,17 @@ offset_bottom = -6.1035156e-05
 text = "Join"
 metadata/_edit_use_anchors_ = true
 
+[node name="DisconnectButton" type="Button" parent="." unique_id=1936141313]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.4453125
+anchor_top = 0.7824074
+anchor_right = 0.5671875
+anchor_bottom = 0.86666673
+offset_bottom = -6.1035156e-05
+text = "Disconnect"
+metadata/_edit_use_anchors_ = true
+
 [node name="HostOrClientLabel" type="Label" parent="." unique_id=174781305]
 layout_mode = 0
 anchor_left = 0.26510417
@@ -62,3 +73,4 @@ metadata/_edit_use_anchors_ = true
 
 [connection signal="pressed" from="HostButton" to="." method="_on_host_button_pressed"]
 [connection signal="pressed" from="JoinButton" to="." method="_on_join_button_pressed"]
+[connection signal="pressed" from="DisconnectButton" to="." method="_on_disconnect_button_pressed"]

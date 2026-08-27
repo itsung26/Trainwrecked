@@ -19,7 +19,7 @@ public partial class Player : CharacterBody3D
 	private Node3D PickupableBodyTarget;
 	// The unique multiplayer ID label.
 	private Label3D PlayerIdLabel;
-	
+
 	#endregion
 
 	#region Regular Variables
@@ -37,7 +37,7 @@ public partial class Player : CharacterBody3D
 	private PickupableBody _HeldBody = null;
 	public PickupableBody HeldBody
 	{
-		get {return _HeldBody;}
+		get { return _HeldBody; }
 		private set
 		{
 			SetHeldBody(value, _HeldBody);
@@ -61,18 +61,20 @@ public partial class Player : CharacterBody3D
 
 	#endregion
 
-    public override void _Ready()
-    {
+	public override void _Ready()
+	{
 		InitRefs();
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 		// Initialize locomotion state
 		if (!IsOnFloor())
 		{
 			LocomotionStateMachine.EnterState("FallingState");
-		} else {
+		}
+		else
+		{
 			LocomotionStateMachine.EnterState("GroundedState");
 		}
-    }
+	}
 
 
 	public override void _Input(InputEvent NewEvent)
@@ -82,14 +84,14 @@ public partial class Player : CharacterBody3D
 			// store the relative movement of the mouse from the last frame
 			InputEventMouseMotion NewMouseMotionEvent = NewEvent as InputEventMouseMotion;
 			Vector2 RelativeMovement = NewMouseMotionEvent.Relative;
-			
+
 			float NewPlayerRotation = Rotation.Y - RelativeMovement.X * MouseSensitivity / 10.0f;
 			Rotation = new Vector3(Rotation.X, NewPlayerRotation, Rotation.Z);
 
-            float NewCameraPivotRotation = PlayerCameraPivot.Rotation.X - RelativeMovement.Y * MouseSensitivity / 10.0f;
-            PlayerCameraPivot.Rotation = new Vector3(Math.Clamp(NewCameraPivotRotation, -1.5f, 1.5f), PlayerCameraPivot.Rotation.Y, PlayerCameraPivot.Rotation.Z);
+			float NewCameraPivotRotation = PlayerCameraPivot.Rotation.X - RelativeMovement.Y * MouseSensitivity / 10.0f;
+			PlayerCameraPivot.Rotation = new Vector3(Math.Clamp(NewCameraPivotRotation, -1.5f, 1.5f), PlayerCameraPivot.Rotation.Y, PlayerCameraPivot.Rotation.Z);
 
-        }
+		}
 		else if (NewEvent is InputEventKey NewKeyEvent)
 		{
 			if (Input.IsActionJustPressed("Interact"))
@@ -168,7 +170,8 @@ public partial class Player : CharacterBody3D
 			velocity += GetGravity() * (float)delta;
 		}
 
-		if (CurrentLocomotionStateName == "GroundedState") {
+		if (CurrentLocomotionStateName == "GroundedState")
+		{
 			float GroundedSpeed = Speed * GlobalSpeedModifier;
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
 			Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
@@ -182,7 +185,7 @@ public partial class Player : CharacterBody3D
 				velocity.X = Mathf.MoveToward(Velocity.X, 0, GroundedSpeed);
 				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, GroundedSpeed);
 			}
-			
+
 			// Handle jump AFTER lateral movement to avoid b-hopping.
 			if (Input.IsActionJustPressed("Jump"))
 			{
@@ -190,7 +193,7 @@ public partial class Player : CharacterBody3D
 			}
 		}
 
-		if (CurrentLocomotionStateName == "SprintingState") 
+		if (CurrentLocomotionStateName == "SprintingState")
 		{
 			float SprintSpeed = Speed * SprintSpeedMultiplier * GlobalSpeedModifier;
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
@@ -205,7 +208,7 @@ public partial class Player : CharacterBody3D
 				velocity.X = Mathf.MoveToward(Velocity.X, 0, SprintSpeed);
 				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, SprintSpeed);
 			}
-			
+
 			// Handle jump AFTER lateral movement to avoid b-hopping.
 			if (Input.IsActionJustPressed("Jump"))
 			{
@@ -294,10 +297,10 @@ public partial class Player : CharacterBody3D
 			PreviousHeldBody.HoldTarget = null;
 			PreviousHeldBody.HoldingPlayer = null;
 			GlobalSpeedModifier = 1.0f;
-			
+
 			return;
 		}
-		
+
 		// Otherwise, the body is being picked up.
 		_HeldBody.CanBeSelected = false;
 		_HeldBody.IsHeld = true;
@@ -318,7 +321,7 @@ public partial class Player : CharacterBody3D
 			SelectedInteractable = null;
 		}
 	}
-	
+
 	// Returns the object the interactable checking raycast is colliding with.
 	// Returns null if no object or the object does not implement IInteractable.
 	private Node3D GetInteractableFromRaycast()

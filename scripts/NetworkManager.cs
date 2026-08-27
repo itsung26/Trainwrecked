@@ -1,115 +1,100 @@
 using Godot;
 using System;
 
+// Works in tandem with the engine native high level multiplayer API to provide
+// networking service via host-client connection.
 public partial class NetworkManager : Node
 {
-	public const string DEFAULTIP = "127.0.0.1";
-
-	public static bool IsHost
-	{
-		get
-		{
-			MultiplayerApi Api = GetMultiplayerApi();
-			return Api.MultiplayerPeer != null && Api.IsServer();
-		}
-	}
-
-	public static int ClientCount
-	{
-		get
-		{
-			MultiplayerApi Api = GetMultiplayerApi();
-			if (Api.MultiplayerPeer is null)
-			{
-				return 0;
-			}
-
-			return Api.GetPeers().Length;
-		}
-	}
+	public static NetworkManager Instance;
+	public const string Address = "localhost";
+	public const int Port = 7777;
+	public const int MaxClients = 4;
 
 	public override void _Ready()
 	{
-		Multiplayer.PeerConnected += OnPeerConnected;
-		Multiplayer.PeerDisconnected += OnPeerDisconnected;
-		Multiplayer.ConnectedToServer += OnConnectedToServer;
-		Multiplayer.ConnectionFailed += OnConnectionFailed;
-		Multiplayer.ServerDisconnected += OnServerDisconnected;
+		Instance = this;
 	}
 
-	public static Error Host(int Port = 7777, int MaxClients = 4)
+	public static Error StartServer()
 	{
-		ENetMultiplayerPeer peer = new ENetMultiplayerPeer();
-		Error err = peer.CreateServer(Port, MaxClients);
-		if (err != Error.Ok)
+		Error returnError = Error.Unavailable;
+		ENetMultiplayerPeer newPeer = new ENetMultiplayerPeer();
+		returnError = newPeer.CreateServer(Port, MaxClients);
+		SetCurrentPeer(newPeer);
+		return returnError;
+	}
+
+	public static Error StartClient()
+	{
+		Error returnError = Error.Unavailable;
+		ENetMultiplayerPeer newPeer = new ENetMultiplayerPeer();
+		returnError = newPeer.CreateClient(Address, Port);
+		SetCurrentPeer(newPeer);
+		return returnError;
+	}
+
+	public static ENetMultiplayerPeer GetCurrentPeer()
+	{
+		if (Instance.Multiplayer.MultiplayerPeer is null)
 		{
-			Debug.LogError("Failed to host: " + err);
-			return err;
+			return null;
 		}
 
-		MultiplayerApi Api = GetMultiplayerApi();
-		Api.MultiplayerPeer = peer;
-		Debug.Log("Hosting on port " + Port + " as peer " + Api.GetUniqueId());
-		return Error.Ok;
+		return Instance.Multiplayer.MultiplayerPeer as ENetMultiplayerPeer;
 	}
 
-	public static Error Join(String Address, int Port = 7777)
+	// Sets the multiplayer API's peer property, enabling networking.
+	public static void SetCurrentPeer(ENetMultiplayerPeer peer)
 	{
-		ENetMultiplayerPeer peer = new ENetMultiplayerPeer();
-		Error err = peer.CreateClient(Address, Port);
-		if (err != Error.Ok)
+		if (peer is null)
 		{
-			Debug.LogError("Failed to join: " + err);
-			return err;
+			Debug.LogWarn("Set active peer to null. Remember to disconnect first. If this was already done than this message can be ignored.");
 		}
 
-		GetMultiplayerApi().MultiplayerPeer = peer;
-		Debug.Log("Connecting to " + Address + ":" + Port);
-		return Error.Ok;
+		Instance.Multiplayer.MultiplayerPeer = peer;
 	}
 
-	public static void DisconnectSession()
+	/// <summary>
+	/// Returns the IPv4 loopback address for localhost as a string ("127.0.0.1").
+	/// </summary>
+	/// <returns>A string representing the IPv4 loopback address.</returns>
+	public static string GetLocalHostIpv4()
 	{
-		MultiplayerApi Api = GetMultiplayerApi();
-		if (Api.MultiplayerPeer is null)
+		return "127.0.0.1";
+	}
+
+	public static bool IsConnected()
+	{
+		if (GetCurrentPeer() is not null)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public static bool IsServer()
+	{
+		return Instance.Multiplayer.IsServer();
+	}
+
+	public static void DisconnectThisClient()
+	{
+		GetCurrentPeer().DisconnectPeer(1);
+	}
+
+	public static void DisconnectOtherPeer()
+	{
+		// Only the host has the authority to directly disconnect other peers.
+		if (!IsServer())
 		{
 			return;
 		}
 
-		Api.MultiplayerPeer.Close();
-		Api.MultiplayerPeer = null;
-		Debug.Log("Disconnected");
+		// TODO: implement a way to lookup player ids from their names.
 	}
 
-	private static MultiplayerApi GetMultiplayerApi()
+	public static void QuitMultiplayerApi()
 	{
-		return ((SceneTree)Engine.GetMainLoop()).GetMultiplayer();
-	}
-
-	private void OnPeerConnected(long id)
-	{
-		Debug.Log("Peer connected: " + id + " (I am " + Multiplayer.GetUniqueId() + ")");
-	}
-
-	private void OnPeerDisconnected(long id)
-	{
-		GD.Print("Peer disconnected: ", id);
-	}
-
-	private void OnConnectedToServer()
-	{
-		GD.Print("Connected to host. My id is ", Multiplayer.GetUniqueId());
-	}
-
-	private void OnConnectionFailed()
-	{
-		GD.PrintErr("Connection failed");
-		Multiplayer.MultiplayerPeer = null;
-	}
-
-	private void OnServerDisconnected()
-	{
-		GD.Print("Host left");
-		Multiplayer.MultiplayerPeer = null;
+		SetCurrentPeer(null);
 	}
 }

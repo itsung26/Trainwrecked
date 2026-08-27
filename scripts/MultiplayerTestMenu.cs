@@ -23,29 +23,40 @@ public partial class MultiplayerTestMenu : Control
 
 	private void UpdateHostOrClientLabel()
 	{
-		bool IsHost = NetworkManager.IsHost;
-		if (IsHost)
+		if (NetworkManager.IsConnected())
 		{
-			HostOrClientLabel.Text = "Host or client: HOST";
+			if (NetworkManager.IsServer())
+			{
+				HostOrClientLabel.Text = "SERVER";
+			}
+			else
+			{
+				HostOrClientLabel.Text = "CLIENT";
+			}
 		}
-		else if (!IsHost)
+		else
 		{
-			HostOrClientLabel.Text = "Host or client: CLIENT";
+			HostOrClientLabel.Text = "DISCONNECTED";
 		}
 	}
 
 	private void UpdateClientCountLabel()
 	{
-		ClientCountLabel.Text = "# of clients connected: " + NetworkManager.ClientCount;
+		
 	}
 
 	private void _on_host_button_pressed()
 	{
-		NetworkManager.Host();
+		NetworkManager.StartServer();
 	}
 
 	private void _on_join_button_pressed()
 	{
-		NetworkManager.Join(NetworkManager.DEFAULTIP, 7777);
+		NetworkManager.StartClient();
+	}
+
+	private void _on_disconnect_button_pressed()
+	{
+		NetworkManager.DisconnectThisClient();
 	}
 }
