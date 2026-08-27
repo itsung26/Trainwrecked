@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dplket0gqymty" path="res://scripts/PlayerHud.cs" id="1_mlvnn"]
 [ext_resource type="Texture2D" uid="uid://bhbocmwoq7wxj" path="res://assets/2d assets/PNG crosshairs/Light/crosshair-063.png" id="2_iraov"]
+[ext_resource type="PackedScene" uid="uid://m7qjepc5ep2v" path="res://scenes/action_hints_menu.tscn" id="3_er5qu"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_qlg0r"]
 load_path = "res://.godot/imported/crosshair-000.png-1238134b19b9fef10d1f3dc6b811f553.ctex"
@@ -100,3 +101,10 @@ text = "E"
 horizontal_alignment = 1
 vertical_alignment = 1
 metadata/_edit_use_anchors_ = true
+
+[node name="ActionHintsMenu" parent="." unique_id=1023441451 instance=ExtResource("3_er5qu")]
+layout_mode = 1
+anchor_left = 0.0296875
+anchor_top = 0.47314814
+anchor_right = 0.25104168
+anchor_bottom = 0.9574074

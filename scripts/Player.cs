@@ -239,12 +239,12 @@ public partial class Player : CharacterBody3D
 				if (ReferenceToValidate == null)
 				{
 					AllValidated = false;
-					Debug.LogError("Failed to validate object reference: null");
+					Debug.LogError("Player: Failed to validate object reference: null");
 				}
 			}
 			if (AllValidated)
 			{
-				Debug.Log("All object references validated successfully.");
+				Debug.Log("Player: All object references validated successfully.");
 			}
 		}
 	}
