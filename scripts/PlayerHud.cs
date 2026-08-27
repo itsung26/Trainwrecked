@@ -8,13 +8,11 @@ public partial class PlayerHud : Control
 	[Export] public TextureRect SprintCrosshair;
 	[Export] public Label CurrentSelectedLabel;
 	[Export] public Label InteractableNameLabel;
-	[Export] public Label InteractKeybindVisualLabel;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		InteractableNameLabel.Visible = false;
-		InteractKeybindVisualLabel.Visible = false;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -46,14 +44,12 @@ public partial class PlayerHud : Control
 		if ((NewInteractable is IInteractable Interactable) && (Interactable.CanBeSelected == true))
 		{
 			InteractableNameLabel.Visible = true;
-			InteractKeybindVisualLabel.Visible = true;
 			string NameToDisplay = Interactable.InteractableDisplayName;
 			InteractableNameLabel.Text = "'" + NameToDisplay + "'";
 		}
 		else if (NewInteractable == null)
 		{
 			InteractableNameLabel.Visible = false;
-			InteractKeybindVisualLabel.Visible = false;
 			InteractableNameLabel.Text = "''";
 		}
 	}
