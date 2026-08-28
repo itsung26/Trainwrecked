@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://wbut4tbymo6t"]
+
+[node name="SessionButton" type="Button" unique_id=689790396]
+anchors_preset = -1
+anchor_right = 0.165625
+anchor_bottom = 0.028703704
+offset_right = -318.0
+offset_bottom = -31.0
+text = "IP: 000.000.000                          PORT: 0000"
+metadata/_edit_use_anchors_ = true

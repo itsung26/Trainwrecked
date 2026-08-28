@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://cni7aua4ujny2"]
+
+[ext_resource type="Theme" uid="uid://ch3bwa6basydx" path="res://assets/themes/main_menu_theme.tres" id="1_hk22p"]
+[ext_resource type="Script" uid="uid://ckt2fb6dr2qrv" path="res://scripts/TrainwreckedMainMenu.cs" id="2_q71hi"]
+[ext_resource type="PackedScene" uid="uid://dmaiadlbfxajx" path="res://scenes/multiplayer_lobby_menu.tscn" id="3_7lsgn"]
+
+[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_hk22p")
+script = ExtResource("2_q71hi")
+
+[node name="TitleStuff" type="Control" parent="." unique_id=2123797755]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="TitleStuff" unique_id=1669066119]
+layout_mode = 0
+anchor_left = 0.0328125
+anchor_top = 0.05648148
+anchor_right = 0.54322916
+anchor_bottom = 0.21851853
+theme_override_font_sizes/font_size = 128
+text = "TRAINWRECKED"
+metadata/_edit_use_anchors_ = true
+
+[node name="TitleSubLabel" type="Label" parent="TitleStuff" unique_id=438874699]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.041145835
+anchor_top = 0.22777778
+anchor_right = 0.26145834
+anchor_bottom = 0.27685186
+theme_override_font_sizes/font_size = 38
+text = "Alpha build - prototype"
+metadata/_edit_use_anchors_ = true
+
+[node name="DividerLine" type="Line2D" parent="TitleStuff" unique_id=1804639002]
+position = Vector2(83, 228)
+points = PackedVector2Array(-18.655, 0, 992, 0)
+
+[node name="ButtonsBoxContainer" type="VBoxContainer" parent="." unique_id=1233215962]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.038541667
+anchor_top = 0.32685184
+anchor_right = 0.30625
+anchor_bottom = 0.93703705
+offset_bottom = -14.0
+metadata/_edit_use_anchors_ = true
+
+[node name="ContinueButton" type="Button" parent="ButtonsBoxContainer" unique_id=66675753]
+layout_mode = 2
+disabled = true
+text = "CONTINUE"
+
+[node name="Multiplayer" type="Button" parent="ButtonsBoxContainer" unique_id=1702433440]
+layout_mode = 2
+text = "MULTIPLAYER"
+
+[node name="NewGameButton" type="Button" parent="ButtonsBoxContainer" unique_id=1558008108]
+layout_mode = 2
+text = "NEW GAME"
+
+[node name="LoadButton" type="Button" parent="ButtonsBoxContainer" unique_id=1703247504]
+layout_mode = 2
+text = "LOAD"
+
+[node name="OptionsButton" type="Button" parent="ButtonsBoxContainer" unique_id=194838994]
+layout_mode = 2
+text = "OPTIONS"
+
+[node name="QuitButton" type="Button" parent="ButtonsBoxContainer" unique_id=929861102]
+layout_mode = 2
+text = "QUIT"
+
+[node name="MultiplayerLobbyMenu" parent="." unique_id=420463088 instance=ExtResource("3_7lsgn")]
+layout_mode = 1
+
+[connection signal="pressed" from="ButtonsBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
+[connection signal="pressed" from="ButtonsBoxContainer/Multiplayer" to="." method="_on_multiplayer_pressed"]
+[connection signal="pressed" from="ButtonsBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="pressed" from="ButtonsBoxContainer/LoadButton" to="." method="_on_load_button_pressed"]
+[connection signal="pressed" from="ButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="ButtonsBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]

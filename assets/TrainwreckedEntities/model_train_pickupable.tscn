@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://kq8cnnut7xs5" path="res://scripts/PickupableBody.cs" id="1_4jfv1"]
 [ext_resource type="PackedScene" uid="uid://cwlsoos8ke2i6" path="res://assets/3d assets/train_pack/train-diesel-a.fbx" id="2_x2pf3"]
-[ext_resource type="Material" uid="uid://uax7i7j5wmdu" path="res://materials/oscillating_glow.tres" id="3_x2pf3"]
+[ext_resource type="Material" uid="uid://uax7i7j5wmdu" path="res://assets/materials/oscillating_glow.tres" id="3_x2pf3"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_ixv1d"]
 _surfaces = [{

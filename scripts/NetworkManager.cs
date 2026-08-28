@@ -2,35 +2,132 @@ using Godot;
 using System;
 
 // Works in tandem with the engine native high level multiplayer API to provide
-// networking service via host-client connection.
+// networking service via host-client connection. Aims to support LAN-local connections
+// with LAN discovery capability.
 public partial class NetworkManager : Node
 {
 	public static NetworkManager Instance;
 	public const string Address = "localhost";
+	// The port that the host uses to recieve packets from the UDP packet peer.
+	public const int DiscoveryPort = 7778;
+	// The port that the session uses to host the game. It can be considered the "default" port.
+	// At this time, no other port is used for multiplayer hosting/joining.
 	public const int Port = 7777;
 	public const int MaxClients = 4;
+	public const string DiscoverMessage = "TW_DISCOVER";
+	public const string HostReplyPrefix = "TW_HOST";
+	// private bool _HostListening = true;
+	// public bool HostListening
+	// {
+	// 	get {return _HostListening;}
+	// 	set {SetHostListening(value);}
+	// }
+	// private bool _ClientListening = true;
+	// public bool ClientListening
+	// {
+	// 	get {return _ClientListening;}
+	// 	set {SetClientListening(value);}
+	// }
+	// The UDP packet peer used to send queries for a host to listen and answer.
+	public PacketPeerUdp Query = null;
 
 	public override void _Ready()
 	{
 		Instance = this;
 	}
 
+	public override void _Process(double delta)
+	{
+		ListenForClientsAsHost();
+		ListenForHostsAsClient();
+	}
+
+	// Recieve incoming packets, and when the prefix signurature is detected,
+	// respond with the host response prefix packet.
+	public void ListenForClientsAsHost()
+	{
+		if (Query is null)
+		{
+			return;
+		}
+
+		while (Query.GetAvailablePacketCount() > 0)
+		{
+			string message = Query.GetPacket().GetStringFromUtf8();
+			if (message != DiscoverMessage)
+			{
+				continue;
+			}
+
+			string fromIp = Query.GetPacketIP();
+			int fromPort = Query.GetPacketPort();
+			Query.SetDestAddress(fromIp, fromPort);
+			Query.PutPacket($"{HostReplyPrefix}|{Port}".ToUtf8Buffer());
+		}
+	}
+
+	public void BroadcastToListeningHosts()
+	{
+		if (Query is null)
+		{
+			return;
+		}
+
+		Query.PutPacket(DiscoverMessage.ToUtf8Buffer());
+	}
+
+	public void ListenForHostsAsClient()
+	{
+		if (Query is null)
+		{
+			return;
+		}
+
+		while (Query.GetAvailablePacketCount() > 0)
+		{
+			string message = Query.GetPacket().GetStringFromUtf8();
+			string hostIp = Query.GetPacketIP();
+			if (!message.StartsWith(HostReplyPrefix))
+			{
+				continue;
+			}
+
+			// TODO: Finish implementation
+		}
+	}
+
+	// Hosts a game on port 7777.
 	public static Error StartServer()
 	{
 		Error returnError = Error.Unavailable;
 		ENetMultiplayerPeer newPeer = new ENetMultiplayerPeer();
 		returnError = newPeer.CreateServer(Port, MaxClients);
+		// If the server hosting fails, return the error thrown.
+		if (returnError != Error.Ok)
+		{
+			return returnError;
+		}
+		// Otherwise, set the peer and open the UDP packet peer connection.
 		SetCurrentPeer(newPeer);
-		return returnError;
+		Instance.Query = new PacketPeerUdp();
+		Instance.Query.Bind(DiscoveryPort);
+		return Error.Ok;
 	}
 
-	public static Error StartClient()
+	// Connects clients to the target address.
+	public static Error StartClient(string address)
 	{
 		Error returnError = Error.Unavailable;
 		ENetMultiplayerPeer newPeer = new ENetMultiplayerPeer();
-		returnError = newPeer.CreateClient(Address, Port);
+		returnError = newPeer.CreateClient(address, Port);
+		// If the server joining fails, return the error thrown.
+		if (returnError != Error.Ok)
+		{
+			return returnError;
+		}
+		// Otherwise, set the peer.
 		SetCurrentPeer(newPeer);
-		return returnError;
+		return Error.Ok;
 	}
 
 	public static ENetMultiplayerPeer GetCurrentPeer()

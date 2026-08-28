@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c8vgfw3v1amg5"]
 
 [ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="1_broj0"]
-[ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://shaders/procedural_sky.gdshader" id="1_vdocq"]
+[ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="1_vdocq"]
 [ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="2_6yrld"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_58cwd"]

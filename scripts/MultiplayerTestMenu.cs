@@ -52,7 +52,6 @@ public partial class MultiplayerTestMenu : Control
 
 	private void _on_join_button_pressed()
 	{
-		NetworkManager.StartClient();
 	}
 
 	private void _on_disconnect_button_pressed()

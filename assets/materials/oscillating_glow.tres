@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://uax7i7j5wmdu"]
 
-[ext_resource type="Shader" uid="uid://dt4cy8wqh7jhp" path="res://shaders/oscillating_glow.gdshader" id="1_xccal"]
+[ext_resource type="Shader" uid="uid://dt4cy8wqh7jhp" path="res://assets/shaders/oscillating_glow.gdshader" id="1_xccal"]
 
 [resource]
 render_priority = 0
