@@ -68,11 +68,21 @@ public partial class NetworkManager : Node
 
 	public void BroadcastToListeningHosts()
 	{
-		if (Query is null)
+		// If the host tries to call this method return to prevent
+		// overwriting the packet destination.
+		if (GetCurrentPeer() is not null && IsServer())
 		{
 			return;
 		}
 
+		if (Query is null)
+		{
+			Query = new PacketPeerUdp();
+			Query.Bind(0);
+			Query.SetBroadcastEnabled(true);
+		}
+
+		Query.SetDestAddress("255.255.255.255", DiscoveryPort);
 		Query.PutPacket(DiscoverMessage.ToUtf8Buffer());
 	}
 
