@@ -62,7 +62,7 @@ layout_mode = 2
 disabled = true
 text = "CONTINUE"
 
-[node name="Multiplayer" type="Button" parent="ButtonsBoxContainer" unique_id=1702433440]
+[node name="MultiplayerButton" type="Button" parent="ButtonsBoxContainer" unique_id=1702433440]
 layout_mode = 2
 text = "MULTIPLAYER"
 
@@ -87,7 +87,7 @@ visible = false
 layout_mode = 1
 
 [connection signal="pressed" from="ButtonsBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
-[connection signal="pressed" from="ButtonsBoxContainer/Multiplayer" to="." method="_on_multiplayer_pressed"]
+[connection signal="pressed" from="ButtonsBoxContainer/MultiplayerButton" to="." method="_on_multiplayer_button_pressed"]
 [connection signal="pressed" from="ButtonsBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
 [connection signal="pressed" from="ButtonsBoxContainer/LoadButton" to="." method="_on_load_button_pressed"]
 [connection signal="pressed" from="ButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]

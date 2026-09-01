@@ -19,7 +19,7 @@ public partial class TrainwreckedMainMenu : Control
 	{
 	}
 
-	private void _on_multiplayer_pressed()
+	private void _on_multiplayer_button_pressed()
 	{
 		
 	}
