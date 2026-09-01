@@ -50,6 +50,15 @@ offset_bottom = -6.1035156e-05
 text = "Disconnect"
 metadata/_edit_use_anchors_ = true
 
+[node name="BroadcastToHostsButton" type="Button" parent="." unique_id=1747689747]
+layout_mode = 0
+anchor_left = 0.48802084
+anchor_top = 0.14722222
+anchor_right = 0.5677083
+anchor_bottom = 0.17592593
+text = "Broadcast to hosts"
+metadata/_edit_use_anchors_ = true
+
 [node name="HostOrClientLabel" type="Label" parent="." unique_id=174781305]
 layout_mode = 0
 anchor_left = 0.26510417
@@ -74,3 +83,4 @@ metadata/_edit_use_anchors_ = true
 [connection signal="pressed" from="HostButton" to="." method="_on_host_button_pressed"]
 [connection signal="pressed" from="JoinButton" to="." method="_on_join_button_pressed"]
 [connection signal="pressed" from="DisconnectButton" to="." method="_on_disconnect_button_pressed"]
+[connection signal="pressed" from="BroadcastToHostsButton" to="." method="_on_broadcast_to_hosts_button_pressed"]

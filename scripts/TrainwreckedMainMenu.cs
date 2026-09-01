@@ -3,12 +3,25 @@ using System;
 
 public partial class TrainwreckedMainMenu : Control
 {
+	private MultiplayerLobbyMenu MultiplayerLobbyMenu;
+
+    public override void _Ready()
+    {
+        InitRefs();
+    }
+
+	private void InitRefs()
+	{
+		MultiplayerLobbyMenu = GetNode<MultiplayerLobbyMenu>("MultiplayerLobbyMenu");
+	}
+
 	private void _on_continue_button_pressed()
 	{
 	}
 
 	private void _on_multiplayer_pressed()
 	{
+		
 	}
 
 	private void _on_new_game_button_pressed()

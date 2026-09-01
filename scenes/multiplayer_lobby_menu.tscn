@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cq0drgojv14n4" path="res://scripts/MultiplayerLobbyMenu.cs" id="1_2lyg7"]
 [ext_resource type="PackedScene" uid="uid://wbut4tbymo6t" path="res://scenes/session_button.tscn" id="1_p66dv"]
 
-[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088]
+[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,6 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2lyg7")
 MultiplayerSessionButton = ExtResource("1_p66dv")
+NodeToAddChildrenOf = NodePath("SessionsScrollContainer/SessionsContainer")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=237297881]
 layout_mode = 1
@@ -46,3 +47,17 @@ metadata/_edit_use_anchors_ = true
 [node name="SessionsContainer" type="VBoxContainer" parent="SessionsScrollContainer" unique_id=346051037]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="RefreshButton" type="Button" parent="." unique_id=1588767850]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8578125
+anchor_top = 0.8851852
+anchor_right = 0.965625
+anchor_bottom = 0.9527778
+theme_override_font_sizes/font_size = 47
+text = "REFRESH"
+metadata/_edit_use_anchors_ = true
+
+[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="RefreshButton" to="." method="_on_refresh_button_pressed"]

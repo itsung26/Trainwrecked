@@ -58,4 +58,9 @@ public partial class MultiplayerTestMenu : Control
 	{
 		NetworkManager.DisconnectThisClient();
 	}
+
+	private void _on_broadcast_to_hosts_button_pressed()
+	{
+		NetworkManager.BroadcastToListeningHosts();
+	}
 }

@@ -51,6 +51,12 @@ public partial class NetworkManager : Node
 			return;
 		}
 
+		// Return if not a host or offline.
+		if (!IsServer() || !IsConnected())
+		{
+			return;
+		}
+
 		while (Query.GetAvailablePacketCount() > 0)
 		{
 			string message = Query.GetPacket().GetStringFromUtf8();
@@ -63,10 +69,11 @@ public partial class NetworkManager : Node
 			int fromPort = Query.GetPacketPort();
 			Query.SetDestAddress(fromIp, fromPort);
 			Query.PutPacket($"{HostReplyPrefix}|{Port}".ToUtf8Buffer());
+			Debug.Log("Recieved a client prefix, replying to client.");
 		}
 	}
 
-	public void BroadcastToListeningHosts()
+	public static void BroadcastToListeningHosts()
 	{
 		// If the host tries to call this method return to prevent
 		// overwriting the packet destination.
@@ -75,20 +82,26 @@ public partial class NetworkManager : Node
 			return;
 		}
 
-		if (Query is null)
+		if (Instance.Query is null)
 		{
-			Query = new PacketPeerUdp();
-			Query.Bind(0);
-			Query.SetBroadcastEnabled(true);
+			Instance.Query = new PacketPeerUdp();
+			Instance.Query.Bind(0);
+			Instance.Query.SetBroadcastEnabled(true);
 		}
 
-		Query.SetDestAddress("255.255.255.255", DiscoveryPort);
-		Query.PutPacket(DiscoverMessage.ToUtf8Buffer());
+		Instance.Query.SetDestAddress("255.255.255.255", DiscoveryPort);
+		Instance.Query.PutPacket(DiscoverMessage.ToUtf8Buffer());
 	}
 
 	public void ListenForHostsAsClient()
 	{
 		if (Query is null)
+		{
+			return;
+		}
+
+		// Hosts use Query as the discovery listener; do not consume their packets here.
+		if (GetCurrentPeer() is not null && IsServer())
 		{
 			return;
 		}
@@ -182,6 +195,16 @@ public partial class NetworkManager : Node
 	public static bool IsServer()
 	{
 		return Instance.Multiplayer.IsServer();
+	}
+
+	public static bool IsClient()
+	{
+		if (IsConnected() && !IsServer())
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	public static void DisconnectThisClient()

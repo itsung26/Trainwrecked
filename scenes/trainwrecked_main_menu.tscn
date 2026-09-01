@@ -83,6 +83,7 @@ layout_mode = 2
 text = "QUIT"
 
 [node name="MultiplayerLobbyMenu" parent="." unique_id=420463088 instance=ExtResource("3_7lsgn")]
+visible = false
 layout_mode = 1
 
 [connection signal="pressed" from="ButtonsBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
