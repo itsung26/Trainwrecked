@@ -6,6 +6,7 @@ public partial class MultiplayerLobbyMenu : Control
 {
 	[Export] public PackedScene MultiplayerSessionButton { get; set; }
 	[Export] public Node NodeToAddChildrenOf { get; set; }
+	[Export] public Timer SessionListenerTimer { get; set; }
 	public bool CheckingForNewSessions { get; set; } = false;
 	private Array<LanDiscoverySession> _lastFrameKnownSessions = new Array<LanDiscoverySession>();
 
@@ -65,7 +66,32 @@ public partial class MultiplayerLobbyMenu : Control
 	// and the method returns true.
 	public bool CheckForNewSessions()
 	{
-		
+		Array<LanDiscoverySession> currentSessions = NetworkManager.GetKnownSessions();
+		bool foundNew = false;
+
+		foreach (LanDiscoverySession session in currentSessions)
+		{
+			bool alreadyKnown = false;
+			foreach (LanDiscoverySession lastFrameSession in _lastFrameKnownSessions)
+			{
+				if (lastFrameSession.Ip == session.Ip && lastFrameSession.Port == session.Port)
+				{
+					alreadyKnown = true;
+					break;
+				}
+			}
+
+			if (alreadyKnown)
+			{
+				continue;
+			}
+
+			AddSessionButton(session.Ip, session.Port);
+			foundNew = true;
+		}
+
+		_lastFrameKnownSessions = currentSessions.Duplicate();
+		return foundNew;
 	}
 
 	private void _on_back_button_pressed()
@@ -79,6 +105,14 @@ public partial class MultiplayerLobbyMenu : Control
 	private void _on_refresh_button_pressed()
 	{
 		ClearSessionButtons();
+		_lastFrameKnownSessions.Clear();
+		CheckingForNewSessions = true;
+		SessionListenerTimer.Start(4.0);
 		NetworkManager.BroadcastToListeningHosts();
+	}
+
+	private void _on_session_listener_timer_timeout()
+	{
+		CheckingForNewSessions = false;
 	}
 }
