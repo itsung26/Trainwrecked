@@ -63,4 +63,9 @@ public partial class MultiplayerTestMenu : Control
 	{
 		NetworkManager.BroadcastToListeningHosts();
 	}
+
+	private void _on_read_host_replies_button_pressed()
+	{
+		Debug.Log(NetworkManager.GetKnownSessions());
+	}
 }

@@ -1,11 +1,15 @@
 using Godot;
 using System;
+using Godot.Collections;
+using System.Collections.Generic;
 
 // Works in tandem with the engine native high level multiplayer API to provide
 // networking service via host-client connection. Aims to support LAN-local connections
 // with LAN discovery capability.
 public partial class NetworkManager : Node
 {
+	private Array<LanDiscoverySession> _knownSessions = new Array<LanDiscoverySession>();
+
 	public static NetworkManager Instance;
 	public const string Address = "localhost";
 	// The port that the host uses to recieve packets from the UDP packet peer.
@@ -89,6 +93,9 @@ public partial class NetworkManager : Node
 			Instance.Query.SetBroadcastEnabled(true);
 		}
 
+		// Clear the list of known sessions.
+		Instance._knownSessions.Clear();
+
 		Instance.Query.SetDestAddress("255.255.255.255", DiscoveryPort);
 		Instance.Query.PutPacket(DiscoverMessage.ToUtf8Buffer());
 	}
@@ -115,7 +122,13 @@ public partial class NetworkManager : Node
 				continue;
 			}
 
-			// TODO: Finish implementation
+			// By now it is known that the incoming message is a valid host reply.
+			string stringHostPort = message.Split("|")[1];
+			int.TryParse(stringHostPort, out int hostPort);
+
+			// Instance a new session resource and add it to the array of known sessions.
+			LanDiscoverySession newlyDiscoveredSession = new LanDiscoverySession(hostIp, hostPort);
+			_knownSessions.Add(newlyDiscoveredSession);
 		}
 	}
 
@@ -223,8 +236,8 @@ public partial class NetworkManager : Node
 		// TODO: implement a way to lookup player ids from their names.
 	}
 
-	public static void QuitMultiplayerApi()
+	public static Array<LanDiscoverySession> GetKnownSessions()
 	{
-		SetCurrentPeer(null);
+		return Instance._knownSessions;
 	}
 }

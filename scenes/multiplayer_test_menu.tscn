@@ -59,6 +59,16 @@ anchor_bottom = 0.17592593
 text = "Broadcast to hosts"
 metadata/_edit_use_anchors_ = true
 
+[node name="ReadHostRepliesButton" type="Button" parent="." unique_id=1312474919]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.70208335
+anchor_top = 0.14722222
+anchor_right = 0.7817708
+anchor_bottom = 0.17592593
+text = "Read Host Replies"
+metadata/_edit_use_anchors_ = true
+
 [node name="HostOrClientLabel" type="Label" parent="." unique_id=174781305]
 layout_mode = 0
 anchor_left = 0.26510417
@@ -84,3 +94,4 @@ metadata/_edit_use_anchors_ = true
 [connection signal="pressed" from="JoinButton" to="." method="_on_join_button_pressed"]
 [connection signal="pressed" from="DisconnectButton" to="." method="_on_disconnect_button_pressed"]
 [connection signal="pressed" from="BroadcastToHostsButton" to="." method="_on_broadcast_to_hosts_button_pressed"]
+[connection signal="pressed" from="ReadHostRepliesButton" to="." method="_on_read_host_replies_button_pressed"]

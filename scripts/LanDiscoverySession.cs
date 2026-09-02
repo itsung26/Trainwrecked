@@ -1,10 +1,13 @@
 using System;
 using Godot;
 
-public struct LanDiscoverySession
+[GlobalClass]
+public partial class LanDiscoverySession : Resource
 {
-	public string Ip { get; }
-	public int Port { get; }
+	[Export]
+	public string Ip { get; set; }
+	[Export]
+	public int Port { get; set; }
 
 	public LanDiscoverySession(string ip, int port)
 	{
