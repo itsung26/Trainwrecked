@@ -21,7 +21,7 @@ public partial class TrainwreckedMainMenu : Control
 
 	private void _on_multiplayer_button_pressed()
 	{
-		
+		MultiplayerLobbyMenu.Visible = true;
 	}
 
 	private void _on_new_game_button_pressed()
