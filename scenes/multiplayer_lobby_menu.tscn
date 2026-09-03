@@ -1,19 +1,23 @@
 [gd_scene format=3 uid="uid://dmaiadlbfxajx"]
 
 [ext_resource type="Script" uid="uid://cq0drgojv14n4" path="res://scripts/MultiplayerLobbyMenu.cs" id="1_2lyg7"]
+[ext_resource type="Theme" uid="uid://bavwoqyte2k7r" path="res://assets/themes/multiplayer_lobby_menu_theme.tres" id="1_h1w8e"]
 [ext_resource type="PackedScene" uid="uid://wbut4tbymo6t" path="res://scenes/session_button.tscn" id="1_p66dv"]
 
-[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer")]
+[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_h1w8e")
 script = ExtResource("1_2lyg7")
 MultiplayerSessionButton = ExtResource("1_p66dv")
 NodeToAddChildrenOf = NodePath("SessionsScrollContainer/SessionsContainer")
 SessionListenerTimer = NodePath("SessionListenerTimer")
+SessionsScrollContainer = NodePath("SessionsScrollContainer")
+DirectHostJoinButton = NodePath("DirectHostJoinButton")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=237297881]
 layout_mode = 1
@@ -31,8 +35,27 @@ anchor_left = 0.0265625
 anchor_top = 0.87222224
 anchor_right = 0.1078125
 anchor_bottom = 0.95185184
-theme_override_font_sizes/font_size = 57
 text = "BACK"
+metadata/_edit_use_anchors_ = true
+
+[node name="RefreshButton" type="Button" parent="." unique_id=1588767850]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8578125
+anchor_top = 0.8851852
+anchor_right = 0.965625
+anchor_bottom = 0.9527778
+text = "REFRESH"
+metadata/_edit_use_anchors_ = true
+
+[node name="DirectHostJoinButton" type="Button" parent="." unique_id=590938940]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.39166668
+anchor_top = 0.87222224
+anchor_right = 0.5828125
+anchor_bottom = 0.9398148
+text = "Direct Host/Join"
 metadata/_edit_use_anchors_ = true
 
 [node name="SessionsScrollContainer" type="ScrollContainer" parent="." unique_id=1567574736]
@@ -49,17 +72,6 @@ metadata/_edit_use_anchors_ = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="RefreshButton" type="Button" parent="." unique_id=1588767850]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.8578125
-anchor_top = 0.8851852
-anchor_right = 0.965625
-anchor_bottom = 0.9527778
-theme_override_font_sizes/font_size = 47
-text = "REFRESH"
-metadata/_edit_use_anchors_ = true
-
 [node name="SessionListenerTimer" type="Timer" parent="." unique_id=2092920109]
 editor_description = "upon timeout, the menu stops listening for new sessions."
 wait_time = 4.0
@@ -67,4 +79,5 @@ one_shot = true
 
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="RefreshButton" to="." method="_on_refresh_button_pressed"]
+[connection signal="pressed" from="DirectHostJoinButton" to="." method="_on_direct_host_join_button_pressed"]
 [connection signal="timeout" from="SessionListenerTimer" to="." method="_on_session_listener_timer_timeout"]

@@ -1,9 +1,9 @@
 using Godot;
 using System;
+using Godot.Collections;
 
 public partial class Debug : Node
 {
-
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -23,6 +23,12 @@ public partial class Debug : Node
 	public static void Log<T>(T message)
 	{
 		GD.Print(message);
+	}
+
+	public static void Log<[MustBeVariant] T>(T[] systemArrayMessage)
+	{
+		Array<T> godotArray = new Array<T>(systemArrayMessage);
+		Log(godotArray);
 	}
 
 	public static void LogWarn<T>(T warning)

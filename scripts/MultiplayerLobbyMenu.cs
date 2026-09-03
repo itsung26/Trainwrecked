@@ -7,6 +7,8 @@ public partial class MultiplayerLobbyMenu : Control
 	[Export] public PackedScene MultiplayerSessionButton { get; set; }
 	[Export] public Node NodeToAddChildrenOf { get; set; }
 	[Export] public Timer SessionListenerTimer { get; set; }
+	[Export] public ScrollContainer SessionsScrollContainer { get; set; }
+	[Export] public Button DirectHostJoinButton { get; set; }
 	public bool CheckingForNewSessions { get; set; } = false;
 	private Array<LanDiscoverySession> _lastFrameKnownSessions = new Array<LanDiscoverySession>();
 
@@ -109,6 +111,12 @@ public partial class MultiplayerLobbyMenu : Control
 		CheckingForNewSessions = true;
 		SessionListenerTimer.Start(4.0);
 		NetworkManager.BroadcastToListeningHosts();
+	}
+
+	private void _on_direct_host_join_button_pressed()
+	{
+		SessionsScrollContainer.Visible = false;
+		DirectHostJoinButton.Disabled = true;
 	}
 
 	private void _on_session_listener_timer_timeout()
