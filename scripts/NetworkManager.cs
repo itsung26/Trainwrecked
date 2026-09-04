@@ -4,6 +4,7 @@ using Godot.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Linq;
 
 // Works in tandem with the engine native high level multiplayer API to provide
 // networking service via host-client connection. Aims to support LAN-local connections
@@ -81,29 +82,29 @@ public partial class NetworkManager : Node
 	#region wrapper signal emitters
 	private void OnMultiplayerPeerConnected(long id)
 	{
-		EmitSignal("PeerConnected", id);
+		EmitSignal(SignalName.PeerConnected, id);
 	}
 
 	private void OnMultiplayerPeerDisconnected(long id)
 	{
-		EmitSignal("PeerDisconnected", id);
+		EmitSignal(SignalName.PeerDisconnected, id);
 	}
 
 	private void OnMultiplayerConnectedToServer()
 	{
-		EmitSignal("ConnectedToServer");
+		EmitSignal(SignalName.ConnectedToServer);
 	}
 
 	private void OnMultiplayerConnectionFailed()
 	{
-		EmitSignal("ConnectionFailed");
+		EmitSignal(SignalName.ConnectionFailed);
 	}
 
 	private void OnMultiplayerServerDisconnected()
 	{
-		EmitSignal("ServerDisconnected");
+		EmitSignal(SignalName.ServerDisconnected);
 	}
-	
+
 	#endregion
 
 	public override void _Process(double delta)
@@ -147,7 +148,7 @@ public partial class NetworkManager : Node
 	{
 		// If the host tries to call this method return to prevent
 		// overwriting the packet destination.
-		if (GetCurrentPeer() is not null && IsServer())
+		if (IsConnected() && IsServer())
 		{
 			return;
 		}
@@ -174,7 +175,7 @@ public partial class NetworkManager : Node
 		}
 
 		// Hosts use Query as the discovery listener; do not consume their packets here.
-		if (GetCurrentPeer() is not null && IsServer())
+		if (IsConnected() && IsServer())
 		{
 			return;
 		}
@@ -232,14 +233,9 @@ public partial class NetworkManager : Node
 		return Error.Ok;
 	}
 
-	public static ENetMultiplayerPeer GetCurrentPeer()
+	public static MultiplayerPeer GetCurrentPeer()
 	{
-		if (Instance.Multiplayer.MultiplayerPeer is null)
-		{
-			return null;
-		}
-
-		return Instance.Multiplayer.MultiplayerPeer as ENetMultiplayerPeer;
+		return Instance.Multiplayer.MultiplayerPeer;
 	}
 
 	// Sets the multiplayer API's peer property, enabling networking.
@@ -247,7 +243,17 @@ public partial class NetworkManager : Node
 	{
 		if (peer is null)
 		{
-			Debug.LogWarn("Set active peer to null. Remember to disconnect first. If this was already done than this message can be ignored.");
+			Debug.LogError("Set active peer to null.");
+		}
+
+		Instance.Multiplayer.MultiplayerPeer = peer;
+	}
+
+	public static void SetCurrentPeer(OfflineMultiplayerPeer peer)
+	{
+		if (peer is null)
+		{
+			Debug.LogError("Set active peer to null.");
 		}
 
 		Instance.Multiplayer.MultiplayerPeer = peer;
@@ -264,11 +270,13 @@ public partial class NetworkManager : Node
 
 	public static bool IsConnected()
 	{
-		if (GetCurrentPeer() is not null)
+		MultiplayerPeer peer = GetCurrentPeer();
+		if (peer is null || peer is OfflineMultiplayerPeer)
 		{
-			return true;
+			return false;
 		}
-		return false;
+
+		return peer.GetConnectionStatus() == MultiplayerPeer.ConnectionStatus.Connected;
 	}
 
 	public static bool IsServer()
@@ -286,20 +294,30 @@ public partial class NetworkManager : Node
 		return false;
 	}
 
-	public static void DisconnectThisClient()
+	// On a host, closes the server entirely.
+	// On a client, disconnects from the server.
+	public static void Disconnect()
 	{
-		GetCurrentPeer().DisconnectPeer(1);
-	}
-
-	public static void DisconnectOtherPeer()
-	{
-		// Only the host has the authority to directly disconnect other peers.
-		if (!IsServer())
+		if (IsServer() && IsConnected())
 		{
-			return;
+			GetCurrentPeer().Close();
+			SetCurrentPeer(new OfflineMultiplayerPeer());
+			if (Instance.Query is not null)
+			{
+				Instance.Query.Close();
+				Instance.Query = null;
+			}
 		}
-
-		// TODO: implement a way to lookup player ids from their names.
+		else if (IsClient() && IsConnected())
+		{
+			GetCurrentPeer().Close();
+			SetCurrentPeer(new OfflineMultiplayerPeer());
+			if (Instance.Query is not null)
+			{
+				Instance.Query.Close();
+				Instance.Query = null;
+			}
+		}
 	}
 
 	public static Array<LanDiscoverySession> GetKnownSessions()
@@ -355,5 +373,18 @@ public partial class NetworkManager : Node
 		}
 
 		return fallback;
+	}
+
+	public static Array<int> GetPeerIds()
+	{
+		return new Array<int>(Instance.Multiplayer.GetPeers());
+	}
+
+	public static void DisconnectAllOtherPeers()
+	{
+		foreach (int somePeer in GetPeerIds())
+		{
+			GetCurrentPeer().DisconnectPeer(somePeer);
+		}
 	}
 }

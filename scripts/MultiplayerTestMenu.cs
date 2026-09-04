@@ -13,6 +13,37 @@ public partial class MultiplayerTestMenu : Control
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		NetworkManager.Instance.PeerConnected += OnNetworkPeerConnected;
+		NetworkManager.Instance.PeerDisconnected += OnNetworkPeerDisconnected;
+		NetworkManager.Instance.ConnectedToServer += OnNetworkConnectedToServer;
+		NetworkManager.Instance.ConnectionFailed += OnNetworkConnectionFailed;
+		NetworkManager.Instance.ServerDisconnected += OnNetworkServerDisconnected;
+		Debug.Log("MultiplayerTestMenu: NetworkManager signals connected.");
+	}
+
+	private void OnNetworkPeerConnected(long id)
+	{
+		Debug.Log($"PeerConnected: {id}");
+	}
+
+	private void OnNetworkPeerDisconnected(long id)
+	{
+		Debug.Log($"PeerDisconnected: {id}");
+	}
+
+	private void OnNetworkConnectedToServer()
+	{
+		Debug.Log("ConnectedToServer");
+	}
+
+	private void OnNetworkConnectionFailed()
+	{
+		Debug.Log("ConnectionFailed");
+	}
+
+	private void OnNetworkServerDisconnected()
+	{
+		Debug.Log("ServerDisconnected");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -20,7 +51,6 @@ public partial class MultiplayerTestMenu : Control
 	{
 		UpdateHostOrClientLabel();
 		UpdateClientCountLabel();
-		Debug.Log(NetworkManager.GetPublicSubnetIpv4());
 	}
 
 	private void UpdateHostOrClientLabel()
@@ -60,17 +90,20 @@ public partial class MultiplayerTestMenu : Control
 
 	private void _on_host_button_pressed()
 	{
-		NetworkManager.StartServer();
+		Error err = NetworkManager.StartServer();
+		Debug.Log($"Host pressed. StartServer => {err}. (PeerConnected only fires when a client joins.)");
 	}
 
 	private void _on_join_button_pressed()
 	{
-		NetworkManager.StartClient(ConnectingAddress);
+		Error err = NetworkManager.StartClient(ConnectingAddress);
+		Debug.Log($"Join pressed. StartClient({ConnectingAddress}) => {err}. Wait for ConnectedToServer or ConnectionFailed.");
 	}
 
 	private void _on_disconnect_button_pressed()
 	{
-		NetworkManager.DisconnectThisClient();
+		Debug.Log("Disconnect pressed. Close() does not emit PeerDisconnected on this peer.");
+		NetworkManager.Disconnect();
 	}
 
 	private void _on_broadcast_to_hosts_button_pressed()
