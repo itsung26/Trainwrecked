@@ -4,7 +4,7 @@
 [ext_resource type="Theme" uid="uid://bavwoqyte2k7r" path="res://assets/themes/multiplayer_lobby_menu_theme.tres" id="1_h1w8e"]
 [ext_resource type="PackedScene" uid="uid://wbut4tbymo6t" path="res://scenes/session_button.tscn" id="1_p66dv"]
 
-[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinButton")]
+[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinMenu", "DirectHostJoinButton", "LanSessionsButton", "HostButton", "JoinButton", "InvalidIpAddressLabel", "BlankLabel", "LanSessionsMenu")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,10 +14,17 @@ grow_vertical = 2
 theme = ExtResource("1_h1w8e")
 script = ExtResource("1_2lyg7")
 MultiplayerSessionButton = ExtResource("1_p66dv")
-NodeToAddChildrenOf = NodePath("SessionsScrollContainer/SessionsContainer")
+NodeToAddChildrenOf = NodePath("LanSessionsMenu/SessionsScrollContainer/SessionsContainer")
 SessionListenerTimer = NodePath("SessionListenerTimer")
-SessionsScrollContainer = NodePath("SessionsScrollContainer")
+SessionsScrollContainer = NodePath("LanSessionsMenu/SessionsScrollContainer")
+DirectHostJoinMenu = NodePath("DirectHostJoinMenu")
 DirectHostJoinButton = NodePath("DirectHostJoinButton")
+LanSessionsButton = NodePath("LanSessionsButton")
+HostButton = NodePath("DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/HostButton")
+JoinButton = NodePath("DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/JoinButton")
+InvalidIpAddressLabel = NodePath("DirectHostJoinMenu/HostOrJoinVbox/InvalidIpAddressLabel")
+BlankLabel = NodePath("DirectHostJoinMenu/HostOrJoinVbox/BlankLabel")
+LanSessionsMenu = NodePath("LanSessionsMenu")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=237297881]
 layout_mode = 1
@@ -38,27 +45,93 @@ anchor_bottom = 0.95185184
 text = "BACK"
 metadata/_edit_use_anchors_ = true
 
-[node name="RefreshButton" type="Button" parent="." unique_id=1588767850]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.8578125
-anchor_top = 0.8851852
-anchor_right = 0.965625
-anchor_bottom = 0.9527778
-text = "REFRESH"
-metadata/_edit_use_anchors_ = true
-
 [node name="DirectHostJoinButton" type="Button" parent="." unique_id=590938940]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.39166668
+anchor_left = 0.49114582
 anchor_top = 0.87222224
-anchor_right = 0.5828125
+anchor_right = 0.6822917
 anchor_bottom = 0.9398148
 text = "Direct Host/Join"
 metadata/_edit_use_anchors_ = true
 
-[node name="SessionsScrollContainer" type="ScrollContainer" parent="." unique_id=1567574736]
+[node name="LanSessionsButton" type="Button" parent="." unique_id=62278957]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.30729166
+anchor_top = 0.87222224
+anchor_right = 0.46666667
+anchor_bottom = 0.9398148
+offset_right = 7.0
+offset_bottom = 2.0
+text = "LAN Sessions"
+metadata/_edit_use_anchors_ = true
+
+[node name="SessionListenerTimer" type="Timer" parent="." unique_id=2092920109]
+editor_description = "upon timeout, the menu stops listening for new sessions."
+wait_time = 4.0
+one_shot = true
+
+[node name="DirectHostJoinMenu" type="Control" parent="." unique_id=1268197545]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HostOrJoinVbox" type="VBoxContainer" parent="DirectHostJoinMenu" unique_id=1821548389]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3917969
+anchor_top = 0.44907406
+anchor_right = 0.6082031
+anchor_bottom = 0.5509259
+offset_top = 3.0517578e-05
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="InvalidIpAddressLabel" type="Label" parent="DirectHostJoinMenu/HostOrJoinVbox" unique_id=6158379]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+text = "Invalid IP Address"
+
+[node name="BlankLabel" type="Label" parent="DirectHostJoinMenu/HostOrJoinVbox" unique_id=1133593061]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+
+[node name="IpInput" type="LineEdit" parent="DirectHostJoinMenu/HostOrJoinVbox" unique_id=1964832549]
+layout_mode = 2
+placeholder_text = "Enter the host's local IPV4 here..."
+max_length = 15
+
+[node name="HostOrJoinHbox" type="HBoxContainer" parent="DirectHostJoinMenu/HostOrJoinVbox" unique_id=565413092]
+layout_mode = 2
+
+[node name="HostButton" type="Button" parent="DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox" unique_id=1927278695]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Host"
+
+[node name="JoinButton" type="Button" parent="DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox" unique_id=61679925]
+layout_mode = 2
+size_flags_horizontal = 3
+disabled = true
+text = "Join"
+
+[node name="LanSessionsMenu" type="Control" parent="." unique_id=2085684647]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="SessionsScrollContainer" type="ScrollContainer" parent="LanSessionsMenu" unique_id=1567574736]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.30729166
@@ -68,16 +141,25 @@ anchor_bottom = 0.73240745
 offset_bottom = -6.1035156e-05
 metadata/_edit_use_anchors_ = true
 
-[node name="SessionsContainer" type="VBoxContainer" parent="SessionsScrollContainer" unique_id=346051037]
+[node name="SessionsContainer" type="VBoxContainer" parent="LanSessionsMenu/SessionsScrollContainer" unique_id=346051037]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SessionListenerTimer" type="Timer" parent="." unique_id=2092920109]
-editor_description = "upon timeout, the menu stops listening for new sessions."
-wait_time = 4.0
-one_shot = true
+[node name="RefreshButton" type="Button" parent="LanSessionsMenu" unique_id=1588767850]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8578125
+anchor_top = 0.8851852
+anchor_right = 0.965625
+anchor_bottom = 0.9527778
+offset_right = 4.0
+offset_bottom = 2.0
+text = "REFRESH"
+metadata/_edit_use_anchors_ = true
 
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
-[connection signal="pressed" from="RefreshButton" to="." method="_on_refresh_button_pressed"]
 [connection signal="pressed" from="DirectHostJoinButton" to="." method="_on_direct_host_join_button_pressed"]
+[connection signal="pressed" from="LanSessionsButton" to="." method="_on_lan_sessions_button_pressed"]
 [connection signal="timeout" from="SessionListenerTimer" to="." method="_on_session_listener_timer_timeout"]
+[connection signal="text_changed" from="DirectHostJoinMenu/HostOrJoinVbox/IpInput" to="." method="_on_ip_input_text_changed"]
+[connection signal="pressed" from="LanSessionsMenu/RefreshButton" to="." method="_on_refresh_button_pressed"]

@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Godot.Collections;
+using System.Text.RegularExpressions;
 
 public partial class MultiplayerLobbyMenu : Control
 {
@@ -8,9 +9,22 @@ public partial class MultiplayerLobbyMenu : Control
 	[Export] public Node NodeToAddChildrenOf { get; set; }
 	[Export] public Timer SessionListenerTimer { get; set; }
 	[Export] public ScrollContainer SessionsScrollContainer { get; set; }
+	[Export] public Control DirectHostJoinMenu { get; set; }
 	[Export] public Button DirectHostJoinButton { get; set; }
+	[Export] public Button LanSessionsButton { get; set; }
+	[Export] public Button HostButton { get; set; }
+	[Export] public Button JoinButton { get; set; }
+	[Export] public Label InvalidIpAddressLabel { get; set; }
+	[Export] public Label BlankLabel { get; set; }
+	[Export] public Control LanSessionsMenu { get; set; }
 	public bool CheckingForNewSessions { get; set; } = false;
 	private Array<LanDiscoverySession> _lastFrameKnownSessions = new Array<LanDiscoverySession>();
+
+    public override void _Ready()
+	{
+		// Initialize by setting initial state.
+		_on_direct_host_join_button_pressed();
+	}
 
     public override void _Process(double delta)
     {
@@ -96,6 +110,21 @@ public partial class MultiplayerLobbyMenu : Control
 		return foundNew;
 	}
 
+	// Returns true if newInput is in the valid form ###.###.###.###
+	// Returns false otherwise.
+	private bool ValidateIpTextInput(string newInput)
+	{
+		if (newInput is null)
+		{
+			return false;
+		}
+
+		newInput = newInput.Substr(0, 15);
+
+		// Regex regex = new Regex("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(newInput, @"^\d{1,3}(\.\d{1,3}){3}$");
+	}
+
 	private void _on_back_button_pressed()
 	{
 		Visible = false;
@@ -115,8 +144,32 @@ public partial class MultiplayerLobbyMenu : Control
 
 	private void _on_direct_host_join_button_pressed()
 	{
-		SessionsScrollContainer.Visible = false;
 		DirectHostJoinButton.Disabled = true;
+		LanSessionsButton.Disabled = false;
+		LanSessionsMenu.Visible = false;
+		DirectHostJoinMenu.Visible = true;
+	}
+
+	private void _on_lan_sessions_button_pressed()
+	{
+		LanSessionsButton.Disabled = true;
+		DirectHostJoinMenu.Visible = false;
+		LanSessionsMenu.Visible = true;
+		DirectHostJoinButton.Disabled = false;
+		
+	}
+
+	private void _on_ip_input_text_changed(string newText)
+	{
+		JoinButton.Disabled = !ValidateIpTextInput(newText);
+		InvalidIpAddressLabel.Visible = !ValidateIpTextInput(newText);
+		BlankLabel.Visible = ValidateIpTextInput(newText);
+
+		if (newText == "")
+		{
+			BlankLabel.Visible = true;
+			InvalidIpAddressLabel.Visible = false;
+		}
 	}
 
 	private void _on_session_listener_timer_timeout()

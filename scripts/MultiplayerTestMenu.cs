@@ -8,6 +8,7 @@ public partial class MultiplayerTestMenu : Control
 	[Export] Button JoinButton { get; set; }
 	[Export] Label HostOrClientLabel { get; set; }
 	[Export] Label ClientCountLabel { get; set; }
+	[Export] string ConnectingAddress { get; set; }
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -52,6 +53,7 @@ public partial class MultiplayerTestMenu : Control
 
 	private void _on_join_button_pressed()
 	{
+		NetworkManager.StartClient(ConnectingAddress);
 	}
 
 	private void _on_disconnect_button_pressed()
