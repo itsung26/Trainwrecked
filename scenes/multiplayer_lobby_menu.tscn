@@ -4,7 +4,7 @@
 [ext_resource type="Theme" uid="uid://bavwoqyte2k7r" path="res://assets/themes/multiplayer_lobby_menu_theme.tres" id="1_h1w8e"]
 [ext_resource type="PackedScene" uid="uid://wbut4tbymo6t" path="res://scenes/session_button.tscn" id="1_p66dv"]
 
-[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinMenu", "DirectHostJoinButton", "LanSessionsButton", "HostButton", "JoinButton", "InvalidIpAddressLabel", "BlankLabel", "LanSessionsMenu")]
+[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinMenu", "DirectHostJoinButton", "LanSessionsButton", "HostButton", "JoinButton", "InvalidIpAddressLabel", "BlankLabel", "LanSessionsMenu", "HostingStatusLabel")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,6 +25,7 @@ JoinButton = NodePath("DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/JoinButt
 InvalidIpAddressLabel = NodePath("DirectHostJoinMenu/HostOrJoinVbox/InvalidIpAddressLabel")
 BlankLabel = NodePath("DirectHostJoinMenu/HostOrJoinVbox/BlankLabel")
 LanSessionsMenu = NodePath("LanSessionsMenu")
+HostingStatusLabel = NodePath("DirectHostJoinMenu/HostingStatusLabel")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=237297881]
 layout_mode = 1
@@ -85,10 +86,11 @@ mouse_filter = 2
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.3917969
-anchor_top = 0.44907406
+anchor_top = 0.42453703
 anchor_right = 0.6082031
-anchor_bottom = 0.5509259
-offset_top = 3.0517578e-05
+anchor_bottom = 0.57546294
+offset_top = 26.5
+offset_bottom = -26.5
 grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_use_anchors_ = true
@@ -122,7 +124,18 @@ size_flags_horizontal = 3
 disabled = true
 text = "Join"
 
+[node name="HostingStatusLabel" type="Label" parent="DirectHostJoinMenu" unique_id=2080835720]
+layout_mode = 0
+anchor_left = 0.36875
+anchor_top = 0.3148148
+anchor_right = 0.64166665
+anchor_bottom = 0.3824074
+theme_override_font_sizes/font_size = 53
+text = "Hosting Status Label"
+metadata/_edit_use_anchors_ = true
+
 [node name="LanSessionsMenu" type="Control" parent="." unique_id=2085684647]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -162,4 +175,6 @@ metadata/_edit_use_anchors_ = true
 [connection signal="pressed" from="LanSessionsButton" to="." method="_on_lan_sessions_button_pressed"]
 [connection signal="timeout" from="SessionListenerTimer" to="." method="_on_session_listener_timer_timeout"]
 [connection signal="text_changed" from="DirectHostJoinMenu/HostOrJoinVbox/IpInput" to="." method="_on_ip_input_text_changed"]
+[connection signal="pressed" from="DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="pressed" from="DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/JoinButton" to="." method="_on_join_button_pressed"]
 [connection signal="pressed" from="LanSessionsMenu/RefreshButton" to="." method="_on_refresh_button_pressed"]

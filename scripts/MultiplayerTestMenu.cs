@@ -20,6 +20,7 @@ public partial class MultiplayerTestMenu : Control
 	{
 		UpdateHostOrClientLabel();
 		UpdateClientCountLabel();
+		Debug.Log(NetworkManager.GetPublicSubnetIpv4());
 	}
 
 	private void UpdateHostOrClientLabel()
@@ -44,6 +45,17 @@ public partial class MultiplayerTestMenu : Control
 	private void UpdateClientCountLabel()
 	{
 		
+	}
+
+	// Returns true if this host has at least one client connected.
+	private bool HasPeer()
+	{
+		if (!NetworkManager.IsConnected() || !NetworkManager.IsServer())
+		{
+			return false;
+		}
+
+		return Multiplayer.GetPeers().Length > 0;
 	}
 
 	private void _on_host_button_pressed()

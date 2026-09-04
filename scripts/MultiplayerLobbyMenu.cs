@@ -17,6 +17,7 @@ public partial class MultiplayerLobbyMenu : Control
 	[Export] public Label InvalidIpAddressLabel { get; set; }
 	[Export] public Label BlankLabel { get; set; }
 	[Export] public Control LanSessionsMenu { get; set; }
+	[Export] public Label HostingStatusLabel { get; set; }
 	public bool CheckingForNewSessions { get; set; } = false;
 	private Array<LanDiscoverySession> _lastFrameKnownSessions = new Array<LanDiscoverySession>();
 
@@ -24,6 +25,7 @@ public partial class MultiplayerLobbyMenu : Control
 	{
 		// Initialize by setting initial state.
 		_on_direct_host_join_button_pressed();
+		HostingStatusLabel.Text = "";
 	}
 
     public override void _Process(double delta)
@@ -156,7 +158,7 @@ public partial class MultiplayerLobbyMenu : Control
 		DirectHostJoinMenu.Visible = false;
 		LanSessionsMenu.Visible = true;
 		DirectHostJoinButton.Disabled = false;
-		
+
 	}
 
 	private void _on_ip_input_text_changed(string newText)
@@ -170,6 +172,16 @@ public partial class MultiplayerLobbyMenu : Control
 			BlankLabel.Visible = true;
 			InvalidIpAddressLabel.Visible = false;
 		}
+	}
+
+	private void _on_host_button_pressed()
+	{
+		
+	}
+
+	private void _on_join_button_pressed()
+	{
+		
 	}
 
 	private void _on_session_listener_timer_timeout()

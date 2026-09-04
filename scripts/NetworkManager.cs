@@ -2,6 +2,8 @@ using Godot;
 using System;
 using Godot.Collections;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 
 // Works in tandem with the engine native high level multiplayer API to provide
 // networking service via host-client connection. Aims to support LAN-local connections
@@ -239,5 +241,55 @@ public partial class NetworkManager : Node
 	public static Array<LanDiscoverySession> GetKnownSessions()
 	{
 		return Instance._knownSessions;
+	}
+
+	// Returns THIS client's LAN IPv4 that other devices on the same subnet can reach.
+	// Prefers private ranges (10/8, 172.16/12, 192.168/16). Returns "" if none found.
+	public static string GetPublicSubnetIpv4()
+	{
+		string fallback = "";
+
+		foreach (string address in IP.GetLocalAddresses())
+		{
+			if (!IPAddress.TryParse(address, out IPAddress parsed))
+			{
+				continue;
+			}
+
+			if (parsed.AddressFamily != AddressFamily.InterNetwork)
+			{
+				continue;
+			}
+
+			if (IPAddress.IsLoopback(parsed))
+			{
+				continue;
+			}
+
+			byte[] bytes = parsed.GetAddressBytes();
+
+			// Skip link-local 169.254.0.0/16
+			if (bytes[0] == 169 && bytes[1] == 254)
+			{
+				continue;
+			}
+
+			bool isPrivate =
+				bytes[0] == 10
+				|| (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
+				|| (bytes[0] == 192 && bytes[1] == 168);
+
+			if (isPrivate)
+			{
+				return address;
+			}
+
+			if (fallback == "")
+			{
+				fallback = address;
+			}
+		}
+
+		return fallback;
 	}
 }
