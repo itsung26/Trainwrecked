@@ -18,23 +18,24 @@ public partial class MultiplayerLobbyMenu : Control
 	[Export] public Label BlankLabel { get; set; }
 	[Export] public Control LanSessionsMenu { get; set; }
 	[Export] public Label HostingStatusLabel { get; set; }
+	[Export] public LineEdit IpInput { get; set; }
 	public bool CheckingForNewSessions { get; set; } = false;
 	private Array<LanDiscoverySession> _lastFrameKnownSessions = new Array<LanDiscoverySession>();
 
-    public override void _Ready()
+	public override void _Ready()
 	{
 		// Initialize by setting initial state.
 		_on_direct_host_join_button_pressed();
 		HostingStatusLabel.Text = "";
 	}
 
-    public override void _Process(double delta)
-    {
-        if (CheckingForNewSessions)
+	public override void _Process(double delta)
+	{
+		if (CheckingForNewSessions)
 		{
 			CheckForNewSessions();
 		}
-    }
+	}
 
 	public void AddSessionButton(string ipAddress, int portAddress)
 	{
@@ -46,7 +47,7 @@ public partial class MultiplayerLobbyMenu : Control
 	// Immidiately frees all session buttons from memory.
 	public void ClearSessionButtons()
 	{
-		foreach(SessionButton button in GetSessionButtons())
+		foreach (SessionButton button in GetSessionButtons())
 		{
 			button.Free();
 		}
@@ -58,7 +59,7 @@ public partial class MultiplayerLobbyMenu : Control
 	{
 		if (deleteDeferred)
 		{
-			foreach(SessionButton button in GetSessionButtons())
+			foreach (SessionButton button in GetSessionButtons())
 			{
 				button.Visible = false;
 				button.QueueFree();
@@ -176,12 +177,25 @@ public partial class MultiplayerLobbyMenu : Control
 
 	private void _on_host_button_pressed()
 	{
-		
+		HostButton.Disabled = true;
+		JoinButton.Disabled = true;
+		Error returnedError = NetworkManager.StartServer();
+
+		if (returnedError == Error.Ok)
+		{
+			HostingStatusLabel.Text = "Successfully hosted server on IP " + NetworkManager.GetPublicSubnetIpv4() + " with port 7777";
+		}
+		else if (returnedError != Error.Ok)
+		{
+			HostingStatusLabel.Text = "Error hosting server: " + returnedError.ToString();
+		}
 	}
 
+	// Precondition: The input IP will always be a valid IP string,
+	// but may not be a real IP address.
 	private void _on_join_button_pressed()
 	{
-		
+
 	}
 
 	private void _on_session_listener_timer_timeout()

@@ -37,10 +37,74 @@ public partial class NetworkManager : Node
 	// The UDP packet peer used to send queries for a host to listen and answer.
 	public PacketPeerUdp Query = null;
 
+	// Wrappers for MultiplayerAPI connection lifecycle signals.
+	// Listen via NetworkManager.Instance.PeerConnected += ... (or Connect).
+
+	/// <summary>
+	/// Emitted when a remote peer joins. <paramref name="id"/> is their multiplayer peer id.
+	/// Typically used on the host when a client connects.
+	/// </summary>
+	[Signal] public delegate void PeerConnectedEventHandler(long id);
+
+	/// <summary>
+	/// Emitted when a remote peer leaves. <paramref name="id"/> is their multiplayer peer id.
+	/// </summary>
+	[Signal] public delegate void PeerDisconnectedEventHandler(long id);
+
+	/// <summary>
+	/// Emitted on the client when the connection to the host succeeds
+	/// after <see cref="StartClient"/>.
+	/// </summary>
+	[Signal] public delegate void ConnectedToServerEventHandler();
+
+	/// <summary>
+	/// Emitted on the client when joining the host fails
+	/// after <see cref="StartClient"/>.
+	/// </summary>
+	[Signal] public delegate void ConnectionFailedEventHandler();
+
+	/// <summary>
+	/// Emitted on the client when the host disconnects or the session is lost.
+	/// </summary>
+	[Signal] public delegate void ServerDisconnectedEventHandler();
+
 	public override void _Ready()
 	{
 		Instance = this;
+		Multiplayer.PeerConnected += OnMultiplayerPeerConnected;
+		Multiplayer.PeerDisconnected += OnMultiplayerPeerDisconnected;
+		Multiplayer.ConnectedToServer += OnMultiplayerConnectedToServer;
+		Multiplayer.ConnectionFailed += OnMultiplayerConnectionFailed;
+		Multiplayer.ServerDisconnected += OnMultiplayerServerDisconnected;
 	}
+
+	#region wrapper signal emitters
+	private void OnMultiplayerPeerConnected(long id)
+	{
+		EmitSignal("PeerConnected", id);
+	}
+
+	private void OnMultiplayerPeerDisconnected(long id)
+	{
+		EmitSignal("PeerDisconnected", id);
+	}
+
+	private void OnMultiplayerConnectedToServer()
+	{
+		EmitSignal("ConnectedToServer");
+	}
+
+	private void OnMultiplayerConnectionFailed()
+	{
+		EmitSignal("ConnectionFailed");
+	}
+
+	private void OnMultiplayerServerDisconnected()
+	{
+		EmitSignal("ServerDisconnected");
+	}
+	
+	#endregion
 
 	public override void _Process(double delta)
 	{

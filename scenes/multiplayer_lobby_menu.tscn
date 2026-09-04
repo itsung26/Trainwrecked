@@ -82,15 +82,26 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
+[node name="HostingStatusLabel" type="Label" parent="DirectHostJoinMenu" unique_id=2080835720]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.33888888
+anchor_right = 1.0
+anchor_bottom = 0.40648147
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 53
+text = "Hosting Status Label"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
 [node name="HostOrJoinVbox" type="VBoxContainer" parent="DirectHostJoinMenu" unique_id=1821548389]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.3917969
+anchor_left = 0.36354166
 anchor_top = 0.42453703
-anchor_right = 0.6082031
+anchor_right = 0.63645834
 anchor_bottom = 0.57546294
-offset_top = 26.5
-offset_bottom = -26.5
 grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_use_anchors_ = true
@@ -123,16 +134,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "Join"
-
-[node name="HostingStatusLabel" type="Label" parent="DirectHostJoinMenu" unique_id=2080835720]
-layout_mode = 0
-anchor_left = 0.36875
-anchor_top = 0.3148148
-anchor_right = 0.64166665
-anchor_bottom = 0.3824074
-theme_override_font_sizes/font_size = 53
-text = "Hosting Status Label"
-metadata/_edit_use_anchors_ = true
 
 [node name="LanSessionsMenu" type="Control" parent="." unique_id=2085684647]
 visible = false
