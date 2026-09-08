@@ -19,6 +19,8 @@ public partial class MultiplayerLobbyMenu : Control
 	[Export] public Control LanSessionsMenu { get; set; }
 	[Export] public Label HostingStatusLabel { get; set; }
 	[Export] public LineEdit IpInput { get; set; }
+	[Export] public LineEdit NameInput { get; set; }
+	[Export] public Button DisconnectButton { get; set; }
 	public bool CheckingForNewSessions { get; set; } = false;
 	private Array<LanDiscoverySession> _lastFrameKnownSessions = new Array<LanDiscoverySession>();
 
@@ -183,6 +185,8 @@ public partial class MultiplayerLobbyMenu : Control
 
 		if (returnedError == Error.Ok)
 		{
+			HostButton.Visible = false;
+			DisconnectButton.Visible = true;
 			HostingStatusLabel.Text = "Successfully hosted server on IP " + NetworkManager.GetPublicSubnetIpv4() + " with port 7777";
 		}
 		else if (returnedError != Error.Ok)
@@ -196,6 +200,11 @@ public partial class MultiplayerLobbyMenu : Control
 	private void _on_join_button_pressed()
 	{
 
+	}
+
+	private void _on_disconnect_button_pressed()
+	{
+		NetworkManager.Disconnect();
 	}
 
 	private void _on_session_listener_timer_timeout()

@@ -268,6 +268,14 @@ public partial class NetworkManager : Node
 		return "127.0.0.1";
 	}
 
+	/// <summary>
+	/// Returns whether this machine has an active ENet multiplayer session
+	/// whose connection status is <see cref="MultiplayerPeer.ConnectionStatus.Connected"/>.
+	/// </summary>
+	/// <returns>
+	/// <see langword="true"/> when the current peer is a connected <see cref="ENetMultiplayerPeer"/>;
+	/// <see langword="false"/> when offline, still connecting, or using <see cref="OfflineMultiplayerPeer"/>.
+	/// </returns>
 	public static bool IsConnected()
 	{
 		MultiplayerPeer peer = GetCurrentPeer();
@@ -279,11 +287,49 @@ public partial class NetworkManager : Node
 		return peer.GetConnectionStatus() == MultiplayerPeer.ConnectionStatus.Connected;
 	}
 
+	/// <summary>
+	/// Returns whether this machine is a client currently attempting to join a host.
+	/// </summary>
+	/// <returns>
+	/// <see langword="true"/> when the current peer is an <see cref="ENetMultiplayerPeer"/>
+	/// with status <see cref="MultiplayerPeer.ConnectionStatus.Connecting"/> and this peer is not the server;
+	/// otherwise <see langword="false"/>.
+	/// </returns>
+	public static bool IsConnecting()
+	{
+		MultiplayerPeer peer = GetCurrentPeer();
+		if (peer is null || peer is OfflineMultiplayerPeer || IsServer())
+		{
+			return false;
+		}
+
+		return peer.GetConnectionStatus() == MultiplayerPeer.ConnectionStatus.Connecting;
+	}
+
+	/// <summary>
+	/// Returns whether the multiplayer API treats this peer as the server.
+	/// </summary>
+	/// <remarks>
+	/// This mirrors <see cref="MultiplayerApi.IsServer"/> and does not require a network session.
+	/// <see cref="OfflineMultiplayerPeer"/> (the default) also reports as server, so pair with
+	/// <see cref="IsConnected"/> when you need "hosting an online game."
+	/// </remarks>
+	/// <returns>
+	/// <see langword="true"/> if this peer is the server (including offline default);
+	/// otherwise <see langword="false"/>.
+	/// </returns>
 	public static bool IsServer()
 	{
 		return Instance.Multiplayer.IsServer();
 	}
 
+	/// <summary>
+	/// Returns whether this machine is a connected multiplayer client.
+	/// </summary>
+	/// <returns>
+	/// <see langword="true"/> when <see cref="IsConnected"/> is true and <see cref="IsServer"/> is false;
+	/// otherwise <see langword="false"/> (including while still connecting).
+	/// </returns>
 	public static bool IsClient()
 	{
 		if (IsConnected() && !IsServer())

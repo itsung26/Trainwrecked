@@ -4,7 +4,7 @@
 [ext_resource type="Theme" uid="uid://bavwoqyte2k7r" path="res://assets/themes/multiplayer_lobby_menu_theme.tres" id="1_h1w8e"]
 [ext_resource type="PackedScene" uid="uid://wbut4tbymo6t" path="res://scenes/session_button.tscn" id="1_p66dv"]
 
-[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinMenu", "DirectHostJoinButton", "LanSessionsButton", "HostButton", "JoinButton", "InvalidIpAddressLabel", "BlankLabel", "LanSessionsMenu", "HostingStatusLabel")]
+[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinMenu", "DirectHostJoinButton", "LanSessionsButton", "HostButton", "JoinButton", "InvalidIpAddressLabel", "BlankLabel", "LanSessionsMenu", "HostingStatusLabel", "IpInput", "NameInput", "DisconnectButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,6 +26,9 @@ InvalidIpAddressLabel = NodePath("DirectHostJoinMenu/HostOrJoinVbox/InvalidIpAdd
 BlankLabel = NodePath("DirectHostJoinMenu/HostOrJoinVbox/BlankLabel")
 LanSessionsMenu = NodePath("LanSessionsMenu")
 HostingStatusLabel = NodePath("DirectHostJoinMenu/HostingStatusLabel")
+IpInput = NodePath("DirectHostJoinMenu/HostOrJoinVbox/IpInput")
+NameInput = NodePath("DirectHostJoinMenu/HostOrJoinVbox/NameInput")
+DisconnectButton = NodePath("DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/DisconnectButton")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=237297881]
 layout_mode = 1
@@ -99,9 +102,11 @@ metadata/_edit_use_anchors_ = true
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.36354166
-anchor_top = 0.42453703
+anchor_top = 0.4027778
 anchor_right = 0.63645834
-anchor_bottom = 0.57546294
+anchor_bottom = 0.5972222
+offset_top = 23.5
+offset_bottom = -23.5
 grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_use_anchors_ = true
@@ -121,6 +126,11 @@ layout_mode = 2
 placeholder_text = "Enter the host's local IPV4 here..."
 max_length = 15
 
+[node name="NameInput" type="LineEdit" parent="DirectHostJoinMenu/HostOrJoinVbox" unique_id=289349801]
+visible = false
+layout_mode = 2
+placeholder_text = "Enter player name here..."
+
 [node name="HostOrJoinHbox" type="HBoxContainer" parent="DirectHostJoinMenu/HostOrJoinVbox" unique_id=565413092]
 layout_mode = 2
 
@@ -129,11 +139,39 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Host"
 
+[node name="DisconnectButton" type="Button" parent="DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox" unique_id=1641924427]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Disconnect"
+
 [node name="JoinButton" type="Button" parent="DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox" unique_id=61679925]
 layout_mode = 2
 size_flags_horizontal = 3
 disabled = true
 text = "Join"
+
+[node name="JoinersPanel" type="PanelContainer" parent="DirectHostJoinMenu" unique_id=169706113]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.72760415
+anchor_top = 0.27824074
+anchor_right = 0.90625
+anchor_bottom = 0.72175926
+grow_horizontal = 0
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="JoinersPanelVbox" type="VBoxContainer" parent="DirectHostJoinMenu/JoinersPanel" unique_id=1186549283]
+layout_mode = 2
+
+[node name="JoinersPanelTitle" type="Label" parent="DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox" unique_id=508533055]
+layout_mode = 2
+text = "Clients Connected:"
+
+[node name="DividerLabel" type="Label" parent="DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox" unique_id=1088833476]
+layout_mode = 2
+text = "======================"
 
 [node name="LanSessionsMenu" type="Control" parent="." unique_id=2085684647]
 visible = false
@@ -177,5 +215,6 @@ metadata/_edit_use_anchors_ = true
 [connection signal="timeout" from="SessionListenerTimer" to="." method="_on_session_listener_timer_timeout"]
 [connection signal="text_changed" from="DirectHostJoinMenu/HostOrJoinVbox/IpInput" to="." method="_on_ip_input_text_changed"]
 [connection signal="pressed" from="DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="pressed" from="DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/DisconnectButton" to="." method="_on_disconnect_button_pressed"]
 [connection signal="pressed" from="DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/JoinButton" to="." method="_on_join_button_pressed"]
 [connection signal="pressed" from="LanSessionsMenu/RefreshButton" to="." method="_on_refresh_button_pressed"]

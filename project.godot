@@ -20,6 +20,8 @@ config/icon="res://icon.svg"
 
 Debug="*uid://deitrokuoubwr"
 NetworkManager="*uid://b82sn2fpkr8h2"
+SaveParser="*uid://dj3p41uh4euil"
+ConfigParser="*uid://suvuwhce2x8q"
 
 [display]
 

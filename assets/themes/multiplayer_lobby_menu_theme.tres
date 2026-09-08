@@ -2,6 +2,18 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7m3ph"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3nhpd"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.101960786, 0.101960786, 0.101960786, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
 [resource]
 Button/font_sizes/font_size = 48
 Label/font_sizes/font_size = 27
@@ -10,3 +22,4 @@ LineEdit/colors/font_placeholder_color = Color(1, 1, 1, 0.7019608)
 LineEdit/font_sizes/font_size = 25
 LineEdit/styles/focus = SubResource("StyleBoxFlat_7m3ph")
 LineEdit/styles/normal = SubResource("StyleBoxFlat_7m3ph")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_3nhpd")
