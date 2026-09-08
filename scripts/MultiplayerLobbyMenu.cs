@@ -21,6 +21,13 @@ public partial class MultiplayerLobbyMenu : Control
 	[Export] public LineEdit IpInput { get; set; }
 	[Export] public LineEdit NameInput { get; set; }
 	[Export] public Button DisconnectButton { get; set; }
+	[Export] public Label PublicIpLabel { get; set; }
+	[Export] public PanelContainer JoinersPanel { get; set; }
+	[Export] public Label ClientLabel1 { get; set; }
+	[Export] public Label ClientLabel2 { get; set; }
+	[Export] public Label ClientLabel3 { get; set; }
+	[Export] public Label ClientLabel4 { get; set; }
+	[Export] public Label UniqueIdLabel { get; set; }
 	public bool CheckingForNewSessions { get; set; } = false;
 	private Array<LanDiscoverySession> _lastFrameKnownSessions = new Array<LanDiscoverySession>();
 
@@ -29,6 +36,17 @@ public partial class MultiplayerLobbyMenu : Control
 		// Initialize by setting initial state.
 		_on_direct_host_join_button_pressed();
 		HostingStatusLabel.Text = "";
+		NetworkManager.Instance.PeerConnected += _on_peer_connected;
+		NetworkManager.Instance.ConnectedToServer += _on_connected_to_server;
+		NetworkManager.Instance.ConnectionFailed += _on_connection_failed;
+		NetworkManager.Instance.ServerDisconnected += _on_server_disconnected;
+		NetworkManager.Instance.PeerDisconnected += _on_peer_disconnected;
+		PublicIpLabel.Text = "Your hosting IP is: " + NetworkManager.GetPublicSubnetIpv4();
+		// Clear the joiner labels.
+		ClientLabel1.Text = "";
+		ClientLabel2.Text = "";
+		ClientLabel3.Text = "";
+		ClientLabel4.Text = "";
 	}
 
 	public override void _Process(double delta)
@@ -37,6 +55,7 @@ public partial class MultiplayerLobbyMenu : Control
 		{
 			CheckForNewSessions();
 		}
+		UniqueIdLabel.Text = "My unique ID: " + NetworkManager.GetUniqueId();
 	}
 
 	public void AddSessionButton(string ipAddress, int portAddress)
@@ -130,6 +149,87 @@ public partial class MultiplayerLobbyMenu : Control
 		return Regex.IsMatch(newInput, @"^\d{1,3}(\.\d{1,3}){3}$");
 	}
 
+	// Sets the text of all ClientLabels to newText.
+	private void SetAllClientLabelText(string newText)
+	{
+		ClientLabel1.Text = newText;
+		ClientLabel2.Text = newText;
+		ClientLabel3.Text = newText;
+		ClientLabel4.Text = newText;
+	}
+
+	// Returns the first Clientlabel, etc ClientLabel1, ClientLabel2,... that has only the text
+	// "". If they all have text, return null.
+	private Label GetFirstFreeClientLabel()
+	{
+		if (ClientLabel1.Text == "")
+		{
+			return ClientLabel1;
+		}
+		if (ClientLabel2.Text == "")
+		{
+			return ClientLabel2;
+		}
+		if (ClientLabel3.Text == "")
+		{
+			return ClientLabel3;
+		}
+		if (ClientLabel4.Text == "")
+		{
+			return ClientLabel4;
+		}
+
+		return null;
+	}
+
+	// Returns the first ClientLabel with a name matching uniqueIdName.
+	private Label GetClientLabel(string uniqueIdName)
+	{
+		if (ClientLabel1.Text == uniqueIdName || ClientLabel1.Text.StartsWith(uniqueIdName + " "))
+		{
+			return ClientLabel1;
+		}
+		if (ClientLabel2.Text == uniqueIdName || ClientLabel2.Text.StartsWith(uniqueIdName + " "))
+		{
+			return ClientLabel2;
+		}
+		if (ClientLabel3.Text == uniqueIdName || ClientLabel3.Text.StartsWith(uniqueIdName + " "))
+		{
+			return ClientLabel3;
+		}
+		if (ClientLabel4.Text == uniqueIdName || ClientLabel4.Text.StartsWith(uniqueIdName + " "))
+		{
+			return ClientLabel4;
+		}
+
+		return null;
+	}
+
+	// Returns the amount of client labels in the list that do not contain
+	// only the text "".
+	private int GetClientLabelsOccupied()
+	{
+		int amt = 0;
+		if (ClientLabel1.Text != "")
+		{
+			amt++;
+		}
+		if (ClientLabel2.Text != "")
+		{
+			amt++;
+		}
+		if (ClientLabel3.Text != "")
+		{
+			amt++;
+		}
+		if (ClientLabel4.Text != "")
+		{
+			amt++;
+		}
+
+		return amt;
+	}
+
 	private void _on_back_button_pressed()
 	{
 		Visible = false;
@@ -179,7 +279,6 @@ public partial class MultiplayerLobbyMenu : Control
 
 	private void _on_host_button_pressed()
 	{
-		HostButton.Disabled = true;
 		JoinButton.Disabled = true;
 		Error returnedError = NetworkManager.StartServer();
 
@@ -187,6 +286,14 @@ public partial class MultiplayerLobbyMenu : Control
 		{
 			HostButton.Visible = false;
 			DisconnectButton.Visible = true;
+			IpInput.Editable = false;
+			IpInput.Text = NetworkManager.GetPublicSubnetIpv4();
+			// Set the first label to show the hosts' ID.
+			if (GetFirstFreeClientLabel() is not null)
+			{
+				GetFirstFreeClientLabel().Text = NetworkManager.GetUniqueId().ToString() + " " + "(HOST)";
+				JoinersPanel.GetChild(0).GetChild<Label>(0).Text = $"Clients Connected {GetClientLabelsOccupied()}/4";
+			}
 			HostingStatusLabel.Text = "Successfully hosted server on IP " + NetworkManager.GetPublicSubnetIpv4() + " with port 7777";
 		}
 		else if (returnedError != Error.Ok)
@@ -199,16 +306,90 @@ public partial class MultiplayerLobbyMenu : Control
 	// but may not be a real IP address.
 	private void _on_join_button_pressed()
 	{
-
+		JoinButton.Disabled = true;
+		HostButton.Disabled = true;
+		IpInput.Editable = false;
+		JoinButton.Text = "Joining...";
+		Error returnedError = NetworkManager.StartClient(IpInput.Text);
+		if (returnedError != Error.Ok)
+		{
+			Debug.Log("Error joining: " + returnedError);
+		}
 	}
 
 	private void _on_disconnect_button_pressed()
 	{
 		NetworkManager.Disconnect();
+		HostingStatusLabel.Text = "";
+		SetAllClientLabelText("");
+		JoinersPanel.GetChild(0).GetChild<Label>(0).Text = "Clients Connected 0/4";
+
+		if (NetworkManager.IsServer())
+		{
+			DisconnectButton.Visible = false;
+			HostButton.Visible = true;
+			IpInput.Clear();
+			IpInput.Editable = true;
+		}
 	}
 
 	private void _on_session_listener_timer_timeout()
 	{
 		CheckingForNewSessions = false;
+	}
+
+	private void _on_peer_connected(long id)
+	{
+		// If host, update the list of clients.
+		// ClientListSynchronizer will keep the list in sync for clients.
+		if (NetworkManager.IsServer())
+		{
+			if (GetFirstFreeClientLabel() is not null)
+			{
+				GetFirstFreeClientLabel().Text = id.ToString() + " " + "(CLIENT)";
+			}
+			JoinersPanel.GetChild(0).GetChild<Label>(0).Text = $"Clients Connected {GetClientLabelsOccupied()}/4";
+		}
+	}
+
+	private void _on_connected_to_server()
+	{
+		HostingStatusLabel.Text = "Successfully connected to session.";
+		JoinButton.Text = "Join";
+		JoinButton.Disabled = true;
+		HostButton.Disabled = false;
+		HostButton.Visible = false;
+		DisconnectButton.Visible = true;
+	}
+
+	private void _on_connection_failed()
+	{
+		HostingStatusLabel.Text = "Failed to connect to session. Ensure you are on the same local subnet as the host.";
+		JoinButton.Text = "Join";
+		JoinButton.Disabled = false;
+		HostButton.Disabled = false;
+		IpInput.Clear();
+		IpInput.Editable = true;
+		// Wipe away the dead EnetMultiplayerPeer from the failed connection attempt.
+		NetworkManager.GetCurrentPeer().Close();
+		NetworkManager.SetCurrentPeer(new OfflineMultiplayerPeer());
+	}
+
+	private void _on_server_disconnected()
+	{
+		int unique = NetworkManager.GetUniqueId();
+		Debug.Log($"{unique} registered a server disconnection. It is expected that either the host left or the session was lost.");
+		// Clear all labels.
+		SetAllClientLabelText("");
+		JoinersPanel.GetChild(0).GetChild<Label>(0).Text = "Clients Connected 0/4";
+	}
+
+	private void _on_peer_disconnected(long id)
+	{
+		if (NetworkManager.IsServer())
+		{
+			Label labelOfClientThatLeft = GetClientLabel(id.ToString());
+			labelOfClientThatLeft.Text = "";
+		}
 	}
 }

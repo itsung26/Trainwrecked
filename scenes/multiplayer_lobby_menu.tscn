@@ -4,7 +4,24 @@
 [ext_resource type="Theme" uid="uid://bavwoqyte2k7r" path="res://assets/themes/multiplayer_lobby_menu_theme.tres" id="1_h1w8e"]
 [ext_resource type="PackedScene" uid="uid://wbut4tbymo6t" path="res://scenes/session_button.tscn" id="1_p66dv"]
 
-[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinMenu", "DirectHostJoinButton", "LanSessionsButton", "HostButton", "JoinButton", "InvalidIpAddressLabel", "BlankLabel", "LanSessionsMenu", "HostingStatusLabel", "IpInput", "NameInput", "DisconnectButton")]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_h1w8e"]
+properties/0/path = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel1:text")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel2:text")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel3:text")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel4:text")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/JoinersPanelTitle:text")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+
+[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinMenu", "DirectHostJoinButton", "LanSessionsButton", "HostButton", "JoinButton", "InvalidIpAddressLabel", "BlankLabel", "LanSessionsMenu", "HostingStatusLabel", "IpInput", "NameInput", "DisconnectButton", "PublicIpLabel", "JoinersPanel", "ClientLabel1", "ClientLabel2", "ClientLabel3", "ClientLabel4", "UniqueIdLabel")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -29,6 +46,13 @@ HostingStatusLabel = NodePath("DirectHostJoinMenu/HostingStatusLabel")
 IpInput = NodePath("DirectHostJoinMenu/HostOrJoinVbox/IpInput")
 NameInput = NodePath("DirectHostJoinMenu/HostOrJoinVbox/NameInput")
 DisconnectButton = NodePath("DirectHostJoinMenu/HostOrJoinVbox/HostOrJoinHbox/DisconnectButton")
+PublicIpLabel = NodePath("DirectHostJoinMenu/PublicIpLabel")
+JoinersPanel = NodePath("DirectHostJoinMenu/JoinersPanel")
+ClientLabel1 = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel1")
+ClientLabel2 = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel2")
+ClientLabel3 = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel3")
+ClientLabel4 = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel4")
+UniqueIdLabel = NodePath("DirectHostJoinMenu/UniqueIdLabel")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=237297881]
 layout_mode = 1
@@ -98,15 +122,39 @@ text = "Hosting Status Label"
 horizontal_alignment = 1
 metadata/_edit_use_anchors_ = true
 
+[node name="PublicIpLabel" type="Label" parent="DirectHostJoinMenu" unique_id=868655528]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.108333334
+anchor_right = 1.0
+anchor_bottom = 0.17592593
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 53
+text = "Your hosting IP is: UNKOWN"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="UniqueIdLabel" type="Label" parent="DirectHostJoinMenu" unique_id=1660019733]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.024074074
+anchor_right = 1.0
+anchor_bottom = 0.09166667
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 53
+text = "My unique ID is: UNKOWN"
+horizontal_alignment = 1
+metadata/_edit_use_anchors_ = true
+
 [node name="HostOrJoinVbox" type="VBoxContainer" parent="DirectHostJoinMenu" unique_id=1821548389]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.36354166
-anchor_top = 0.4027778
+anchor_top = 0.42453703
 anchor_right = 0.63645834
-anchor_bottom = 0.5972222
-offset_top = 23.5
-offset_bottom = -23.5
+anchor_bottom = 0.57546294
 grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_use_anchors_ = true
@@ -154,10 +202,10 @@ text = "Join"
 [node name="JoinersPanel" type="PanelContainer" parent="DirectHostJoinMenu" unique_id=169706113]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.72760415
-anchor_top = 0.27824074
-anchor_right = 0.90625
-anchor_bottom = 0.72175926
+anchor_left = 0.78489584
+anchor_top = 0.49074075
+anchor_right = 0.9635417
+anchor_bottom = 0.93425924
 grow_horizontal = 0
 grow_vertical = 2
 metadata/_edit_use_anchors_ = true
@@ -167,11 +215,27 @@ layout_mode = 2
 
 [node name="JoinersPanelTitle" type="Label" parent="DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox" unique_id=508533055]
 layout_mode = 2
-text = "Clients Connected:"
+text = "Clients Connected 0/4:"
 
 [node name="DividerLabel" type="Label" parent="DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox" unique_id=1088833476]
 layout_mode = 2
 text = "======================"
+
+[node name="ClientLabel1" type="Label" parent="DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox" unique_id=461422099]
+layout_mode = 2
+text = "UNKOWN (HOST)"
+
+[node name="ClientLabel2" type="Label" parent="DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox" unique_id=556799157]
+layout_mode = 2
+text = "UNKOWN (HOST)"
+
+[node name="ClientLabel3" type="Label" parent="DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox" unique_id=1236291358]
+layout_mode = 2
+text = "UNKOWN (HOST)"
+
+[node name="ClientLabel4" type="Label" parent="DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox" unique_id=133081443]
+layout_mode = 2
+text = "UNKOWN (HOST)"
 
 [node name="LanSessionsMenu" type="Control" parent="." unique_id=2085684647]
 visible = false
@@ -186,11 +250,12 @@ mouse_filter = 2
 [node name="SessionsScrollContainer" type="ScrollContainer" parent="LanSessionsMenu" unique_id=1567574736]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.30729166
-anchor_top = 0.19629629
-anchor_right = 0.6734375
-anchor_bottom = 0.73240745
-offset_bottom = -6.1035156e-05
+anchor_left = 0.22942708
+anchor_top = 0.23214816
+anchor_right = 0.7705729
+anchor_bottom = 0.7678519
+grow_horizontal = 2
+grow_vertical = 2
 metadata/_edit_use_anchors_ = true
 
 [node name="SessionsContainer" type="VBoxContainer" parent="LanSessionsMenu/SessionsScrollContainer" unique_id=346051037]
@@ -208,6 +273,9 @@ offset_right = 4.0
 offset_bottom = 2.0
 text = "REFRESH"
 metadata/_edit_use_anchors_ = true
+
+[node name="ClientListSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1790075124]
+replication_config = SubResource("SceneReplicationConfig_h1w8e")
 
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="DirectHostJoinButton" to="." method="_on_direct_host_join_button_pressed"]

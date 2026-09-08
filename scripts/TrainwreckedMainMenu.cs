@@ -5,10 +5,10 @@ public partial class TrainwreckedMainMenu : Control
 {
 	private MultiplayerLobbyMenu MultiplayerLobbyMenu;
 
-    public override void _Ready()
-    {
-        InitRefs();
-    }
+	public override void _Ready()
+	{
+		InitRefs();
+	}
 
 	private void InitRefs()
 	{
@@ -30,6 +30,7 @@ public partial class TrainwreckedMainMenu : Control
 
 	private void _on_load_button_pressed()
 	{
+
 	}
 
 	private void _on_options_button_pressed()
@@ -40,4 +41,5 @@ public partial class TrainwreckedMainMenu : Control
 	{
 		GetTree().Quit(); // placeholder
 	}
+
 }

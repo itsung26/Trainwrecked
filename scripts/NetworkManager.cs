@@ -421,6 +421,11 @@ public partial class NetworkManager : Node
 		return fallback;
 	}
 
+	public static int GetUniqueId()
+	{
+		return Instance.Multiplayer.GetUniqueId();
+	}
+
 	public static Array<int> GetPeerIds()
 	{
 		return new Array<int>(Instance.Multiplayer.GetPeers());
