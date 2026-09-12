@@ -77,6 +77,15 @@ public partial class NetworkManager : Node
 		Multiplayer.ConnectedToServer += OnMultiplayerConnectedToServer;
 		Multiplayer.ConnectionFailed += OnMultiplayerConnectionFailed;
 		Multiplayer.ServerDisconnected += OnMultiplayerServerDisconnected;
+
+		if (RunArguments.HasHostFlag)
+		{
+			StartServer();
+		}
+		else if (RunArguments.HasJoinFlag)
+		{
+			StartClient(RunArguments.JoinFlagAddress);
+		}
 	}
 
 	#region wrapper signal emitters
@@ -438,4 +447,5 @@ public partial class NetworkManager : Node
 			GetCurrentPeer().DisconnectPeer(somePeer);
 		}
 	}
+
 }

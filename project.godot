@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 Debug="*uid://deitrokuoubwr"
+RunArguments="*uid://dogkk7idqxtvq"
 NetworkManager="*uid://b82sn2fpkr8h2"
 SaveParser="*uid://dj3p41uh4euil"
 ConfigParser="*uid://suvuwhce2x8q"
