@@ -230,6 +230,16 @@ public partial class MultiplayerLobbyMenu : Control
 		return amt;
 	}
 
+	public void RefreshLanDiscoveryBox()
+	{
+		ClearSessionButtons();
+		_lastFrameKnownSessions.Clear();
+		CheckingForNewSessions = true;
+		SessionListenerTimer.Start(4.0);
+		NetworkManager.BroadcastToListeningHosts();
+
+	}
+
 	private void _on_back_button_pressed()
 	{
 		Visible = false;
@@ -240,11 +250,7 @@ public partial class MultiplayerLobbyMenu : Control
 	// a SessionButton.
 	private void _on_refresh_button_pressed()
 	{
-		ClearSessionButtons();
-		_lastFrameKnownSessions.Clear();
-		CheckingForNewSessions = true;
-		SessionListenerTimer.Start(4.0);
-		NetworkManager.BroadcastToListeningHosts();
+		RefreshLanDiscoveryBox();
 	}
 
 	private void _on_direct_host_join_button_pressed()
@@ -261,7 +267,7 @@ public partial class MultiplayerLobbyMenu : Control
 		DirectHostJoinMenu.Visible = false;
 		LanSessionsMenu.Visible = true;
 		DirectHostJoinButton.Disabled = false;
-
+		RefreshLanDiscoveryBox();
 	}
 
 	private void _on_ip_input_text_changed(string newText)
@@ -377,11 +383,19 @@ public partial class MultiplayerLobbyMenu : Control
 
 	private void _on_server_disconnected()
 	{
-		int unique = NetworkManager.GetUniqueId();
-		Debug.Log($"{unique} registered a server disconnection. It is expected that either the host left or the session was lost.");
-		// Clear all labels.
+		HostingStatusLabel.Text = "Disconnected from session. The host left or the connection was lost.";
+		JoinButton.Text = "Join";
+		JoinButton.Disabled = false;
+		HostButton.Disabled = false;
+		HostButton.Visible = true;
+		DisconnectButton.Visible = false;
+		IpInput.Clear();
+		IpInput.Editable = true;
 		SetAllClientLabelText("");
 		JoinersPanel.GetChild(0).GetChild<Label>(0).Text = "Clients Connected 0/4";
+		// Wipe away the dead EnetMultiplayerPeer from the lost session.
+		NetworkManager.GetCurrentPeer().Close();
+		NetworkManager.SetCurrentPeer(new OfflineMultiplayerPeer());
 	}
 
 	private void _on_peer_disconnected(long id)

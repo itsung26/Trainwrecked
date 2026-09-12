@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://boi5es405i8mg"]
+
+[ext_resource type="Script" uid="uid://daqwkjjf2cumh" path="res://scripts/SessionChat.cs" id="1_ai772"]
+
+[node name="SessionChat" type="Control" unique_id=292976534 node_paths=PackedStringArray("MessageList", "MessageInput")]
+layout_mode = 3
+anchor_right = 0.34010416
+anchor_bottom = 0.27407408
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ai772")
+MessageList = NodePath("ChatPanel/ChatLayout/MessageScroll/MessageList")
+MessageInput = NodePath("ChatPanel/ChatLayout/InputRow/MessageInput")
+metadata/_edit_use_anchors_ = true
+
+[node name="ChatPanel" type="PanelContainer" parent="." unique_id=1741038003]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ChatLayout" type="VBoxContainer" parent="ChatPanel" unique_id=1959919754]
+layout_mode = 2
+
+[node name="MessageScroll" type="ScrollContainer" parent="ChatPanel/ChatLayout" unique_id=37902223]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="MessageList" type="VBoxContainer" parent="ChatPanel/ChatLayout/MessageScroll" unique_id=930367706]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InputRow" type="HBoxContainer" parent="ChatPanel/ChatLayout" unique_id=2055588728]
+layout_mode = 2
+
+[node name="MessageInput" type="LineEdit" parent="ChatPanel/ChatLayout/InputRow" unique_id=320312703]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Type a message..."
+
+[connection signal="text_submitted" from="ChatPanel/ChatLayout/InputRow/MessageInput" to="." method="_on_message_input_text_submitted"]

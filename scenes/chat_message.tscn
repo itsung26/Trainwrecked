@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cj2kpajmxemnc"]
+
+[ext_resource type="Script" uid="uid://b3m8tkkeg1tao" path="res://scripts/ChatMessage.cs" id="1_fpeyo"]
+
+[node name="ChatMessage" type="Label" unique_id=476726059]
+anchors_preset = -1
+anchor_right = 0.020833334
+anchor_bottom = 0.021296296
+script = ExtResource("1_fpeyo")
+metadata/_edit_use_anchors_ = true

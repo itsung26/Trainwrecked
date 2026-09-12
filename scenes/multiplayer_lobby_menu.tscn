@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cq0drgojv14n4" path="res://scripts/MultiplayerLobbyMenu.cs" id="1_2lyg7"]
 [ext_resource type="Theme" uid="uid://bavwoqyte2k7r" path="res://assets/themes/multiplayer_lobby_menu_theme.tres" id="1_h1w8e"]
 [ext_resource type="PackedScene" uid="uid://wbut4tbymo6t" path="res://scenes/session_button.tscn" id="1_p66dv"]
+[ext_resource type="PackedScene" uid="uid://boi5es405i8mg" path="res://scenes/session_chat.tscn" id="4_jjmda"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_h1w8e"]
 properties/0/path = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel1:text")
@@ -276,6 +277,9 @@ metadata/_edit_use_anchors_ = true
 
 [node name="ClientListSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1790075124]
 replication_config = SubResource("SceneReplicationConfig_h1w8e")
+
+[node name="SessionChat" parent="." unique_id=292976534 instance=ExtResource("4_jjmda")]
+layout_mode = 1
 
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="DirectHostJoinButton" to="." method="_on_direct_host_join_button_pressed"]
