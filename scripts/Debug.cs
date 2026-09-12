@@ -4,10 +4,22 @@ using Godot.Collections;
 
 public partial class Debug : Node
 {
+	public bool NetworkDebugWindowNamesEnabled { get; set; } = true;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		if (NetworkDebugWindowNamesEnabled)
+		{
+			if (RunArguments.HasHostFlag)
+			{
+				GetWindow().Title = "Trainwrecked (HOST)";
+			}
+			else if (RunArguments.HasJoinFlag)
+			{
+				GetWindow().Title = "Trainwrecked (CLIENT)";
+			}
+		}
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
