@@ -14,17 +14,19 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
-[node name="SessionChat" type="Control" unique_id=292976534 node_paths=PackedStringArray("MessageList", "MessageInput", "ChatPanel")]
+[node name="SessionChat" type="Control" unique_id=292976534 node_paths=PackedStringArray("MessageList", "MessageInput", "ChatPanel", "DelayBeforeFadeoutTimer")]
 layout_mode = 3
-anchor_right = 0.34010416
-anchor_bottom = 0.27407408
+anchor_right = 0.303125
+anchor_bottom = 0.2537037
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ai772")
 MessageList = NodePath("ChatPanel/ChatLayout/MessageScroll/MessageList")
 MessageInput = NodePath("ChatPanel/ChatLayout/InputRow/MessageInput")
 ChatPanel = NodePath("ChatPanel")
+DelayBeforeFadeoutTimer = NodePath("DelayBeforeFadeoutTimer")
 PanelOpacity = 0.615
+InactiveOpacity = 0.2
 metadata/_edit_use_anchors_ = true
 
 [node name="ChatPanel" type="PanelContainer" parent="." unique_id=1741038003]
@@ -55,5 +57,16 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Type a message..."
+editable = false
+context_menu_enabled = false
+shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
+selecting_enabled = false
+drag_and_drop_selection_enabled = false
 
+[node name="DelayBeforeFadeoutTimer" type="Timer" parent="." unique_id=632365567]
+one_shot = true
+
+[connection signal="editing_toggled" from="ChatPanel/ChatLayout/InputRow/MessageInput" to="." method="_on_message_input_editing_toggled"]
 [connection signal="text_submitted" from="ChatPanel/ChatLayout/InputRow/MessageInput" to="." method="_on_message_input_text_submitted"]
+[connection signal="timeout" from="DelayBeforeFadeoutTimer" to="." method="_on_delay_before_fadeout_timer_timeout"]

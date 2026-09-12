@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Diagnostics;
 
 /// <summary>
 /// Session chat panel. Messages are host-authoritative:
@@ -14,6 +15,7 @@ public partial class SessionChat : Control
 	/// <summary>Line edit the player types into.</summary>
 	[Export] public LineEdit MessageInput { get; set; }
 	[Export] public PanelContainer ChatPanel { get; set; }
+	[Export] public Timer DelayBeforeFadeoutTimer { get; set; }
 	private float _panelOpacity = 1.0f;
 	[Export]
 	public float PanelOpacity
@@ -27,23 +29,83 @@ public partial class SessionChat : Control
 			SetPanelOpacity(value);
 		}
 	}
+	[Export] public float DelayBeforeFadeoutBegin { get; set; } = 1.0f;
+	[Export] public float ActiveOpacity { get; set; } = 0.615f;
+	[Export] public float InactiveOpacity { get; set; } = 0.25f;
+	[Export] public float FadeOutSpeed { get; set; } = 0.5f;
+	public bool IsTyping
+	{
+		get
+		{
+			return GetIsTyping();
+		}
+	}
+	private bool _fadingOut = false;
+	private StyleBoxFlat _panelStyleBox;
 
 	public override void _Ready()
 	{
+		CachePanelStyleBox();
+		SetPanelOpacity(InactiveOpacity);
 		NetworkManager.Instance.ConnectedToServer += _on_connected_to_server;
 	}
 
-    public override void _Process(double delta)
-    {
-        // TODO: implement fadaway effect after a certain amount of time passes.
-    }
+	public override void _Input(InputEvent @event)
+	{
+		if (Input.IsActionJustPressed("Chat Toggle") && !IsTyping)
+		{
+			MessageInput.Editable = true;
+			MessageInput.Edit();
+			MessageInput.CallDeferred(LineEdit.MethodName.Clear);
+		}
+	}
+
+	public override void _Process(double delta)
+	{
+		if (_fadingOut)
+		{
+			if (PanelOpacity == InactiveOpacity)
+			{
+				_fadingOut = false;
+			}
+			else
+			{
+				PanelOpacity = Mathf.MoveToward(PanelOpacity, InactiveOpacity, FadeOutSpeed * ((float)delta));
+			}
+		}
+	}
+
+	/// <summary>
+	/// Returns true if MessageInput is currently being edited, and false otherwise.
+	/// </summary>
+	/// <returns></returns>
+	public bool GetIsTyping()
+	{
+		return MessageInput != null && MessageInput.IsEditing();
+	}
 
 	public void SetPanelOpacity(float opacity)
 	{
 		_panelOpacity = Mathf.Clamp(opacity, 0.0f, 1.0f);
-		StyleBoxFlat styleBox = ChatPanel.GetThemeStylebox("panel") as StyleBoxFlat;
-		Color col = styleBox.BgColor;
-		styleBox.BgColor = new Color(col, _panelOpacity);
+		if (_panelStyleBox == null)
+		{
+			return;
+		}
+
+		Color col = _panelStyleBox.BgColor;
+		_panelStyleBox.BgColor = new Color(col, _panelOpacity);
+	}
+
+	private void CachePanelStyleBox()
+	{
+		StyleBox source = ChatPanel.GetThemeStylebox("panel");
+		_panelStyleBox = source?.Duplicate() as StyleBoxFlat;
+		if (_panelStyleBox == null)
+		{
+			return;
+		}
+
+		ChatPanel.AddThemeStyleboxOverride("panel", _panelStyleBox);
 	}
 
 	/// <summary>
@@ -113,6 +175,8 @@ public partial class SessionChat : Control
 	private void _on_message_input_text_submitted(string newText)
 	{
 		MessageInput.Clear();
+		MessageInput.ReleaseFocus();
+		MessageInput.Editable = false;
 		// If not in a connection state, just add the message locally.
 		// Although, anyone calling this is just talking to themselves.
 		if (!NetworkManager.IsConnected() || NetworkManager.IsConnecting())
@@ -134,5 +198,24 @@ public partial class SessionChat : Control
 	private void _on_connected_to_server()
 	{
 		Clear();
+	}
+
+	private void _on_message_input_editing_toggled(bool toggledOn)
+	{
+		if (toggledOn)
+		{
+			DelayBeforeFadeoutTimer.Stop();
+			_fadingOut = false;
+			PanelOpacity = ActiveOpacity;
+		}
+		else
+		{
+			DelayBeforeFadeoutTimer.Start(DelayBeforeFadeoutBegin);
+		}
+	}
+
+	private void _on_delay_before_fadeout_timer_timeout()
+	{
+		_fadingOut = true;
 	}
 }

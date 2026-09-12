@@ -3,6 +3,7 @@
 [ext_resource type="Theme" uid="uid://ch3bwa6basydx" path="res://assets/themes/main_menu_theme.tres" id="1_hk22p"]
 [ext_resource type="Script" uid="uid://ckt2fb6dr2qrv" path="res://scripts/TrainwreckedMainMenu.cs" id="2_q71hi"]
 [ext_resource type="PackedScene" uid="uid://dmaiadlbfxajx" path="res://scenes/multiplayer_lobby_menu.tscn" id="3_7lsgn"]
+[ext_resource type="PackedScene" uid="uid://boi5es405i8mg" path="res://scenes/session_chat.tscn" id="4_ihut8"]
 
 [node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413]
 layout_mode = 3
@@ -85,6 +86,15 @@ text = "QUIT"
 [node name="MultiplayerLobbyMenu" parent="." unique_id=420463088 instance=ExtResource("3_7lsgn")]
 visible = false
 layout_mode = 1
+
+[node name="SessionChat" parent="." unique_id=292976534 instance=ExtResource("4_ihut8")]
+layout_mode = 1
+anchor_left = 0.696875
+anchor_top = 0.7462963
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
 
 [connection signal="pressed" from="ButtonsBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="ButtonsBoxContainer/MultiplayerButton" to="." method="_on_multiplayer_button_pressed"]

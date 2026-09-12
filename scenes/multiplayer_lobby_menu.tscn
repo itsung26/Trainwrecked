@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://cq0drgojv14n4" path="res://scripts/MultiplayerLobbyMenu.cs" id="1_2lyg7"]
 [ext_resource type="Theme" uid="uid://bavwoqyte2k7r" path="res://assets/themes/multiplayer_lobby_menu_theme.tres" id="1_h1w8e"]
 [ext_resource type="PackedScene" uid="uid://wbut4tbymo6t" path="res://scenes/session_button.tscn" id="1_p66dv"]
-[ext_resource type="PackedScene" uid="uid://boi5es405i8mg" path="res://scenes/session_chat.tscn" id="4_jjmda"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_h1w8e"]
 properties/0/path = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel1:text")
@@ -62,7 +61,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.59607846)
+color = Color(0, 0, 0, 0.7137255)
 
 [node name="BackButton" type="Button" parent="." unique_id=361378923]
 layout_mode = 1
@@ -203,10 +202,10 @@ text = "Join"
 [node name="JoinersPanel" type="PanelContainer" parent="DirectHostJoinMenu" unique_id=169706113]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.78489584
-anchor_top = 0.49074075
-anchor_right = 0.9635417
-anchor_bottom = 0.93425924
+anchor_left = 0.79583335
+anchor_top = 0.037037037
+anchor_right = 0.97447914
+anchor_bottom = 0.48055556
 grow_horizontal = 0
 grow_vertical = 2
 metadata/_edit_use_anchors_ = true
@@ -277,9 +276,6 @@ metadata/_edit_use_anchors_ = true
 
 [node name="ClientListSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1790075124]
 replication_config = SubResource("SceneReplicationConfig_h1w8e")
-
-[node name="SessionChat" parent="." unique_id=292976534 instance=ExtResource("4_jjmda")]
-layout_mode = 1
 
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="DirectHostJoinButton" to="." method="_on_direct_host_join_button_pressed"]
