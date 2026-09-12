@@ -11,8 +11,16 @@ public partial class ChatMessage : Label
 	public ChatMessage(string message, int sender, float chatBoxWidth)
 	{
 		Message = message;
-		Text = message;
+		Text = $"{sender}: {message}";
 		Sender = sender;
 		CustomMinimumSize = new Vector2(chatBoxWidth, CustomMaximumSize.X);
+		AutowrapMode = TextServer.AutowrapMode.WordSmart;
 	}
+
+    public override string ToString()
+    {
+		string generatedInstanceString = Debug.GenerateInstanceToString(this);
+        return $"{generatedInstanceString}|{Sender}: {Message}";
+    }
+
 }

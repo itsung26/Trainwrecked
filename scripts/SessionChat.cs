@@ -1,16 +1,60 @@
 using Godot;
 using System;
 
-// The chat panel. All messages entered are forwarded to
-// the host, who pushes the message to all other clients.
+/// <summary>
+/// Session chat panel. Messages are host-authoritative:
+/// clients submit text to the host, and the host broadcasts the final
+/// message to every peer (including itself via <c>CallLocal</c>).
+/// Offline / not-yet-connected input is appended locally only.
+/// </summary>
 public partial class SessionChat : Control
 {
-	[Export] VBoxContainer MessageList { get; set; }
-	[Export] LineEdit MessageInput { get; set; }
+	/// <summary>Container that owns chat message nodes.</summary>
+	[Export] public VBoxContainer MessageList { get; set; }
+	/// <summary>Line edit the player types into.</summary>
+	[Export] public LineEdit MessageInput { get; set; }
+	[Export] public PanelContainer ChatPanel { get; set; }
+	private float _panelOpacity = 1.0f;
+	[Export]
+	public float PanelOpacity
+	{
+		get
+		{
+			return _panelOpacity;
+		}
+		set
+		{
+			SetPanelOpacity(value);
+		}
+	}
 
-	// Call this as the primary way to send a chat message.
-	// Call as rpc. Never call directly.
-	// Clients are meant to call this method as rpc for the host to run.
+	public override void _Ready()
+	{
+		NetworkManager.Instance.ConnectedToServer += _on_connected_to_server;
+	}
+
+    public override void _Process(double delta)
+    {
+        // TODO: implement fadaway effect after a certain amount of time passes.
+    }
+
+	public void SetPanelOpacity(float opacity)
+	{
+		_panelOpacity = Mathf.Clamp(opacity, 0.0f, 1.0f);
+		StyleBoxFlat styleBox = ChatPanel.GetThemeStylebox("panel") as StyleBoxFlat;
+		Color col = styleBox.BgColor;
+		styleBox.BgColor = new Color(col, _panelOpacity);
+	}
+
+	/// <summary>
+	/// Client → host submit path. Invoke only via
+	/// <c>RpcId(1, MethodName.SubmitChatMessage, text, senderPeerId)</c>.
+	/// Do not call directly. <see cref="MultiplayerApi.RpcMode.AnyPeer"/> allows
+	/// any peer to send; <c>CallLocal = false</c> so the caller does not run this
+	/// body. The host validates and fans out with <see cref="RecieveChatMessage"/>.
+	/// </summary>
+	/// <param name="text">Message body (RPC-serializable; not a node).</param>
+	/// <param name="senderPeerId">Multiplayer peer id of the author.</param>
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false)]
 	private void SubmitChatMessage(string text, int senderPeerId)
 	{
@@ -22,7 +66,13 @@ public partial class SessionChat : Control
 		Rpc(MethodName.RecieveChatMessage, text, senderPeerId);
 	}
 
-	// When called via rpc, this method will be called on all peers and add a chat message.
+	/// <summary>
+	/// Host → all peers display path. Invoke only via <c>Rpc</c> from the host
+	/// (authority). <c>CallLocal = true</c> so the host also adds the message.
+	/// Builds a <see cref="ChatMessage"/> and passes it to <see cref="AddChatMessage"/>.
+	/// </summary>
+	/// <param name="text">Message body.</param>
+	/// <param name="senderPeerId">Multiplayer peer id of the author.</param>
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
 	private void RecieveChatMessage(string text, int senderPeerId)
 	{
@@ -30,7 +80,10 @@ public partial class SessionChat : Control
 		AddChatMessage(newChat);
 	}
 
-	// Locally adds a chat message to the list.
+	/// <summary>
+	/// Adds a message node to <see cref="MessageList"/> with no networking.
+	/// Refuses nodes that are already in the scene tree.
+	/// </summary>
 	public void AddChatMessage(ChatMessage whichMessage)
 	{
 		if (whichMessage.IsInsideTree())
@@ -41,6 +94,22 @@ public partial class SessionChat : Control
 		MessageList.AddChild(whichMessage);
 	}
 
+	/// <summary>
+	/// Queues all chat messages for deletion from memory.
+	/// Runs locally. Not an rpc.
+	/// </summary>
+	public void Clear()
+	{
+		foreach (ChatMessage chatToDelete in MessageList.GetChildren())
+		{
+			chatToDelete.QueueFree();
+		}
+	}
+
+	/// <summary>
+	/// Clears the input, then either appends locally (disconnected / connecting),
+	/// broadcasts as host, or RPCs <see cref="SubmitChatMessage"/> to peer 1 as client.
+	/// </summary>
 	private void _on_message_input_text_submitted(string newText)
 	{
 		MessageInput.Clear();
@@ -49,6 +118,7 @@ public partial class SessionChat : Control
 		if (!NetworkManager.IsConnected() || NetworkManager.IsConnecting())
 		{
 			AddChatMessage(new ChatMessage(newText, NetworkManager.GetUniqueId(), MessageList.Size.X));
+			return;
 		}
 
 		if (NetworkManager.IsServer())
@@ -59,5 +129,10 @@ public partial class SessionChat : Control
 		{
 			RpcId(1, MethodName.SubmitChatMessage, newText, NetworkManager.GetUniqueId());
 		}
+	}
+
+	private void _on_connected_to_server()
+	{
+		Clear();
 	}
 }

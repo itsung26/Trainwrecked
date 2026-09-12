@@ -2,7 +2,19 @@
 
 [ext_resource type="Script" uid="uid://daqwkjjf2cumh" path="res://scripts/SessionChat.cs" id="1_ai772"]
 
-[node name="SessionChat" type="Control" unique_id=292976534 node_paths=PackedStringArray("MessageList", "MessageInput")]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ai772"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="SessionChat" type="Control" unique_id=292976534 node_paths=PackedStringArray("MessageList", "MessageInput", "ChatPanel")]
 layout_mode = 3
 anchor_right = 0.34010416
 anchor_bottom = 0.27407408
@@ -11,6 +23,8 @@ grow_vertical = 2
 script = ExtResource("1_ai772")
 MessageList = NodePath("ChatPanel/ChatLayout/MessageScroll/MessageList")
 MessageInput = NodePath("ChatPanel/ChatLayout/InputRow/MessageInput")
+ChatPanel = NodePath("ChatPanel")
+PanelOpacity = 0.615
 metadata/_edit_use_anchors_ = true
 
 [node name="ChatPanel" type="PanelContainer" parent="." unique_id=1741038003]
@@ -20,6 +34,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ai772")
 
 [node name="ChatLayout" type="VBoxContainer" parent="ChatPanel" unique_id=1959919754]
 layout_mode = 2
