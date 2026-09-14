@@ -89,6 +89,8 @@ public partial class NetworkManager : Node
 		}
 	}
 
+	// All methods here are event handlers that do nothing but
+	// emit their wrapper signals.
 	#region wrapper signal emitters
 	private void OnMultiplayerPeerConnected(long id)
 	{
@@ -447,6 +449,19 @@ public partial class NetworkManager : Node
 		{
 			GetCurrentPeer().DisconnectPeer(somePeer);
 		}
+	}
+
+	// Returns the amount of players (including the host and self) currently connected.
+	// Does not include players that are currently still connecting.
+	public static int GetPlayerCount()
+	{
+		if (!IsConnected())
+		{
+			return 0;
+		}
+
+		// GetPeers() / GetPeerIds() omit this peer.
+		return GetPeerIds().Count + 1;
 	}
 
 }

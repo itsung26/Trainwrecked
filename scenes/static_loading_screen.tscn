@@ -1,15 +1,8 @@
 [gd_scene format=3 uid="uid://bujo46m28bxu"]
 
-[node name="StaticLoadingScreen" type="Control" unique_id=315603723]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="StaticLoadingScreen" type="CanvasLayer" unique_id=1463857134]
 
 [node name="BlackoutRect" type="ColorRect" parent="." unique_id=421597211]
-layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -18,7 +11,6 @@ grow_vertical = 2
 color = Color(0, 0, 0, 1)
 
 [node name="Label" type="Label" parent="." unique_id=172907482]
-layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.3046875
 anchor_top = 0.41111112

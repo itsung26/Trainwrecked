@@ -39,6 +39,7 @@ public partial class TrainwreckedMainMenu : Control
 
 	private void _on_new_game_button_pressed()
 	{
+		LevelLoader.LoadMainLevel();
 	}
 
 	private void _on_load_button_pressed()

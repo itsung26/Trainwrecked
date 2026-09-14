@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c58gckeg4226m"]
 
-[ext_resource type="PackedScene" uid="uid://bnhq8tk5or7vo" path="res://scenes/player.tscn" id="1_ifns1"]
+[ext_resource type="Script" uid="uid://4x8elhhftwqh" path="res://scripts/TrainwreckedLevel.cs" id="1_ltgxd"]
 [ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="1_srtiu"]
 [ext_resource type="Texture2D" uid="uid://vpwu4vq6nyke" path="res://assets/2d assets/textures/prototype textures/Light/texture_07.png" id="2_2j2p2"]
 [ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="3_dh6dg"]
@@ -69,7 +69,9 @@ _data = {
 }
 point_count = 4
 
-[node name="TestingScene" type="Node3D" unique_id=1860517348]
+[node name="TestingScene" type="Node3D" unique_id=1386985927]
+script = ExtResource("1_ltgxd")
+metadata/_custom_type_script = "uid://4x8elhhftwqh"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1818100782]
 environment = SubResource("Environment_v6rby")
@@ -77,9 +79,6 @@ environment = SubResource("Environment_v6rby")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=555761083]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
 shadow_enabled = true
-
-[node name="Player" parent="." unique_id=320653181 instance=ExtResource("1_ifns1")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 4.5975895, 4.7683716e-07, 2.4189339)
 
 [node name="OneChunk" type="CSGBox3D" parent="." unique_id=878317186]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -12.5, 0)
@@ -144,3 +143,7 @@ offset_right = 40.0
 offset_bottom = 23.0
 theme_override_font_sizes/font_size = 121
 text = "I am a test hud anchor"
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1175847090]
+_spawnable_scenes = PackedStringArray("uid://bnhq8tk5or7vo")
+spawn_path = NodePath("..")

@@ -23,6 +23,7 @@ RunArguments="*uid://dogkk7idqxtvq"
 NetworkManager="*uid://b82sn2fpkr8h2"
 SaveParser="*uid://dj3p41uh4euil"
 ConfigParser="*uid://suvuwhce2x8q"
+LevelLoader="*uid://b6jghqwi5kwmd"
 
 [display]
 
