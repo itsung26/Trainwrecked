@@ -6,7 +6,6 @@ public partial class Debug : Node
 {
 	public bool NetworkDebugWindowNamesEnabled { get; set; } = true;
 
-	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		if (NetworkDebugWindowNamesEnabled)
@@ -22,7 +21,6 @@ public partial class Debug : Node
 		}
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
 		if (Input.IsActionJustPressed("Debug Quit"))
