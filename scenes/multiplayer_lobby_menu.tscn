@@ -21,7 +21,7 @@ properties/4/path = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/J
 properties/4/spawn = true
 properties/4/replication_mode = 1
 
-[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinMenu", "DirectHostJoinButton", "LanSessionsButton", "HostButton", "JoinButton", "InvalidIpAddressLabel", "BlankLabel", "LanSessionsMenu", "HostingStatusLabel", "IpInput", "NameInput", "DisconnectButton", "PublicIpLabel", "JoinersPanel", "ClientLabel1", "ClientLabel2", "ClientLabel3", "ClientLabel4", "UniqueIdLabel")]
+[node name="MultiplayerLobbyMenu" type="Control" unique_id=420463088 node_paths=PackedStringArray("NodeToAddChildrenOf", "SessionListenerTimer", "SessionsScrollContainer", "DirectHostJoinMenu", "DirectHostJoinButton", "LanSessionsButton", "HostButton", "JoinButton", "InvalidIpAddressLabel", "BlankLabel", "LanSessionsMenu", "HostingStatusLabel", "IpInput", "NameInput", "DisconnectButton", "PublicIpLabel", "JoinersPanel", "ClientLabel1", "ClientLabel2", "ClientLabel3", "ClientLabel4", "UniqueIdLabel", "BackButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -53,6 +53,7 @@ ClientLabel2 = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/Client
 ClientLabel3 = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel3")
 ClientLabel4 = NodePath("DirectHostJoinMenu/JoinersPanel/JoinersPanelVbox/ClientLabel4")
 UniqueIdLabel = NodePath("DirectHostJoinMenu/UniqueIdLabel")
+BackButton = NodePath("BackButton")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=237297881]
 layout_mode = 1

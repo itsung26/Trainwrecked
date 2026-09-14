@@ -1,18 +1,31 @@
 using Godot;
 using System;
+using System.ComponentModel;
 
 public partial class TrainwreckedMainMenu : Control
 {
-	private MultiplayerLobbyMenu MultiplayerLobbyMenu;
+	[Export] public MultiplayerLobbyMenu MultiplayerLobbyMenu { get; set; }
+	[Export] public Button ContinueButton { get; set; }
+	[Export] public Button MultiplayerButton { get; set; }
+	[Export] public Button NewGameButton { get; set; }
+	[Export] public Button LoadButton { get; set; }
+	[Export] public Button OptionsButton { get; set; }
+	[Export] public Button QuitButton { get; set; }
 
 	public override void _Ready()
 	{
-		InitRefs();
+		NetworkManager.Instance.ConnectedToServer += _on_connected_to_server;
+		NetworkManager.Instance.ConnectionFailed += _on_connection_failed;
+		NetworkManager.Instance.ServerDisconnected += _on_server_disconnected;
+		UpdateButtonRestrictions();
 	}
 
-	private void InitRefs()
+	public void UpdateButtonRestrictions()
 	{
-		MultiplayerLobbyMenu = GetNode<MultiplayerLobbyMenu>("MultiplayerLobbyMenu");
+		bool isClient = NetworkManager.IsClient();
+
+		NewGameButton.Disabled = isClient;
+		LoadButton.Disabled = isClient;
 	}
 
 	private void _on_continue_button_pressed()
@@ -40,6 +53,26 @@ public partial class TrainwreckedMainMenu : Control
 	private void _on_quit_button_pressed()
 	{
 		GetTree().Quit(); // placeholder
+	}
+
+	private void _on_multiplayer_lobby_menu_exited_menu()
+	{
+		UpdateButtonRestrictions();
+	}
+
+	private void _on_connected_to_server()
+	{
+		UpdateButtonRestrictions();
+	}
+
+	private void _on_connection_failed()
+	{
+		UpdateButtonRestrictions();
+	}
+
+	private void _on_server_disconnected()
+	{
+		UpdateButtonRestrictions();
 	}
 
 }

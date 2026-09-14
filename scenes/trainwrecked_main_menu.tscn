@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://dmaiadlbfxajx" path="res://scenes/multiplayer_lobby_menu.tscn" id="3_7lsgn"]
 [ext_resource type="PackedScene" uid="uid://boi5es405i8mg" path="res://scenes/session_chat.tscn" id="4_ihut8"]
 
-[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413]
+[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,6 +14,13 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_hk22p")
 script = ExtResource("2_q71hi")
+MultiplayerLobbyMenu = NodePath("MultiplayerLobbyMenu")
+ContinueButton = NodePath("ButtonsBoxContainer/ContinueButton")
+MultiplayerButton = NodePath("ButtonsBoxContainer/MultiplayerButton")
+NewGameButton = NodePath("ButtonsBoxContainer/NewGameButton")
+LoadButton = NodePath("ButtonsBoxContainer/LoadButton")
+OptionsButton = NodePath("ButtonsBoxContainer/OptionsButton")
+QuitButton = NodePath("ButtonsBoxContainer/QuitButton")
 
 [node name="TitleStuff" type="Control" parent="." unique_id=2123797755]
 layout_mode = 1
@@ -102,3 +109,4 @@ grow_vertical = 0
 [connection signal="pressed" from="ButtonsBoxContainer/LoadButton" to="." method="_on_load_button_pressed"]
 [connection signal="pressed" from="ButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="ButtonsBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="ExitedMenu" from="MultiplayerLobbyMenu" to="." method="_on_multiplayer_lobby_menu_exited_menu"]

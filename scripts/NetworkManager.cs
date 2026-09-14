@@ -78,6 +78,7 @@ public partial class NetworkManager : Node
 		Multiplayer.ConnectionFailed += OnMultiplayerConnectionFailed;
 		Multiplayer.ServerDisconnected += OnMultiplayerServerDisconnected;
 
+		// Check for executable arguments: open a session if found.
 		if (RunArguments.HasHostFlag)
 		{
 			StartServer();

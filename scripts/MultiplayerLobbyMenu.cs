@@ -28,8 +28,11 @@ public partial class MultiplayerLobbyMenu : Control
 	[Export] public Label ClientLabel3 { get; set; }
 	[Export] public Label ClientLabel4 { get; set; }
 	[Export] public Label UniqueIdLabel { get; set; }
+	[Export] public Button BackButton { get; set; }
 	public bool CheckingForNewSessions { get; set; } = false;
 	private Array<LanDiscoverySession> _lastFrameKnownSessions = new Array<LanDiscoverySession>();
+
+	[Signal] public delegate void ExitedMenuEventHandler();
 
 	public override void _Ready()
 	{
@@ -243,6 +246,7 @@ public partial class MultiplayerLobbyMenu : Control
 	private void _on_back_button_pressed()
 	{
 		Visible = false;
+		EmitSignal(SignalName.ExitedMenu);
 	}
 
 	// Makes a LAN discovery broadcast. This clears the list of known sessions as well.
@@ -316,6 +320,7 @@ public partial class MultiplayerLobbyMenu : Control
 		HostButton.Disabled = true;
 		IpInput.Editable = false;
 		JoinButton.Text = "Joining...";
+		BackButton.Disabled = true;
 		Error returnedError = NetworkManager.StartClient(IpInput.Text);
 		if (returnedError != Error.Ok)
 		{
@@ -360,6 +365,7 @@ public partial class MultiplayerLobbyMenu : Control
 
 	private void _on_connected_to_server()
 	{
+		BackButton.Disabled = false;
 		HostingStatusLabel.Text = "Successfully connected to session.";
 		JoinButton.Text = "Join";
 		JoinButton.Disabled = true;
@@ -376,6 +382,7 @@ public partial class MultiplayerLobbyMenu : Control
 		HostButton.Disabled = false;
 		IpInput.Clear();
 		IpInput.Editable = true;
+		BackButton.Disabled = false;
 		// Wipe away the dead EnetMultiplayerPeer from the failed connection attempt.
 		NetworkManager.GetCurrentPeer().Close();
 		NetworkManager.SetCurrentPeer(new OfflineMultiplayerPeer());
