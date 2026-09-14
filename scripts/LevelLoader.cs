@@ -47,9 +47,9 @@ public partial class LevelLoader : Node
     }
 
     [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
-    private void ChangeSceneToPackedTargetLevel()
+    private Error ChangeSceneToPackedTargetLevel()
     {
-        GetTree().ChangeSceneToPacked(TargetLevel);
+        return GetTree().ChangeSceneToPacked(TargetLevel);
     }
 
 }

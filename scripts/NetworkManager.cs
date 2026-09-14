@@ -453,7 +453,7 @@ public partial class NetworkManager : Node
 
 	// Returns the amount of players (including the host and self) currently connected.
 	// Does not include players that are currently still connecting.
-	public static int GetPlayerCount()
+	public static int GetTotalConnectedPeerCount()
 	{
 		if (!IsConnected())
 		{
