@@ -14,5 +14,5 @@
 - Violation of the conservation of energy on electric trains (windmill problem)
 - Multiplayer save state synchronization
     - should player save be independent from world save?
-    - would simplify loading saves and greatly trim save file size
-    - would allow players to go into one world and get resources and then keep them in another world, breaking balancing
+        - would simplify loading saves and greatly trim save file size
+        - would allow players to go into one world and get resources and then keep them in another world, breaking balancing
