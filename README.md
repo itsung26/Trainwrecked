@@ -1,3 +1,4 @@
+[![State-of-the-art Shitcode](https://img.shields.io/static/v1?label=State-of-the-art&message=Shitcode&color=7B5804)](https://github.com/trekhleb/state-of-the-art-shitcode)
 # Trainwrecked is a 1-4 player cooperative game about operating a train as it travels along an endless stretch of rail procedurally-generated world. Maintain, refuel, and even construct new parts of the train to keep it running throughout the world.
 
 ## Some planned features:
