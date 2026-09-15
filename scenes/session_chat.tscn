@@ -59,9 +59,7 @@ size_flags_horizontal = 3
 placeholder_text = "Type a message..."
 editable = false
 context_menu_enabled = false
-shortcut_keys_enabled = false
 middle_mouse_paste_enabled = false
-selecting_enabled = false
 drag_and_drop_selection_enabled = false
 
 [node name="DelayBeforeFadeoutTimer" type="Timer" parent="." unique_id=632365567]
