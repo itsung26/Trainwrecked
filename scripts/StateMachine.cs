@@ -7,24 +7,29 @@ using Godot.Collections;
 /// </summary>
 /// <remarks>
 /// Do not add or remove state children at runtime. States are collected once in
-/// <see cref="_Ready"/> via <see cref="InitializeStates"/>.
+/// <see cref="_Ready"/> via <see cref="InitializeStates"/>. If <see cref="InitialState"/>
+/// is assigned, it is entered automatically after that collection.
 /// </remarks>
 [GlobalClass]
 public partial class StateMachine : Node
 {
 	/// <summary>When <see langword="true"/>, logs state initialization and transitions.</summary>
-	[Export] public bool LoggingDebug = false;
-	// Determines the first state entered. If null, initial state is intended to be entered manually.
+	[Export] public bool LoggingDebug { get; set; } = false;
+
+	/// <summary>
+	/// The state to enter first after initialization.
+	/// When <see langword="null"/>, the initial state must be entered manually.
+	/// </summary>
 	[Export] public State InitialState { get; set; }
 
 	/// <summary>Child <see cref="State"/> nodes discovered at initialization.</summary>
-	public Array<State> States = new Array<State>();
+	public Array<State> States { get; } = new Array<State>();
 
 	/// <summary>The state currently entered, or <see langword="null"/> if none.</summary>
-	public State CurrentState = null;
+	public State CurrentState { get; private set; }
 
 	/// <summary>The state exited by the most recent transition, or <see langword="null"/>.</summary>
-	public State PreviousState = null;
+	public State PreviousState { get; private set; }
 
 	/// <summary>
 	/// Emitted after a successful transition.
@@ -33,10 +38,16 @@ public partial class StateMachine : Node
 	/// </summary>
 	[Signal] public delegate void StateChangedEventHandler(State NewState, State OldState);
 
-	/// <summary>Collects child states when the node enters the scene tree.</summary>
+	/// <summary>
+	/// Collects child states, then enters <see cref="InitialState"/> when it is set.
+	/// </summary>
 	public override void _Ready()
 	{
 		InitializeStates();
+		if (InitialState is not null)
+		{
+			EnterState(InitialState);
+		}
 	}
 
 	/// <summary>

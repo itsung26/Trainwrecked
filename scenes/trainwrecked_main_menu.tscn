@@ -237,8 +237,9 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 0
 
-[node name="MainMenuStateMachine" type="Node" parent="." unique_id=1756330227]
+[node name="MainMenuStateMachine" type="Node" parent="." unique_id=1756330227 node_paths=PackedStringArray("InitialState")]
 script = ExtResource("11_xkjpu")
+InitialState = NodePath("TitleScreenState")
 metadata/_custom_type_script = "uid://bhsg271e1lvlh"
 
 [node name="TitleScreenState" type="Node" parent="MainMenuStateMachine" unique_id=1919216800]
