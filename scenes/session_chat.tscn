@@ -65,6 +65,7 @@ drag_and_drop_selection_enabled = false
 [node name="DelayBeforeFadeoutTimer" type="Timer" parent="." unique_id=632365567]
 one_shot = true
 
+[connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="editing_toggled" from="ChatPanel/ChatLayout/InputRow/MessageInput" to="." method="_on_message_input_editing_toggled"]
 [connection signal="text_submitted" from="ChatPanel/ChatLayout/InputRow/MessageInput" to="." method="_on_message_input_text_submitted"]
 [connection signal="timeout" from="DelayBeforeFadeoutTimer" to="." method="_on_delay_before_fadeout_timer_timeout"]

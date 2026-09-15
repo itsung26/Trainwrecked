@@ -10,6 +10,7 @@ using System.Diagnostics;
 /// </summary>
 public partial class SessionChat : Control
 {
+	[Export] public bool CanEnterChat { get; set; } = true;
 	/// <summary>Container that owns chat message nodes.</summary>
 	[Export] public VBoxContainer MessageList { get; set; }
 	/// <summary>Line edit the player types into.</summary>
@@ -52,7 +53,7 @@ public partial class SessionChat : Control
 
 	public override void _Input(InputEvent @event)
 	{
-		if (Input.IsActionJustPressed("Chat Toggle") && !IsTyping)
+		if (Input.IsActionJustPressed("Chat Toggle") && !IsTyping && CanEnterChat)
 		{
 			MessageInput.Editable = true;
 			MessageInput.Edit();
@@ -217,5 +218,10 @@ public partial class SessionChat : Control
 	private void _on_delay_before_fadeout_timer_timeout()
 	{
 		_fadingOut = true;
+	}
+
+	private void _on_visibility_changed()
+	{
+		CanEnterChat = Visible;
 	}
 }

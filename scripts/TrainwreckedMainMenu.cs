@@ -11,9 +11,15 @@ public partial class TrainwreckedMainMenu : Control
 	[Export] public Button LoadButton { get; set; }
 	[Export] public Button OptionsButton { get; set; }
 	[Export] public Button QuitButton { get; set; }
+	[Export] public Vector3 CameraInitialPosition { get; set; }
+	[Export] public Vector3 CameraInitialRotation { get; set; }
+	[Export] public StateMachine MainMenuStateMachine { get; set; }
+	[Export] public Control MainMenuScreenAssembly { get; set; }
+
 
 	public override void _Ready()
 	{
+		MainMenuStateMachine.EnterState("TitleScreenState");
 		NetworkManager.Instance.ConnectedToServer += _on_connected_to_server;
 		NetworkManager.Instance.ConnectionFailed += _on_connection_failed;
 		NetworkManager.Instance.ServerDisconnected += _on_server_disconnected;
@@ -30,6 +36,7 @@ public partial class TrainwreckedMainMenu : Control
 
 	private void _on_continue_button_pressed()
 	{
+		
 	}
 
 	private void _on_multiplayer_button_pressed()

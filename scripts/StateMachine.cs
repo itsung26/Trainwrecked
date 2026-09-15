@@ -2,37 +2,54 @@ using Godot;
 using System;
 using Godot.Collections;
 
-// Do not add or remove states at runtime. States are initialized as children.
+/// <summary>
+/// Owns child <see cref="State"/> nodes and switches among them.
+/// </summary>
+/// <remarks>
+/// Do not add or remove state children at runtime. States are collected once in
+/// <see cref="_Ready"/> via <see cref="InitializeStates"/>.
+/// </remarks>
 [GlobalClass]
 public partial class StateMachine : Node
 {
+	/// <summary>When <see langword="true"/>, logs state initialization and transitions.</summary>
 	[Export] public bool LoggingDebug = false;
+	// Determines the first state entered. If null, initial state is intended to be entered manually.
+	[Export] public State InitialState { get; set; }
 
+	/// <summary>Child <see cref="State"/> nodes discovered at initialization.</summary>
 	public Array<State> States = new Array<State>();
+
+	/// <summary>The state currently entered, or <see langword="null"/> if none.</summary>
 	public State CurrentState = null;
+
+	/// <summary>The state exited by the most recent transition, or <see langword="null"/>.</summary>
 	public State PreviousState = null;
 
-	// Emitted when the state changes.
+	/// <summary>
+	/// Emitted after a successful transition.
+	/// <paramref name="NewState"/> is the state just entered;
+	/// <paramref name="OldState"/> is the previous state (may be <see langword="null"/>).
+	/// </summary>
 	[Signal] public delegate void StateChangedEventHandler(State NewState, State OldState);
 
-	// Called when the node enters the scene tree for the first time.
+	/// <summary>Collects child states when the node enters the scene tree.</summary>
 	public override void _Ready()
 	{
 		InitializeStates();
 	}
 
-	public override void _Process(double delta)
-	{
-		// Debug.Log(States);
-	}
-
+	/// <summary>
+	/// Populates <see cref="States"/> from direct children that are <see cref="State"/> nodes.
+	/// </summary>
 	private void InitializeStates()
 	{
 		Array<Node> Children = GetChildren();
 		for (int i = 0; i < Children.Count; i++)
 		{
 			Node Child = Children[i];
-			if (Child is State) {
+			if (Child is State)
+			{
 				States.Add(Child as State);
 			}
 		}
@@ -47,11 +64,19 @@ public partial class StateMachine : Node
 		}
 	}
 
-	// Enters the given state by reference.
-	// If it is already current and canBeReentered is false, this is a no-op.
+	/// <summary>
+	/// Exits <see cref="CurrentState"/> (if any), enters <paramref name="StateToEnter"/>,
+	/// then emits <see cref="SignalName.StateChanged"/>.
+	/// </summary>
+	/// <param name="StateToEnter">State to enter. Ignored when <see langword="null"/>.</param>
+	/// <remarks>
+	/// If <paramref name="StateToEnter"/> is already current and
+	/// <see cref="State.CanBeReentered"/> is <see langword="false"/>, this is a no-op.
+	/// </remarks>
 	public void EnterState(State StateToEnter)
 	{
-		if (StateToEnter == null) {
+		if (StateToEnter == null)
+		{
 			return;
 		}
 
@@ -64,7 +89,8 @@ public partial class StateMachine : Node
 		}
 
 		// exit the previous state, if it is not null
-		if (CurrentState != null) {
+		if (CurrentState != null)
+		{
 			CurrentState.OnExit();
 		}
 
@@ -76,13 +102,22 @@ public partial class StateMachine : Node
 		StateToEnter.OnEnter();
 
 		String PreviousName = PreviousState != null ? PreviousState.Name : "None";
-		if (LoggingDebug) {
+		if (LoggingDebug)
+		{
 			Debug.Log("Entered state: " + StateToEnter.Name + " from previous state: " + PreviousName);
 		}
 		EmitSignal(SignalName.StateChanged, StateToEnter, PreviousState);
 	}
 
-	// Enters the state with the given name.
+	/// <summary>
+	/// Enters the child state whose <see cref="Node.Name"/> equals <paramref name="StateName"/>
+	/// (case-insensitive).
+	/// </summary>
+	/// <param name="StateName">Name of the state to enter. Ignored when <see langword="null"/>.</param>
+	/// <remarks>
+	/// Resolves the state with <see cref="GetStateByName"/>, then calls
+	/// <see cref="EnterState(State)"/>. Missing names result in a no-op.
+	/// </remarks>
 	public void EnterState(String StateName)
 	{
 		if (StateName == null) return;
@@ -90,17 +125,50 @@ public partial class StateMachine : Node
 		EnterState(StateToEnter);
 	}
 
-	// Returns the child state with the given name.
-	// Returns null if no state with the given name is found.
-	public State GetStateByName(String StateName){
+	/// <summary>
+	/// Enters the initialized child state at <paramref name="stateIndex"/>.
+	/// </summary>
+	/// <param name="stateIndex">Index into <see cref="States"/>.</param>
+	/// <remarks>
+	/// Resolves the state with <see cref="GetStateByIndex"/>, then calls
+	/// <see cref="EnterState(State)"/>. Out-of-range indices result in a no-op.
+	/// </remarks>
+	public void EnterState(int stateIndex)
+	{
+		State stateToEnter = GetStateByIndex(stateIndex);
+		EnterState(stateToEnter);
+	}
+
+	/// <summary>
+	/// Returns the initialized child state whose <see cref="Node.Name"/> equals
+	/// <paramref name="StateName"/> (case-insensitive).
+	/// </summary>
+	/// <param name="StateName">Name to match against <see cref="States"/>.</param>
+	/// <returns>The matching <see cref="State"/>, or <see langword="null"/> if none is found.</returns>
+	public State GetStateByName(String StateName)
+	{
 		for (int i = 0; i < States.Count; i++)
 		{
 			State State = States[i];
-			if (State.Name == StateName)
+			if (string.Equals(State.Name, StateName, StringComparison.OrdinalIgnoreCase))
 			{
 				return State;
 			}
 		}
 		return null;
+	}
+
+	/// <summary>
+	/// Returns the initialized child state at <paramref name="index"/>.
+	/// </summary>
+	/// <param name="index">Index into <see cref="States"/>.</param>
+	/// <returns>The matching <see cref="State"/>, or <see langword="null"/> if the index is out of range.</returns>
+	public State GetStateByIndex(int index)
+	{
+		if (index < 0 || index >= States.Count)
+		{
+			return null;
+		}
+		return States[index];
 	}
 }

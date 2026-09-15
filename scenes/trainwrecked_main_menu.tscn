@@ -3,9 +3,80 @@
 [ext_resource type="Theme" uid="uid://ch3bwa6basydx" path="res://assets/themes/main_menu_theme.tres" id="1_hk22p"]
 [ext_resource type="Script" uid="uid://ckt2fb6dr2qrv" path="res://scripts/TrainwreckedMainMenu.cs" id="2_q71hi"]
 [ext_resource type="PackedScene" uid="uid://dmaiadlbfxajx" path="res://scenes/multiplayer_lobby_menu.tscn" id="3_7lsgn"]
+[ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="3_ljjiq"]
 [ext_resource type="PackedScene" uid="uid://boi5es405i8mg" path="res://scenes/session_chat.tscn" id="4_ihut8"]
+[ext_resource type="PackedScene" uid="uid://cwoeroni2y0ee" path="res://assets/3d assets/playermodel_assets/male_base_mesh/male_base.blend" id="4_j45et"]
+[ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="5_r60r8"]
+[ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="6_fk41g"]
+[ext_resource type="Shader" uid="uid://wq7oa27iovho" path="res://assets/shaders/heat_haze.gdshader" id="7_fk41g"]
+[ext_resource type="PackedScene" uid="uid://wc37b7h2vw56" path="res://assets/particles/circling_vultures.tscn" id="10_j53pp"]
+[ext_resource type="Script" uid="uid://bhsg271e1lvlh" path="res://scripts/StateMachine.cs" id="11_xkjpu"]
+[ext_resource type="Script" uid="uid://d13b5kdgkflx4" path="res://scripts/State.cs" id="12_27gen"]
 
-[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton")]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_j45et"]
+shader = ExtResource("3_ljjiq")
+shader_parameter/day_top_color = Color(0.54447806, 0.4582054, 0.32065102, 1)
+shader_parameter/day_bottom_color = Color(0.52278095, 0.30031046, 0.17298615, 1)
+shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
+shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
+shader_parameter/night_bottom_color = Color(0.1, 0, 0.2, 1)
+shader_parameter/horizon_color = Color(0, 0.7, 0.8, 1)
+shader_parameter/horizon_blur = 0.05
+shader_parameter/sun_color = Color(10, 8, 1, 1)
+shader_parameter/sun_sunset_color = Color(10, 0, 0, 1)
+shader_parameter/sun_size = 0.39900001825398
+shader_parameter/sun_blur = 6.44900030562898
+shader_parameter/moon_color = Color(1, 0.95, 0.7, 1)
+shader_parameter/moon_size = 0.06
+shader_parameter/moon_blur = 0.1
+shader_parameter/clouds_edge_color = Color(0.9577505, 0.77992535, 0.6423334, 1)
+shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
+shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
+shader_parameter/clouds_speed = 2.0
+shader_parameter/clouds_direction = 0.2
+shader_parameter/clouds_scale = 1.0
+shader_parameter/clouds_cutoff = 0.43999999016512
+shader_parameter/clouds_fuzziness = 1.06999997608336
+shader_parameter/clouds_weight = 0.0
+shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_speed = 1.0
+shader_parameter/overwritten_time = 0.0
+
+[sub_resource type="Sky" id="Sky_2j2p2"]
+sky_material = SubResource("ShaderMaterial_j45et")
+
+[sub_resource type="Environment" id="Environment_fx8ei"]
+background_mode = 2
+sky = SubResource("Sky_2j2p2")
+glow_enabled = true
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_dehhp"]
+size = Vector2(500, 500)
+
+[sub_resource type="Curve3D" id="Curve3D_j53pp"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 59.74458, 0.060000002, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_4u45r"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_j53pp"]
+width = 2048
+height = 2048
+noise = SubResource("FastNoiseLite_4u45r")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dehhp"]
+shader = ExtResource("7_fk41g")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_j53pp")
+shader_parameter/strength = 0.0030000001425
+shader_parameter/speed = Vector2(0.1, 0.05)
+
+[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton", "MainMenuStateMachine", "MainMenuScreenAssembly")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,15 +85,62 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_hk22p")
 script = ExtResource("2_q71hi")
-MultiplayerLobbyMenu = NodePath("MultiplayerLobbyMenu")
-ContinueButton = NodePath("ButtonsBoxContainer/ContinueButton")
-MultiplayerButton = NodePath("ButtonsBoxContainer/MultiplayerButton")
-NewGameButton = NodePath("ButtonsBoxContainer/NewGameButton")
-LoadButton = NodePath("ButtonsBoxContainer/LoadButton")
-OptionsButton = NodePath("ButtonsBoxContainer/OptionsButton")
-QuitButton = NodePath("ButtonsBoxContainer/QuitButton")
+MultiplayerLobbyMenu = NodePath("MainMenuScreenAssembly/MultiplayerLobbyMenu")
+ContinueButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/ContinueButton")
+MultiplayerButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/MultiplayerButton")
+NewGameButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/NewGameButton")
+LoadButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/LoadButton")
+OptionsButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/OptionsButton")
+QuitButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton")
+CameraInitialPosition = Vector3(-0.23645872, 4.5841656, -0.60454434)
+CameraInitialRotation = Vector3(1.1003536, 0.62831813, 0)
+MainMenuStateMachine = NodePath("MainMenuStateMachine")
+MainMenuScreenAssembly = NodePath("MainMenuScreenAssembly")
 
-[node name="TitleStuff" type="Control" parent="." unique_id=2123797755]
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=537319183]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+light_color = Color(0.8468644, 0.69709957, 0.2643382, 1)
+shadow_enabled = true
+
+[node name="Moon" type="DirectionalLight3D" parent="." unique_id=1115412414]
+transform = Transform3D(-0.693952, -0.69179803, -0.19961433, 0.36652312, -0.57803243, 0.7290672, -0.61975086, 0.4327746, 0.65468675, 0, 0, 0)
+visible = false
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1412573935]
+environment = SubResource("Environment_fx8ei")
+
+[node name="MainMenuCamera" type="Camera3D" parent="." unique_id=1014290871]
+transform = Transform3D(0.80901724, 0.5239325, 0.26643172, 0, 0.45328096, -0.8913677, -0.58778495, 0.7211318, 0.3667121, -0.23645872, 4.5841656, -0.60454434)
+
+[node name="CirclingVultures" parent="." unique_id=952487390 instance=ExtResource("10_j53pp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.57464814, 6.975, -1.9296322)
+
+[node name="male_base2" parent="." unique_id=1729264275 instance=ExtResource("4_j45et")]
+transform = Transform3D(0.9854464, 0, -0.16998652, 0, 1, 0, 0.16998652, 0, 0.9854464, 1.5249853, -1.4389176, -2.086162)
+
+[node name="male_base3" parent="." unique_id=954010381 instance=ExtResource("4_j45et")]
+transform = Transform3D(0.9984335, 0, 0.05595073, 0, 1, 0, -0.05595073, 0, 0.9984335, -0.2718229, -1.4389176, -2.5359445)
+
+[node name="male_base4" parent="." unique_id=1789711151 instance=ExtResource("4_j45et")]
+transform = Transform3D(0.92292696, 0, -0.38497502, 0, 1, 0, 0.38497502, 0, 0.92292696, 2.750367, -1.4389176, -2.5290127)
+
+[node name="male_base5" parent="." unique_id=2125827331 instance=ExtResource("4_j45et")]
+transform = Transform3D(0.9692584, 0, -0.24604456, 0, 1, 0, 0.24604456, 0, 0.9692584, 1.0038904, -1.4389176, -3.0686474)
+
+[node name="FloorMesh" type="MeshInstance3D" parent="." unique_id=1008920372]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4350556, 0)
+mesh = SubResource("PlaneMesh_dehhp")
+
+[node name="TrackPath" type="Path3D" parent="." unique_id=834448277]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.904385, -1.4527671, -5.351773)
+curve = SubResource("Curve3D_j53pp")
+script = ExtResource("5_r60r8")
+TrackScene = ExtResource("6_fk41g")
+TrackCount = 59
+metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
+
+[node name="MainMenuScreenAssembly" type="Control" parent="." unique_id=984964178]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,7 +148,24 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TitleLabel" type="Label" parent="TitleStuff" unique_id=1669066119]
+[node name="ColorRect" type="ColorRect" parent="MainMenuScreenAssembly" unique_id=1370345455]
+material = SubResource("ShaderMaterial_dehhp")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleStuff" type="Control" parent="MainMenuScreenAssembly" unique_id=2123797755]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="MainMenuScreenAssembly/TitleStuff" unique_id=1669066119]
 layout_mode = 0
 anchor_left = 0.0328125
 anchor_top = 0.05648148
@@ -40,7 +175,7 @@ theme_override_font_sizes/font_size = 128
 text = "TRAINWRECKED"
 metadata/_edit_use_anchors_ = true
 
-[node name="TitleSubLabel" type="Label" parent="TitleStuff" unique_id=438874699]
+[node name="TitleSubLabel" type="Label" parent="MainMenuScreenAssembly/TitleStuff" unique_id=438874699]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.041145835
@@ -51,50 +186,49 @@ theme_override_font_sizes/font_size = 38
 text = "Alpha build - prototype"
 metadata/_edit_use_anchors_ = true
 
-[node name="DividerLine" type="Line2D" parent="TitleStuff" unique_id=1804639002]
+[node name="DividerLine" type="Line2D" parent="MainMenuScreenAssembly/TitleStuff" unique_id=1804639002]
 position = Vector2(83, 228)
 points = PackedVector2Array(-18.655, 0, 992, 0)
 
-[node name="ButtonsBoxContainer" type="VBoxContainer" parent="." unique_id=1233215962]
+[node name="ButtonsBoxContainer" type="VBoxContainer" parent="MainMenuScreenAssembly" unique_id=1233215962]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.038541667
 anchor_top = 0.32685184
-anchor_right = 0.30625
+anchor_right = 0.28645834
 anchor_bottom = 0.93703705
-offset_bottom = -14.0
 metadata/_edit_use_anchors_ = true
 
-[node name="ContinueButton" type="Button" parent="ButtonsBoxContainer" unique_id=66675753]
+[node name="ContinueButton" type="Button" parent="MainMenuScreenAssembly/ButtonsBoxContainer" unique_id=66675753]
 layout_mode = 2
 disabled = true
 text = "CONTINUE"
 
-[node name="MultiplayerButton" type="Button" parent="ButtonsBoxContainer" unique_id=1702433440]
+[node name="MultiplayerButton" type="Button" parent="MainMenuScreenAssembly/ButtonsBoxContainer" unique_id=1702433440]
 layout_mode = 2
 text = "MULTIPLAYER"
 
-[node name="NewGameButton" type="Button" parent="ButtonsBoxContainer" unique_id=1558008108]
+[node name="NewGameButton" type="Button" parent="MainMenuScreenAssembly/ButtonsBoxContainer" unique_id=1558008108]
 layout_mode = 2
 text = "NEW GAME"
 
-[node name="LoadButton" type="Button" parent="ButtonsBoxContainer" unique_id=1703247504]
+[node name="LoadButton" type="Button" parent="MainMenuScreenAssembly/ButtonsBoxContainer" unique_id=1703247504]
 layout_mode = 2
 text = "LOAD"
 
-[node name="OptionsButton" type="Button" parent="ButtonsBoxContainer" unique_id=194838994]
+[node name="OptionsButton" type="Button" parent="MainMenuScreenAssembly/ButtonsBoxContainer" unique_id=194838994]
 layout_mode = 2
 text = "OPTIONS"
 
-[node name="QuitButton" type="Button" parent="ButtonsBoxContainer" unique_id=929861102]
+[node name="QuitButton" type="Button" parent="MainMenuScreenAssembly/ButtonsBoxContainer" unique_id=929861102]
 layout_mode = 2
 text = "QUIT"
 
-[node name="MultiplayerLobbyMenu" parent="." unique_id=420463088 instance=ExtResource("3_7lsgn")]
+[node name="MultiplayerLobbyMenu" parent="MainMenuScreenAssembly" unique_id=420463088 instance=ExtResource("3_7lsgn")]
 visible = false
 layout_mode = 1
 
-[node name="SessionChat" parent="." unique_id=292976534 instance=ExtResource("4_ihut8")]
+[node name="SessionChat" parent="MainMenuScreenAssembly" unique_id=292976534 instance=ExtResource("4_ihut8")]
 layout_mode = 1
 anchor_left = 0.696875
 anchor_top = 0.7462963
@@ -103,10 +237,26 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 0
 
-[connection signal="pressed" from="ButtonsBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
-[connection signal="pressed" from="ButtonsBoxContainer/MultiplayerButton" to="." method="_on_multiplayer_button_pressed"]
-[connection signal="pressed" from="ButtonsBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
-[connection signal="pressed" from="ButtonsBoxContainer/LoadButton" to="." method="_on_load_button_pressed"]
-[connection signal="pressed" from="ButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
-[connection signal="pressed" from="ButtonsBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
-[connection signal="ExitedMenu" from="MultiplayerLobbyMenu" to="." method="_on_multiplayer_lobby_menu_exited_menu"]
+[node name="MainMenuStateMachine" type="Node" parent="." unique_id=1756330227]
+script = ExtResource("11_xkjpu")
+metadata/_custom_type_script = "uid://bhsg271e1lvlh"
+
+[node name="TitleScreenState" type="Node" parent="MainMenuStateMachine" unique_id=1919216800]
+script = ExtResource("12_27gen")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="TransitioningState" type="Node" parent="MainMenuStateMachine" unique_id=288938646]
+script = ExtResource("12_27gen")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="MainMenuScreenState" type="Node" parent="MainMenuStateMachine" unique_id=358123790]
+script = ExtResource("12_27gen")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
+[connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/MultiplayerButton" to="." method="_on_multiplayer_button_pressed"]
+[connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
+[connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/LoadButton" to="." method="_on_load_button_pressed"]
+[connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
+[connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="ExitedMenu" from="MainMenuScreenAssembly/MultiplayerLobbyMenu" to="." method="_on_multiplayer_lobby_menu_exited_menu"]

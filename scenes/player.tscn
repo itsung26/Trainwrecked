@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://cm87c22qdh8v6" path="res://scenes/player_hud.tscn" id="3_qhqgy"]
 [ext_resource type="Script" uid="uid://bhsg271e1lvlh" path="res://scripts/StateMachine.cs" id="4_qlg0r"]
 [ext_resource type="Script" uid="uid://d13b5kdgkflx4" path="res://scripts/State.cs" id="5_tuyoq"]
+[ext_resource type="PackedScene" uid="uid://cwoeroni2y0ee" path="res://assets/3d assets/playermodel_assets/male_base_mesh/male_base.blend" id="6_tuyoq"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_dehhp"]
 
@@ -76,6 +77,9 @@ metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1884838914]
 replication_config = SubResource("SceneReplicationConfig_qlg0r")
+
+[node name="male_base" parent="." unique_id=1446285638 instance=ExtResource("6_tuyoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1278985, 0, 0)
 
 [connection signal="SelectedInteractableChanged" from="." to="PlayerHud" method="_on_player_selected_interactable_changed"]
 [connection signal="StateChanged" from="LocomotionStateMachine" to="PlayerHud" method="_on_locomotion_state_machine_state_changed"]

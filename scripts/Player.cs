@@ -55,6 +55,8 @@ public partial class Player : CharacterBody3D
 	[Export] public float JumpVelocity = 4.5f;
 	[Export] public float MouseSensitivity = 1.0f;
 	[Export] public float SprintSpeedMultiplier = 1.5f;
+	[Export] public bool inputDisabled = false;
+	[Export] public bool lookDisabled = false;
 
 	#endregion
 
@@ -103,7 +105,7 @@ public partial class Player : CharacterBody3D
 			return;
 		}
 
-		if (NewEvent is InputEventMouseMotion && !SessionChat.IsTyping)
+		if (NewEvent is InputEventMouseMotion && !lookDisabled)
 		{
 			// store the relative movement of the mouse from the last frame
 			InputEventMouseMotion NewMouseMotionEvent = NewEvent as InputEventMouseMotion;
@@ -118,7 +120,7 @@ public partial class Player : CharacterBody3D
 		}
 		else if (NewEvent is InputEventKey NewKeyEvent)
 		{
-			if (Input.IsActionJustPressed("Interact") && !SessionChat.IsTyping)
+			if (Input.IsActionJustPressed("Interact") && !inputDisabled)
 			{
 				// Debug.Log(GetInteractableFromRaycast());
 
@@ -163,6 +165,13 @@ public partial class Player : CharacterBody3D
 			return;
 		}
 
+		if (SessionChat is not null)
+		{
+			bool typing = SessionChat.IsTyping;
+			inputDisabled = typing;
+			lookDisabled = typing;
+		}
+
 		TrySelectInteractable();
 	}
 
@@ -187,7 +196,7 @@ public partial class Player : CharacterBody3D
 		{
 			LocomotionStateMachine.EnterState("FallingState");
 		}
-		else if (Input.IsActionPressed("Sprint") && !SessionChat.IsTyping)
+		else if (Input.IsActionPressed("Sprint") && !inputDisabled)
 		{
 			LocomotionStateMachine.EnterState("SprintingState");
 		}
@@ -208,7 +217,7 @@ public partial class Player : CharacterBody3D
 		{
 			float GroundedSpeed = Speed * GlobalSpeedModifier;
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
-			if (SessionChat.IsTyping)
+			if (inputDisabled)
 			{
 				inputDir = Vector2.Zero;
 			}
@@ -225,7 +234,7 @@ public partial class Player : CharacterBody3D
 			}
 
 			// Handle jump AFTER lateral movement to avoid b-hopping.
-			if (Input.IsActionJustPressed("Jump") && !SessionChat.IsTyping)
+			if (Input.IsActionJustPressed("Jump") && !inputDisabled)
 			{
 				velocity.Y = JumpVelocity;
 			}
@@ -235,6 +244,10 @@ public partial class Player : CharacterBody3D
 		{
 			float SprintSpeed = Speed * SprintSpeedMultiplier * GlobalSpeedModifier;
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
+			if (inputDisabled)
+			{
+				inputDir = Vector2.Zero;
+			}
 			Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 			if (direction != Vector3.Zero)
 			{
@@ -248,7 +261,7 @@ public partial class Player : CharacterBody3D
 			}
 
 			// Handle jump AFTER lateral movement to avoid b-hopping.
-			if (Input.IsActionJustPressed("Jump") && !SessionChat.IsTyping)
+			if (Input.IsActionJustPressed("Jump") && !inputDisabled)
 			{
 				velocity.Y = JumpVelocity;
 			}
