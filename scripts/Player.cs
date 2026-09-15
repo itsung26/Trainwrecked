@@ -19,6 +19,8 @@ public partial class Player : CharacterBody3D
 	private Node3D PickupableBodyTarget;
 	// The unique multiplayer ID label.
 	private Label3D PlayerIdLabel;
+	// Level session chat (sibling under the level root); used to block input while typing.
+	private SessionChat SessionChat;
 
 	#endregion
 
@@ -73,12 +75,13 @@ public partial class Player : CharacterBody3D
 
 	public override void _Ready()
 	{
+		InitRefs();
+		PlayerIdLabel.Text = Name;
 		if (!IsMultiplayerAuthority())
 		{
 			return;
 		}
 
-		InitRefs();
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 		// Initialize locomotion state
 		if (!IsOnFloor())
@@ -89,6 +92,7 @@ public partial class Player : CharacterBody3D
 		{
 			LocomotionStateMachine.EnterState("GroundedState");
 		}
+		PlayerIdLabel.Visible = false;
 	}
 
 
@@ -99,7 +103,7 @@ public partial class Player : CharacterBody3D
 			return;
 		}
 
-		if (NewEvent is InputEventMouseMotion)
+		if (NewEvent is InputEventMouseMotion && !SessionChat.IsTyping)
 		{
 			// store the relative movement of the mouse from the last frame
 			InputEventMouseMotion NewMouseMotionEvent = NewEvent as InputEventMouseMotion;
@@ -114,7 +118,7 @@ public partial class Player : CharacterBody3D
 		}
 		else if (NewEvent is InputEventKey NewKeyEvent)
 		{
-			if (Input.IsActionJustPressed("Interact"))
+			if (Input.IsActionJustPressed("Interact") && !SessionChat.IsTyping)
 			{
 				// Debug.Log(GetInteractableFromRaycast());
 
@@ -183,7 +187,7 @@ public partial class Player : CharacterBody3D
 		{
 			LocomotionStateMachine.EnterState("FallingState");
 		}
-		else if (Input.IsActionPressed("Sprint"))
+		else if (Input.IsActionPressed("Sprint") && !SessionChat.IsTyping)
 		{
 			LocomotionStateMachine.EnterState("SprintingState");
 		}
@@ -204,6 +208,10 @@ public partial class Player : CharacterBody3D
 		{
 			float GroundedSpeed = Speed * GlobalSpeedModifier;
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
+			if (SessionChat.IsTyping)
+			{
+				inputDir = Vector2.Zero;
+			}
 			Vector3 direction = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 			if (direction != Vector3.Zero)
 			{
@@ -217,7 +225,7 @@ public partial class Player : CharacterBody3D
 			}
 
 			// Handle jump AFTER lateral movement to avoid b-hopping.
-			if (Input.IsActionJustPressed("Jump"))
+			if (Input.IsActionJustPressed("Jump") && !SessionChat.IsTyping)
 			{
 				velocity.Y = JumpVelocity;
 			}
@@ -240,7 +248,7 @@ public partial class Player : CharacterBody3D
 			}
 
 			// Handle jump AFTER lateral movement to avoid b-hopping.
-			if (Input.IsActionJustPressed("Jump"))
+			if (Input.IsActionJustPressed("Jump") && !SessionChat.IsTyping)
 			{
 				velocity.Y = JumpVelocity;
 			}
@@ -267,6 +275,9 @@ public partial class Player : CharacterBody3D
 		PrivateReferences.Add(PickupableBodyTarget);
 		PlayerIdLabel = GetNode<Label3D>("PlayerIdLabel");
 		PrivateReferences.Add(PlayerIdLabel);
+		// SessionChat lives on the level, not under the player.
+		SessionChat = GetParent().GetNodeOrNull<SessionChat>("SessionChat");
+		PrivateReferences.Add(SessionChat);
 
 		if (LoggingDebug)
 		{

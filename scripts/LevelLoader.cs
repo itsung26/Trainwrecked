@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 /// </remarks>
 public partial class LevelLoader : Node
 {
+    public readonly PackedScene MainMenu;
     /// <summary>
     /// Packed scene changed to when <see cref="LoadMainLevel"/> succeeds on the host.
     /// Loaded from <c>res://scenes/testing_scene.tscn</c>.
@@ -42,6 +43,7 @@ public partial class LevelLoader : Node
     {
         TargetLevel = GD.Load<PackedScene>("res://scenes/testing_scene.tscn");
         StaticLoadingScreen = GD.Load<PackedScene>("res://scenes/static_loading_screen.tscn");
+        MainMenu = GD.Load<PackedScene>("res://scenes/trainwrecked_main_menu.tscn");
     }
 
     /// <summary>

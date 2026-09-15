@@ -189,7 +189,7 @@ public partial class SessionChat : Control
 		{
 			Rpc(MethodName.RecieveChatMessage, newText, NetworkManager.GetUniqueId());
 		}
-		else
+		else if (NetworkManager.IsClient())
 		{
 			RpcId(1, MethodName.SubmitChatMessage, newText, NetworkManager.GetUniqueId());
 		}

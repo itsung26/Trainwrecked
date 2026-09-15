@@ -12,12 +12,13 @@ public partial class PlayerHud : Control
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		InteractableNameLabel.Visible = false;
-	}
+		if (!IsMultiplayerAuthority())
+		{
+			Visible = false;
+			return;
+		}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
+		InteractableNameLabel.Visible = false;
 	}
 
 	public void SetInteractableName(string Name)

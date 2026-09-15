@@ -1,6 +1,7 @@
 using Godot;
 using Godot.Collections;
 using System;
+using System.Threading.Tasks;
 
 
 /// <summary>
@@ -39,6 +40,7 @@ public partial class TrainwreckedLevel : Node3D
 	/// </summary>
 	public override void _Ready()
 	{
+		NetworkManager.Instance.PeerConnected += _on_peer_connected;
 		// Export config validation.
 		if (PlayerSpawner is null)
 		{
@@ -91,5 +93,30 @@ public partial class TrainwreckedLevel : Node3D
 		newPlayer.Name = peerId.ToString();
 		AddChild(newPlayer, true);
 		newPlayer.GlobalPosition = PlayerSpawnPoints[playerIndex - 1].GlobalPosition;
+	}
+
+	private void _on_peer_connected(long id)
+	{
+		if (NetworkManager.IsServer() && NetworkManager.IsConnected())
+		{
+			Debug.Log("Registered late join. Spawning player.");
+			int firstFreePlayerIndex = NetworkManager.GetTotalConnectedPeerCount();
+			CreatePlayer((int)id, firstFreePlayerIndex);
+		}
+	}
+
+	private void _on_peer_disconnected(long id)
+	{
+		if (NetworkManager.IsServer() && NetworkManager.IsConnected())
+		{
+			if (NetworkManager.IsServer() && NetworkManager.IsConnected())
+			{
+				Player playerToDespawn = GetNodeOrNull<Player>(id.ToString());
+				if (playerToDespawn is not null)
+				{
+					playerToDespawn.QueueFree();
+				}
+			}
+		}
 	}
 }

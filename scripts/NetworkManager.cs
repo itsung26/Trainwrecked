@@ -81,11 +81,19 @@ public partial class NetworkManager : Node
 		// Check for executable arguments: open a session if found.
 		if (RunArguments.HasHostFlag)
 		{
-			StartServer();
+			Error returnedError = StartServer();
+			if (returnedError != Error.Ok)
+			{
+				GetTree().Quit();
+			}
 		}
 		else if (RunArguments.HasJoinFlag)
 		{
-			StartClient(RunArguments.JoinFlagAddress);
+			Error returnedError = StartClient(RunArguments.JoinFlagAddress);
+			if (returnedError != Error.Ok)
+			{
+				GetTree().Quit();
+			}
 		}
 	}
 
@@ -354,6 +362,8 @@ public partial class NetworkManager : Node
 
 	// On a host, closes the server entirely.
 	// On a client, disconnects from the server.
+	// Can be called as rpc to disconnect specific clients as the host.
+	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = false)]
 	public static void Disconnect()
 	{
 		if (IsServer() && IsConnected())

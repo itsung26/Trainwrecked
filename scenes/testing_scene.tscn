@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://assets/TrainwreckedEntities/model_train_pickupable.tscn" id="5_ejtda"]
 [ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://assets/TrainwreckedEntities/model_train_pickupable_red_loco.tscn" id="7_lg35i"]
 [ext_resource type="PackedScene" uid="uid://4cw0uqimmt3h" path="res://scenes/button_interactable.tscn" id="8_8msnd"]
+[ext_resource type="PackedScene" uid="uid://boi5es405i8mg" path="res://scenes/session_chat.tscn" id="10_nihl2"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iraov"]
 shader = ExtResource("1_srtiu")
@@ -132,6 +133,12 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -2.3
 [node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1175847090]
 _spawnable_scenes = PackedStringArray("uid://bnhq8tk5or7vo")
 spawn_path = NodePath("..")
+
+[node name="SessionChat" parent="." unique_id=292976534 instance=ExtResource("10_nihl2")]
+anchor_left = 0.696875
+anchor_top = 0.7462963
+anchor_right = 1.0
+anchor_bottom = 1.0
 
 [node name="SpawnPoint1" type="Marker3D" parent="." unique_id=1992487019]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44340432, 0, 1.0939505)
