@@ -11,6 +11,20 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u8vuu"]
 radius = 0.109375
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qlg0r"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:visible")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("PlayerCameraPivot/PlayerCamera:rotation")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
 [node name="Player" type="CharacterBody3D" unique_id=320653181]
 collision_layer = 2
 script = ExtResource("1_3vyb7")
@@ -59,6 +73,9 @@ metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 [node name="FallingState" type="Node" parent="LocomotionStateMachine" unique_id=153880968]
 script = ExtResource("5_tuyoq")
 metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1884838914]
+replication_config = SubResource("SceneReplicationConfig_qlg0r")
 
 [connection signal="SelectedInteractableChanged" from="." to="PlayerHud" method="_on_player_selected_interactable_changed"]
 [connection signal="StateChanged" from="LocomotionStateMachine" to="PlayerHud" method="_on_locomotion_state_machine_state_changed"]

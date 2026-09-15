@@ -61,8 +61,23 @@ public partial class Player : CharacterBody3D
 
 	#endregion
 
+	// MultiplayerSpawner requires authority changes here (not in _Ready / after AddChild),
+	// or MultiplayerSynchronizer fails to process the pending spawn.
+	public override void _EnterTree()
+	{
+		if (int.TryParse(Name, out int peerId))
+		{
+			SetMultiplayerAuthority(peerId);
+		}
+	}
+
 	public override void _Ready()
 	{
+		if (!IsMultiplayerAuthority())
+		{
+			return;
+		}
+
 		InitRefs();
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 		// Initialize locomotion state
@@ -79,6 +94,11 @@ public partial class Player : CharacterBody3D
 
 	public override void _Input(InputEvent NewEvent)
 	{
+		if (!IsMultiplayerAuthority())
+		{
+			return;
+		}
+
 		if (NewEvent is InputEventMouseMotion)
 		{
 			// store the relative movement of the mouse from the last frame
@@ -134,11 +154,21 @@ public partial class Player : CharacterBody3D
 
 	public override void _Process(double delta)
 	{
+		if (!IsMultiplayerAuthority())
+		{
+			return;
+		}
+
 		TrySelectInteractable();
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (!IsMultiplayerAuthority())
+		{
+			return;
+		}
+		
 		Vector3 velocity = Velocity;
 
 		State CurrentState = LocomotionStateMachine.CurrentState;

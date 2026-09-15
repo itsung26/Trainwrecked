@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://c58gckeg4226m"]
 
+[ext_resource type="PackedScene" uid="uid://bnhq8tk5or7vo" path="res://scenes/player.tscn" id="1_ifns1"]
 [ext_resource type="Script" uid="uid://4x8elhhftwqh" path="res://scripts/TrainwreckedLevel.cs" id="1_ltgxd"]
 [ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="1_srtiu"]
 [ext_resource type="Texture2D" uid="uid://vpwu4vq6nyke" path="res://assets/2d assets/textures/prototype textures/Light/texture_07.png" id="2_2j2p2"]
@@ -8,7 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://assets/TrainwreckedEntities/model_train_pickupable.tscn" id="5_ejtda"]
 [ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://assets/TrainwreckedEntities/model_train_pickupable_red_loco.tscn" id="7_lg35i"]
 [ext_resource type="PackedScene" uid="uid://4cw0uqimmt3h" path="res://scenes/button_interactable.tscn" id="8_8msnd"]
-[ext_resource type="Script" uid="uid://cjswevrlybon" path="res://scripts/HudAnchor.cs" id="9_ltgxd"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iraov"]
 shader = ExtResource("1_srtiu")
@@ -69,8 +69,11 @@ _data = {
 }
 point_count = 4
 
-[node name="TestingScene" type="Node3D" unique_id=1386985927]
+[node name="TestingScene" type="Node3D" unique_id=1386985927 node_paths=PackedStringArray("PlayerSpawner", "PlayerSpawnPoints")]
 script = ExtResource("1_ltgxd")
+PlayerScene = ExtResource("1_ifns1")
+PlayerSpawner = NodePath("PlayerSpawner")
+PlayerSpawnPoints = [NodePath("SpawnPoint1"), NodePath("SpawnPoint2"), NodePath("SpawnPoint3"), NodePath("SpawnPoint4")]
 metadata/_custom_type_script = "uid://4x8elhhftwqh"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1818100782]
@@ -126,24 +129,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3749151, 1.0278907, -1.132
 [node name="ButtonInteractable" parent="." unique_id=751981149 instance=ExtResource("8_8msnd")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -2.3359458, 0.7029725, 0.54710466)
 
-[node name="HudAnchor" type="Node3D" parent="." unique_id=991748749]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3415184, 0.7053701, 0.9638541)
-script = ExtResource("9_ltgxd")
-metadata/_custom_type_script = "uid://cjswevrlybon"
-
-[node name="Control" type="Control" parent="HudAnchor" unique_id=333895272]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="TestLabel" type="Label" parent="HudAnchor/Control" unique_id=167973519]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-theme_override_font_sizes/font_size = 121
-text = "I am a test hud anchor"
-
 [node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1175847090]
 _spawnable_scenes = PackedStringArray("uid://bnhq8tk5or7vo")
 spawn_path = NodePath("..")
+
+[node name="SpawnPoint1" type="Marker3D" parent="." unique_id=1992487019]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44340432, 0, 1.0939505)
+
+[node name="SpawnPoint2" type="Marker3D" parent="." unique_id=1848290497]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.60928094, 0, 0.4300117)
+
+[node name="SpawnPoint3" type="Marker3D" parent="." unique_id=111884536]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27061355, 0, -0.3551771)
+
+[node name="SpawnPoint4" type="Marker3D" parent="." unique_id=1603357715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5567194, 0, -1.1320279)

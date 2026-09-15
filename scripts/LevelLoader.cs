@@ -25,7 +25,7 @@ public partial class LevelLoader : Node
 
     // Loads the level. The client is never allowed to change the scene for everyone.
     // The host will always begin all clients' scene change behavior.
-    public static async Task<Error> LoadMainLevel()
+    public static Error LoadMainLevel()
     {
         if (!NetworkManager.IsConnected() && !NetworkManager.IsConnecting())
         {
