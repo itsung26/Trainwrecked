@@ -74,9 +74,9 @@ seamless = true
 shader = ExtResource("7_fk41g")
 shader_parameter/noise_texture = SubResource("NoiseTexture2D_j53pp")
 shader_parameter/strength = 0.0030000001425
-shader_parameter/speed = Vector2(0.1, 0.05)
+shader_parameter/speed = Vector2(0.025, 0.013)
 
-[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton", "MainMenuStateMachine", "MainMenuScreenAssembly")]
+[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton", "MainMenuCamera", "MainMenuStateMachine", "MainMenuScreenAssembly", "CirclingVultures", "DelayBeforeSplashScreenTransitionTimer", "DelayBeforeContinueTextTimer", "BlackoutRect", "BigTitleLabel", "ContinueLabel")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -92,10 +92,21 @@ NewGameButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/NewGameButt
 LoadButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/LoadButton")
 OptionsButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/OptionsButton")
 QuitButton = NodePath("MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton")
-CameraInitialPosition = Vector3(-0.23645872, 4.5841656, -0.60454434)
-CameraInitialRotation = Vector3(1.1003536, 0.62831813, 0)
+MainMenuCamera = NodePath("MainMenuCamera")
 MainMenuStateMachine = NodePath("MainMenuStateMachine")
 MainMenuScreenAssembly = NodePath("MainMenuScreenAssembly")
+CirclingVultures = NodePath("CirclingVultures")
+DelayBeforeSplashScreenTransitionTimer = NodePath("DelayBeforeSplashScreenTransitionTimer")
+DelayBeforeContinueTextTimer = NodePath("DelayBeforeContinueTextTimer")
+BlackoutRect = NodePath("BlackoutRect")
+BigTitleLabel = NodePath("BigTitleLabel")
+ContinueLabel = NodePath("ContinueLabel")
+CameraInitialPosition = Vector3(-0.23645872, 4.5841656, -0.60454434)
+CameraInitialRotation = Vector3(1.1003536, 0.62831813, 0)
+CameraRotationTweenSpeed = 0.5
+DelayBeforeSplashScreenTransition = 1.5
+DelayBeforeContinueText = 1.0
+BlackoutRectFadeSpeed = 0.25
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=537319183]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
@@ -111,7 +122,6 @@ shadow_enabled = true
 environment = SubResource("Environment_fx8ei")
 
 [node name="MainMenuCamera" type="Camera3D" parent="." unique_id=1014290871]
-transform = Transform3D(0.80901724, 0.5239325, 0.26643172, 0, 0.45328096, -0.8913677, -0.58778495, 0.7211318, 0.3667121, -0.23645872, 4.5841656, -0.60454434)
 
 [node name="CirclingVultures" parent="." unique_id=952487390 instance=ExtResource("10_j53pp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.57464814, 6.975, -1.9296322)
@@ -119,14 +129,26 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.57464814, 6.975, -1.9296322
 [node name="male_base2" parent="." unique_id=1729264275 instance=ExtResource("4_j45et")]
 transform = Transform3D(0.9854464, 0, -0.16998652, 0, 1, 0, 0.16998652, 0, 0.9854464, 1.5249853, -1.4389176, -2.086162)
 
+[node name="Label3D" type="Label3D" parent="male_base2" unique_id=1209820475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8247156, 0)
+billboard = 2
+text = "player 1"
+
 [node name="male_base3" parent="." unique_id=954010381 instance=ExtResource("4_j45et")]
 transform = Transform3D(0.9984335, 0, 0.05595073, 0, 1, 0, -0.05595073, 0, 0.9984335, -0.2718229, -1.4389176, -2.5359445)
+visible = false
 
 [node name="male_base4" parent="." unique_id=1789711151 instance=ExtResource("4_j45et")]
 transform = Transform3D(0.92292696, 0, -0.38497502, 0, 1, 0, 0.38497502, 0, 0.92292696, 2.750367, -1.4389176, -2.5290127)
+visible = false
 
 [node name="male_base5" parent="." unique_id=2125827331 instance=ExtResource("4_j45et")]
 transform = Transform3D(0.9692584, 0, -0.24604456, 0, 1, 0, 0.24604456, 0, 0.9692584, 1.0038904, -1.4389176, -3.0686474)
+
+[node name="Label3D" type="Label3D" parent="male_base5" unique_id=1473258506]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8247156, 0)
+billboard = 2
+text = "player 2"
 
 [node name="FloorMesh" type="MeshInstance3D" parent="." unique_id=1008920372]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4350556, 0)
@@ -140,7 +162,8 @@ TrackScene = ExtResource("6_fk41g")
 TrackCount = 59
 metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 
-[node name="MainMenuScreenAssembly" type="Control" parent="." unique_id=984964178]
+[node name="HeatHazeShader" type="ColorRect" parent="." unique_id=1370345455]
+material = SubResource("ShaderMaterial_dehhp")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -148,8 +171,41 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ColorRect" type="ColorRect" parent="MainMenuScreenAssembly" unique_id=1370345455]
-material = SubResource("ShaderMaterial_dehhp")
+[node name="BlackoutRect" type="ColorRect" parent="." unique_id=1102691289]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="BigTitleLabel" type="Label" parent="." unique_id=422931929]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0328125
+anchor_top = 0.55185187
+anchor_right = 0.54322916
+anchor_bottom = 0.7138889
+theme_override_font_sizes/font_size = 128
+text = "TRAINWRECKED"
+metadata/_edit_use_anchors_ = true
+
+[node name="ContinueLabel" type="Label" parent="." unique_id=1384717690]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0390625
+anchor_top = 0.8796296
+anchor_right = 0.38541666
+anchor_bottom = 0.93796295
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 45
+text = "Press any button to continue..."
+metadata/_edit_use_anchors_ = true
+
+[node name="MainMenuScreenAssembly" type="Control" parent="." unique_id=984964178]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -239,20 +295,38 @@ grow_vertical = 0
 
 [node name="MainMenuStateMachine" type="Node" parent="." unique_id=1756330227 node_paths=PackedStringArray("InitialState")]
 script = ExtResource("11_xkjpu")
-InitialState = NodePath("TitleScreenState")
+InitialState = NodePath("SplashScreenState")
 metadata/_custom_type_script = "uid://bhsg271e1lvlh"
+
+[node name="SplashScreenState" type="Node" parent="MainMenuStateMachine" unique_id=2006227505]
+script = ExtResource("12_27gen")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="SplashScreenTransitioningState" type="Node" parent="MainMenuStateMachine" unique_id=1603205033]
+script = ExtResource("12_27gen")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="SplashScreenAwaitingState" type="Node" parent="MainMenuStateMachine" unique_id=1464656251]
+script = ExtResource("12_27gen")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 
 [node name="TitleScreenState" type="Node" parent="MainMenuStateMachine" unique_id=1919216800]
 script = ExtResource("12_27gen")
 metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 
-[node name="TransitioningState" type="Node" parent="MainMenuStateMachine" unique_id=288938646]
+[node name="TitleScreenTransitioningState" type="Node" parent="MainMenuStateMachine" unique_id=288938646]
 script = ExtResource("12_27gen")
 metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 
 [node name="MainMenuScreenState" type="Node" parent="MainMenuStateMachine" unique_id=358123790]
 script = ExtResource("12_27gen")
 metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="DelayBeforeSplashScreenTransitionTimer" type="Timer" parent="." unique_id=1774050621]
+one_shot = true
+
+[node name="DelayBeforeContinueTextTimer" type="Timer" parent="." unique_id=1528853685]
+one_shot = true
 
 [connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/MultiplayerButton" to="." method="_on_multiplayer_button_pressed"]
@@ -261,3 +335,6 @@ metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 [connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
 [connection signal="ExitedMenu" from="MainMenuScreenAssembly/MultiplayerLobbyMenu" to="." method="_on_multiplayer_lobby_menu_exited_menu"]
+[connection signal="StateChanged" from="MainMenuStateMachine" to="." method="_on_main_menu_state_machine_state_changed"]
+[connection signal="timeout" from="DelayBeforeSplashScreenTransitionTimer" to="." method="_on_delay_before_splash_screen_transition_timer_timeout"]
+[connection signal="timeout" from="DelayBeforeContinueTextTimer" to="." method="_on_delay_before_continue_text_timer_timeout"]
