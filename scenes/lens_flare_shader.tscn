@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://c1ooomqyw3i2g"]
+
+[ext_resource type="Shader" uid="uid://ba74cpybhssm0" path="res://assets/shaders/lens_flare.gdshader" id="1_y62pr"]
+[ext_resource type="Script" uid="uid://3hksb1xf5tmq" path="res://scripts/LensFlareShader.cs" id="2_io4di"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_px1wt"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_8qy8p"]
+noise = SubResource("FastNoiseLite_px1wt")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_io4di"]
+shader = ExtResource("1_y62pr")
+shader_parameter/sun_position = Vector2(0, 0)
+shader_parameter/tint = Vector3(1.4, 1.2, 1)
+shader_parameter/flare_strength = 1.0
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_8qy8p")
+
+[node name="LensFlareShader" type="ColorRect" unique_id=762928351]
+material = SubResource("ShaderMaterial_io4di")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_io4di")

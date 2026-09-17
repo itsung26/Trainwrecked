@@ -1,6 +1,6 @@
 # Document C# Code
 
-Add or upgrade XML documentation on the @-mentioned C# file(s), or on the file currently focused in the editor if none are mentioned.
+Add or upgrade XML documentation on the @-mentioned C# file(s), or on the file currently focused in the editor if none are mentioned. Do not document scene files or any non .cs files.
 
 ## Goal
 

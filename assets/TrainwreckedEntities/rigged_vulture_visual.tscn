@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://n41mt84h84uf"]
+
+[ext_resource type="Script" uid="uid://crtea5ow4gu4b" path="res://scripts/RiggedVultureVisual.cs" id="1_ts0o8"]
+[ext_resource type="PackedScene" uid="uid://dwr2rx5u2ihr0" path="res://assets/3d assets/vulture/vulture_ground.blend" id="1_vft7r"]
+
+[node name="RiggedVultureVisual" type="Node3D" unique_id=67544891 node_paths=PackedStringArray("AnimationDelayTimer", "AnimationPlayer")]
+editor_description = "visual-only entity. plays a random animation every few seconds."
+script = ExtResource("1_ts0o8")
+AnimationDelayTimer = NodePath("AnimationDelayTimer")
+AnimationPlayer = NodePath("vulture_ground2/AnimationPlayer")
+MinTimeBetweenActions = 1.0
+MaxTimeBetweenActions = 3.0
+Animations = Array[String](["idle_look", "look_at_back", "look_left_long_time"])
+
+[node name="vulture_ground2" parent="." unique_id=348913706 instance=ExtResource("1_vft7r")]
+
+[node name="Skeleton3D" parent="vulture_ground2/vulture_ground_rig" parent_id_path=PackedInt32Array(348913706, 1810662143) index="0" unique_id=2047008563]
+bones/3/rotation = Quaternion(0.034662377, -4.8566467e-11, 6.8627153e-09, 0.9993992)
+bones/5/rotation = Quaternion(0.42700812, -0.56361717, 0.427008, 0.5636168)
+
+[node name="AnimationDelayTimer" type="Timer" parent="." unique_id=712008439]
+one_shot = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1260895757]
+transform = Transform3D(-0.8968742, -0.27154896, 0.34911016, 0, 0.78933156, 0.6139672, -0.4422858, 0.5506513, -0.7079311, 0.25334418, 0.65225047, -0.76736933)
+
+[connection signal="animation_finished" from="vulture_ground2/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="timeout" from="AnimationDelayTimer" to="." method="_on_animation_delay_timer_timeout"]
+
+[editable path="vulture_ground2"]

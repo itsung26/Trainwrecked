@@ -1,0 +1,21 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://ycx1b2myd8fy"]
+
+[ext_resource type="Texture2D" uid="uid://ktf5rub5ekhg" path="res://assets/2d assets/textures/enviroment_textures/sandy_dunes/Ground054_2K-PNG_Color.png" id="1_xlowo"]
+[ext_resource type="Texture2D" uid="uid://drnnjnninv0s3" path="res://assets/2d assets/textures/enviroment_textures/sandy_dunes/Ground054_2K-PNG_Displacement.png" id="2_hqsdq"]
+[ext_resource type="Texture2D" uid="uid://dtt2vtcoht0r8" path="res://assets/2d assets/textures/enviroment_textures/sandy_dunes/Ground054_2K-PNG_AmbientOcclusion.png" id="2_omut3"]
+[ext_resource type="Texture2D" uid="uid://dyghu3l0oi5a1" path="res://assets/2d assets/textures/enviroment_textures/sandy_dunes/Ground054_2K-PNG_NormalGL.png" id="3_omut3"]
+[ext_resource type="Texture2D" uid="uid://bry060frdq4m6" path="res://assets/2d assets/textures/enviroment_textures/sandy_dunes/Ground054_2K-PNG_Roughness.png" id="4_r2puu"]
+
+[resource]
+albedo_texture = ExtResource("1_xlowo")
+roughness_texture = ExtResource("4_r2puu")
+normal_enabled = true
+normal_texture = ExtResource("3_omut3")
+ao_enabled = true
+ao_texture = ExtResource("2_omut3")
+heightmap_deep_parallax = true
+heightmap_min_layers = 8
+heightmap_max_layers = 32
+heightmap_texture = ExtResource("2_hqsdq")
+uv1_scale = Vector3(38.49, 38.49, 38.49)
+stencil_flags = 2
