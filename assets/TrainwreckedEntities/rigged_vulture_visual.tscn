@@ -21,9 +21,6 @@ bones/5/rotation = Quaternion(0.42700812, -0.56361717, 0.427008, 0.5636168)
 [node name="AnimationDelayTimer" type="Timer" parent="." unique_id=712008439]
 one_shot = true
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1260895757]
-transform = Transform3D(-0.8968742, -0.27154896, 0.34911016, 0, 0.78933156, 0.6139672, -0.4422858, 0.5506513, -0.7079311, 0.25334418, 0.65225047, -0.76736933)
-
 [connection signal="animation_finished" from="vulture_ground2/AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
 [connection signal="timeout" from="AnimationDelayTimer" to="." method="_on_animation_delay_timer_timeout"]
 
