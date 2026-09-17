@@ -88,6 +88,20 @@ points = PackedVector3Array(-0.5065097, 0.14187208, 0.2629013, 0.5063808, 0.1418
 [sub_resource type="BoxShape3D" id="BoxShape3D_dehhp"]
 size = Vector3(0.30395508, 0.16444397, 0.5686035)
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pycbr"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:linear_velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:angular_velocity")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
 [node name="ModelTrainPickupableRedLoco" type="RigidBody3D" unique_id=1511877849 node_paths=PackedStringArray("InvertedHullMeshes", "DebugLabel1", "DebugLabel2", "DebugLabel3", "DebugLabel4")]
 script = ExtResource("1_j64iu")
 InvertedHullMeshes = [NodePath("train-locomotive-b/train-locomotive-b/wheel/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_1/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_2/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_3/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheels-front/IH"), NodePath("train-locomotive-b/train-locomotive-b/IH")]
@@ -166,5 +180,8 @@ font_size = 15
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="." unique_id=446905549]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00012207031, 0.08243561, -0.008178711)
 shape = SubResource("BoxShape3D_dehhp")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1719451097]
+replication_config = SubResource("SceneReplicationConfig_pycbr")
 
 [editable path="train-locomotive-b"]
