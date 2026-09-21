@@ -66,36 +66,23 @@ properties/3/path = NodePath(".:angular_velocity")
 properties/3/spawn = true
 properties/3/replication_mode = 1
 
-[node name="ModelTrainPickupable" type="RigidBody3D" unique_id=1554800455 node_paths=PackedStringArray("InvertedHullMeshes", "DebugLabel1", "DebugLabel2", "DebugLabel3", "DebugLabel4")]
+[node name="ModelTrainPickupable" type="RigidBody3D" unique_id=1554800455]
 mass = 0.7
 script = ExtResource("1_4jfv1")
-InvertedHullMeshes = [NodePath("train-diesel-a/train-diesel-a/wheels-front/IH"), NodePath("train-diesel-a/train-diesel-a/wheels-back/IH"), NodePath("train-diesel-a/train-diesel-a/IH")]
-InteractableDisplayName = "Diesel Plush"
-HoldSpring = 10.0
-RotationTorque = 5.0
-MaxHoldDistance = 2.0
-FacePlayerAxis = 1
-DebugLabel1 = NodePath("Label3D")
-DebugLabel2 = NodePath("Label3D2")
-DebugLabel3 = NodePath("Label3D3")
-DebugLabel4 = NodePath("Label3D4")
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
 
 [node name="train-diesel-a" parent="." unique_id=1025163884 instance=ExtResource("2_x2pf3")]
 transform = Transform3D(0.215, 0, 0, 0, 0.215, 0, 0, 0, 0.215, 0, 0, 0)
 
 [node name="IH" type="MeshInstance3D" parent="train-diesel-a/train-diesel-a/wheels-front" parent_id_path=PackedInt32Array(1025163884, 2057747786) index="0" unique_id=1488245643]
-visible = false
 mesh = SubResource("ArrayMesh_ixv1d")
 surface_material_override/0 = ExtResource("3_x2pf3")
 
 [node name="IH" type="MeshInstance3D" parent="train-diesel-a/train-diesel-a/wheels-back" parent_id_path=PackedInt32Array(1025163884, 1154467192) index="0" unique_id=1594527495]
-visible = false
 mesh = SubResource("ArrayMesh_5bd0w")
 surface_material_override/0 = ExtResource("3_x2pf3")
 
 [node name="IH" type="MeshInstance3D" parent="train-diesel-a/train-diesel-a" parent_id_path=PackedInt32Array(1025163884, 2082392805) index="2" unique_id=386198600]
-visible = false
 mesh = SubResource("ArrayMesh_4jfv1")
 surface_material_override/0 = ExtResource("3_x2pf3")
 

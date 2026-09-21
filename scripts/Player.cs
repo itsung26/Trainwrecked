@@ -1,67 +1,35 @@
 using Godot;
 using System;
-using Godot.Collections;
 
 public partial class Player : CharacterBody3D
 {
-	#region Private References
-	// The array containing private references for validation.
-	private Array<Node> PrivateReferences = new Array<Node>();
-	// The node that is used to turn the camera.
-	private Node3D PlayerCameraPivot;
-	// The camera that is used to view the world.
-	private Camera3D PlayerCamera;
-	// The state machine that is used to control the player's locomotion.
-	private StateMachine LocomotionStateMachine;
-	// The raycast that is used to check for interactable objects.
-	private RayCast3D InteractRaycast;
-	// The target that the pickupable body is being held at.
-	private Node3D PickupableBodyTarget;
-	// The unique multiplayer ID label.
-	private Label3D PlayerIdLabel;
-	// Level session chat (sibling under the level root); used to block input while typing.
-	private SessionChat SessionChat;
-
-	#endregion
-
 	#region Regular Variables
 	// The interactable that the player is currently looking at. Can be a button, a holdable object, etc.
-	private Node3D _SelectedInteractable = null;
-	public Node3D SelectedInteractable
-	{
-		get { return _SelectedInteractable; }
-		private set
-		{
-			SetSelectedInteractable(value);
-		}
-	}
-	// The physical body that the player is currently holding. Can be null.
-	private PickupableBody _HeldBody = null;
-	public PickupableBody HeldBody
-	{
-		get { return _HeldBody; }
-		private set
-		{
-			SetHeldBody(value, _HeldBody);
-		}
-	}
-	public float GlobalSpeedModifier = 1.0f;
 
 	#endregion
 
 	#region Exported Variables
+	[Export] public Node3D PlayerCameraPivot { get; set; }
+	[Export] public Camera3D PlayerCamera { get; set; }
+	[Export] public StateMachine LocomotionStateMachine { get; set; }
+	[Export] public RayCast3D InteractRaycast { get; set; }
+	[Export] public Label3D PlayerIdLabel { get; set; }
+	/// <summary>Level session chat; used to block input while typing.</summary>
+	[Export] public SessionChat SessionChat { get; set; }
+	[Export] public Node3D PlayerModelTreeRoot { get; set; }
 	[Export] public bool LoggingDebug = false;
 	[Export] public float Speed = 5.0f;
+	[Export] public float GlobalSpeedModifier { get; set; } = 1.0f;
 	[Export] public float JumpVelocity = 4.5f;
 	[Export] public float MouseSensitivity = 1.0f;
 	[Export] public float SprintSpeedMultiplier = 1.5f;
-	[Export] public bool inputDisabled = false;
-	[Export] public bool lookDisabled = false;
+	[Export] public bool InputDisabled = false;
+	[Export] public bool LookDisabled = false;
 
 	#endregion
 
 	#region Signals
-	[Signal] public delegate void SelectedInteractableChangedEventHandler(Node3D NewInteractable);
+	
 
 	#endregion
 
@@ -77,7 +45,8 @@ public partial class Player : CharacterBody3D
 
 	public override void _Ready()
 	{
-		InitRefs();
+		// SessionChat lives on the level, not under the player scene.
+		SessionChat ??= GetParent()?.GetNodeOrNull<SessionChat>("SessionChat");
 		PlayerIdLabel.Text = Name;
 		if (!IsMultiplayerAuthority())
 		{
@@ -95,6 +64,7 @@ public partial class Player : CharacterBody3D
 			LocomotionStateMachine.EnterState("GroundedState");
 		}
 		PlayerIdLabel.Visible = false;
+		PlayerModelTreeRoot.Visible = false;
 	}
 
 
@@ -105,7 +75,7 @@ public partial class Player : CharacterBody3D
 			return;
 		}
 
-		if (NewEvent is InputEventMouseMotion && !lookDisabled)
+		if (NewEvent is InputEventMouseMotion && !LookDisabled)
 		{
 			// store the relative movement of the mouse from the last frame
 			InputEventMouseMotion NewMouseMotionEvent = NewEvent as InputEventMouseMotion;
@@ -118,43 +88,10 @@ public partial class Player : CharacterBody3D
 			PlayerCameraPivot.Rotation = new Vector3(Math.Clamp(NewCameraPivotRotation, -1.5f, 1.5f), PlayerCameraPivot.Rotation.Y, PlayerCameraPivot.Rotation.Z);
 
 		}
+
 		else if (NewEvent is InputEventKey NewKeyEvent)
 		{
-			if (Input.IsActionJustPressed("Interact") && !inputDisabled)
-			{
-				// Debug.Log(GetInteractableFromRaycast());
 
-				// If target is a pickupable
-				if (GetInteractableFromRaycast() is PickupableBody BodyToPickup)
-				{
-					// If holding nothing
-					if (HeldBody is null)
-					{
-						// attempt to hold the new body
-						TryPickupPickupableBody(BodyToPickup);
-					}
-					// if holding something
-					else if (HeldBody is not null)
-					{
-						// drop the held thing
-						DropHeldBody();
-					}
-				}
-				// If target is a button
-				else if (GetInteractableFromRaycast() is ButtonInteractable ButtonToInteract)
-				{
-					ButtonToInteract.InteractWithButton();
-				}
-				// If target is nothing
-				else if (GetInteractableFromRaycast() is null)
-				{
-					// if holding something, drop the held body
-					if (HeldBody is not null)
-					{
-						DropHeldBody();
-					}
-				}
-			}
 		}
 	}
 
@@ -168,11 +105,10 @@ public partial class Player : CharacterBody3D
 		if (SessionChat is not null)
 		{
 			bool typing = SessionChat.IsTyping;
-			inputDisabled = typing;
-			lookDisabled = typing;
+			InputDisabled = typing;
+			LookDisabled = typing;
 		}
 
-		TrySelectInteractable();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -196,7 +132,7 @@ public partial class Player : CharacterBody3D
 		{
 			LocomotionStateMachine.EnterState("FallingState");
 		}
-		else if (Input.IsActionPressed("Sprint") && !inputDisabled)
+		else if (Input.IsActionPressed("Sprint") && !InputDisabled)
 		{
 			LocomotionStateMachine.EnterState("SprintingState");
 		}
@@ -217,7 +153,7 @@ public partial class Player : CharacterBody3D
 		{
 			float GroundedSpeed = Speed * GlobalSpeedModifier;
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
-			if (inputDisabled)
+			if (InputDisabled)
 			{
 				inputDir = Vector2.Zero;
 			}
@@ -234,7 +170,7 @@ public partial class Player : CharacterBody3D
 			}
 
 			// Handle jump AFTER lateral movement to avoid b-hopping.
-			if (Input.IsActionJustPressed("Jump") && !inputDisabled)
+			if (Input.IsActionJustPressed("Jump") && !InputDisabled)
 			{
 				velocity.Y = JumpVelocity;
 			}
@@ -244,7 +180,7 @@ public partial class Player : CharacterBody3D
 		{
 			float SprintSpeed = Speed * SprintSpeedMultiplier * GlobalSpeedModifier;
 			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
-			if (inputDisabled)
+			if (InputDisabled)
 			{
 				inputDir = Vector2.Zero;
 			}
@@ -261,7 +197,7 @@ public partial class Player : CharacterBody3D
 			}
 
 			// Handle jump AFTER lateral movement to avoid b-hopping.
-			if (Input.IsActionJustPressed("Jump") && !inputDisabled)
+			if (Input.IsActionJustPressed("Jump") && !InputDisabled)
 			{
 				velocity.Y = JumpVelocity;
 			}
@@ -274,160 +210,4 @@ public partial class Player : CharacterBody3D
 		MoveAndSlide();
 	}
 
-	private void InitRefs()
-	{
-		PlayerCameraPivot = GetNode<Node3D>("PlayerCameraPivot");
-		PrivateReferences.Add(PlayerCameraPivot);
-		PlayerCamera = PlayerCameraPivot.GetNode<Camera3D>("PlayerCamera");
-		PrivateReferences.Add(PlayerCamera);
-		LocomotionStateMachine = GetNode<StateMachine>("LocomotionStateMachine");
-		PrivateReferences.Add(LocomotionStateMachine);
-		InteractRaycast = PlayerCamera.GetNode<RayCast3D>("InteractRaycast");
-		PrivateReferences.Add(InteractRaycast);
-		PickupableBodyTarget = PlayerCamera.GetNode<Node3D>("PickupableBodyTarget");
-		PrivateReferences.Add(PickupableBodyTarget);
-		PlayerIdLabel = GetNode<Label3D>("PlayerIdLabel");
-		PrivateReferences.Add(PlayerIdLabel);
-		// SessionChat lives on the level, not under the player.
-		SessionChat = GetParent().GetNodeOrNull<SessionChat>("SessionChat");
-		PrivateReferences.Add(SessionChat);
-
-		if (LoggingDebug)
-		{
-			bool AllValidated = true;
-			foreach (Node ReferenceToValidate in PrivateReferences)
-			{
-				if (ReferenceToValidate == null)
-				{
-					AllValidated = false;
-					Debug.LogError("Player: Failed to validate object reference: null");
-				}
-			}
-			if (AllValidated)
-			{
-				Debug.Log("Player: All object references validated successfully.");
-			}
-		}
-	}
-
-	// Updates the currently selected interactable and notifies listeners when it changes.
-	private void SetSelectedInteractable(Node3D Value)
-	{
-		// Prevent reselecting the same interactable.
-		// No change — skip deselect/select/emit.
-		if (_SelectedInteractable == Value)
-		{
-			return;
-		}
-
-		// Clear selection on the previous interactable, if any.
-		if (_SelectedInteractable is IInteractable OldInteractable)
-		{
-			OldInteractable.IsSelected = false;
-		}
-
-		// Store the new selection (may be null when looking at nothing).
-		_SelectedInteractable = Value;
-
-		// Mark the new interactable as selected, if any.
-		if (_SelectedInteractable is IInteractable NewInteractable)
-		{
-			NewInteractable.IsSelected = true;
-		}
-
-		// Notify listeners of the new selection (including null when cleared).
-		EmitSignal(SignalName.SelectedInteractableChanged, _SelectedInteractable);
-	}
-
-	private void SetHeldBody(PickupableBody Value, PickupableBody PreviousHeldBody)
-	{
-		_HeldBody = Value;
-
-		// If the held body is null, the body is being dropped.
-		if (_HeldBody == null)
-		{
-			PreviousHeldBody.IsHeld = false;
-			PreviousHeldBody.CanBeSelected = true;
-			PreviousHeldBody.HoldTarget = null;
-			PreviousHeldBody.HoldingPlayer = null;
-			GlobalSpeedModifier = 1.0f;
-
-			return;
-		}
-
-		// Otherwise, the body is being picked up.
-		_HeldBody.CanBeSelected = false;
-		_HeldBody.IsHeld = true;
-		_HeldBody.HoldingPlayer = this;
-		GlobalSpeedModifier = _HeldBody.PlayerSpeedMultiplier;
-	}
-
-	// Checks for an interactable object in the player's line of sight and selects it if found.
-	private void TrySelectInteractable()
-	{
-		Node3D Hit = GetInteractableFromRaycast();
-		if (Hit is IInteractable Interactable && Interactable.CanBeSelected)
-		{
-			SelectedInteractable = Hit;
-		}
-		else
-		{
-			SelectedInteractable = null;
-		}
-	}
-
-	// Returns the object the interactable checking raycast is colliding with.
-	// Returns null if no object or the object does not implement IInteractable.
-	private Node3D GetInteractableFromRaycast()
-	{
-		if (InteractRaycast == null || !InteractRaycast.IsColliding())
-		{
-			return null;
-		}
-
-		if (!(InteractRaycast.GetCollider() is IInteractable))
-		{
-			return null;
-		}
-
-		return InteractRaycast.GetCollider() as Node3D;
-	}
-
-	// Attempts to pick up the given pickupable body.
-	// Returns immediately if the player is already holding a body, the body is null,
-	// or the body is farther than its max hold distance.
-	public void TryPickupPickupableBody(PickupableBody BodyToPickup)
-	{
-		// If the player is already holding a body, return.
-		if (HeldBody != null)
-		{
-			return;
-		}
-		// If there is no body to pick up, return.
-		if (BodyToPickup == null)
-		{
-			return;
-		}
-		// If the body is farther than its max hold distance, return.
-		if (PickupableBodyTarget.GlobalPosition.DistanceTo(BodyToPickup.GlobalPosition) > BodyToPickup.MaxHoldDistance)
-		{
-			return;
-		}
-
-		// Set the HeldBody to it and the body's HoldTarget to the player's hold marker.
-		HeldBody = BodyToPickup;
-		HeldBody.HoldTarget = PickupableBodyTarget;
-	}
-
-	public void DropHeldBody()
-	{
-		// if held body is already null, return.
-		if (HeldBody == null)
-		{
-			return;
-		}
-
-		// otherwise, set the held body to null.
-		HeldBody = null;
-	}
 }

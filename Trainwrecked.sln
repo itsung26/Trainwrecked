@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trainwrecked", "Trainwrecked.csproj", "{55A0B46D-FCAD-494D-B7BF-CADC556EFE9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trainwrecked", "Trainwrecked.csproj", "{82A3F0F1-2767-40EB-8E90-C1CA5F416211}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,11 +9,11 @@ Global
 	ExportRelease|Any CPU = ExportRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{55A0B46D-FCAD-494D-B7BF-CADC556EFE9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{55A0B46D-FCAD-494D-B7BF-CADC556EFE9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{55A0B46D-FCAD-494D-B7BF-CADC556EFE9B}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
-		{55A0B46D-FCAD-494D-B7BF-CADC556EFE9B}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
-		{55A0B46D-FCAD-494D-B7BF-CADC556EFE9B}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
-		{55A0B46D-FCAD-494D-B7BF-CADC556EFE9B}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{82A3F0F1-2767-40EB-8E90-C1CA5F416211}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82A3F0F1-2767-40EB-8E90-C1CA5F416211}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82A3F0F1-2767-40EB-8E90-C1CA5F416211}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{82A3F0F1-2767-40EB-8E90-C1CA5F416211}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{82A3F0F1-2767-40EB-8E90-C1CA5F416211}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{82A3F0F1-2767-40EB-8E90-C1CA5F416211}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
 	EndGlobalSection
 EndGlobal

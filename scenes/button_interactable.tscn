@@ -57,15 +57,11 @@ _data = {
 &"button_down": SubResource("Animation_3ql4m")
 }
 
-[node name="ButtonInteractable" type="RigidBody3D" unique_id=751981149 node_paths=PackedStringArray("InvertedHullMeshes", "ButtonAnimator")]
+[node name="ButtonInteractable" type="RigidBody3D" unique_id=751981149]
 mass = 0.5
 sleeping = true
 freeze = true
 script = ExtResource("1_j0e45")
-InteractableDisplayName = "Button"
-InvertedHullMeshes = [NodePath("button/IH"), NodePath("button/IH2")]
-ButtonAnimator = NodePath("AnimationPlayer")
-InteractAnimationName = "button_down"
 
 [node name="button" parent="." unique_id=1405335387 instance=ExtResource("1_eupa5")]
 transform = Transform3D(0.205, 0, 0, 0, 0.205, 0, 0, 0, 0.205, 0, 0, 0)
@@ -76,7 +72,6 @@ surface_material_override/0 = ExtResource("3_3ql4m")
 
 [node name="IH2" type="MeshInstance3D" parent="button" unique_id=1075195907]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.13846537, 0)
-visible = false
 mesh = SubResource("ArrayMesh_j0e45")
 surface_material_override/0 = ExtResource("3_3ql4m")
 

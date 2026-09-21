@@ -7,10 +7,9 @@
 [ext_resource type="Script" uid="uid://d13b5kdgkflx4" path="res://scripts/State.cs" id="5_tuyoq"]
 [ext_resource type="PackedScene" uid="uid://cwoeroni2y0ee" path="res://assets/3d assets/playermodel_assets/male_base_mesh/male_base.blend" id="6_tuyoq"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_dehhp"]
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_u8vuu"]
 radius = 0.109375
+height = 1.6657715
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qlg0r"]
 properties/0/path = NodePath(".:position")
@@ -19,19 +18,22 @@ properties/0/replication_mode = 1
 properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath(".:visible")
+properties/2/path = NodePath("PlayerCameraPivot/PlayerCamera:rotation")
 properties/2/spawn = true
 properties/2/replication_mode = 1
-properties/3/path = NodePath("PlayerCameraPivot/PlayerCamera:rotation")
+properties/3/path = NodePath("PlayerCameraPivot:rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
-properties/4/path = NodePath("PlayerCameraPivot:rotation")
-properties/4/spawn = true
-properties/4/replication_mode = 1
 
-[node name="Player" type="CharacterBody3D" unique_id=320653181]
+[node name="Player" type="CharacterBody3D" unique_id=320653181 node_paths=PackedStringArray("PlayerCameraPivot", "PlayerCamera", "LocomotionStateMachine", "InteractRaycast", "PlayerIdLabel", "PlayerModelTreeRoot")]
 collision_layer = 2
 script = ExtResource("1_3vyb7")
+PlayerCameraPivot = NodePath("PlayerCameraPivot")
+PlayerCamera = NodePath("PlayerCameraPivot/PlayerCamera")
+LocomotionStateMachine = NodePath("LocomotionStateMachine")
+InteractRaycast = NodePath("PlayerCameraPivot/PlayerCamera/InteractRaycast")
+PlayerIdLabel = NodePath("PlayerIdLabel")
+PlayerModelTreeRoot = NodePath("male_base")
 LoggingDebug = true
 MouseSensitivity = 0.015
 
@@ -40,13 +42,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2329323, 0)
 billboard = 2
 text = "!!LOOKUP FAILED!!"
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=716433429]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CapsuleMesh_dehhp")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1010997347]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+[node name="PlayerCollider" type="CollisionShape3D" parent="." unique_id=1010997347]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.83288574, 0)
 shape = SubResource("CapsuleShape3D_u8vuu")
+
+[node name="male_base" parent="." unique_id=1446285638 instance=ExtResource("6_tuyoq")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 
 [node name="PlayerCameraPivot" type="Node3D" parent="." unique_id=39234166]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
@@ -81,10 +82,7 @@ metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1884838914]
 replication_config = SubResource("SceneReplicationConfig_qlg0r")
 
-[node name="male_base" parent="." unique_id=1446285638 instance=ExtResource("6_tuyoq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1278985, 0, 0)
-
-[connection signal="SelectedInteractableChanged" from="." to="PlayerHud" method="_on_player_selected_interactable_changed"]
 [connection signal="StateChanged" from="LocomotionStateMachine" to="PlayerHud" method="_on_locomotion_state_machine_state_changed"]
 
+[editable path="male_base"]
 [editable path="PlayerHud"]

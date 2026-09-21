@@ -13,10 +13,6 @@ vec3 sample_color_function(float x) {
 	return mix(color, color_2, x);
 }
 
-void vertex() {
-	// Called for every vertex the material is visible on.
-}
-
 void fragment() {
 	ALBEDO = vec3(0.0);
 	EMISSION = sample_color_function(sample_sine_function(TIME));

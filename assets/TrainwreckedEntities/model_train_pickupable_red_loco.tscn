@@ -102,50 +102,34 @@ properties/3/path = NodePath(".:angular_velocity")
 properties/3/spawn = true
 properties/3/replication_mode = 1
 
-[node name="ModelTrainPickupableRedLoco" type="RigidBody3D" unique_id=1511877849 node_paths=PackedStringArray("InvertedHullMeshes", "DebugLabel1", "DebugLabel2", "DebugLabel3", "DebugLabel4")]
+[node name="ModelTrainPickupableRedLoco" type="RigidBody3D" unique_id=1511877849]
 script = ExtResource("1_j64iu")
-InvertedHullMeshes = [NodePath("train-locomotive-b/train-locomotive-b/wheel/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_1/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_2/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheel_3/IH"), NodePath("train-locomotive-b/train-locomotive-b/wheels-front/IH"), NodePath("train-locomotive-b/train-locomotive-b/IH")]
-InteractableDisplayName = "Steam Locomotive Plush"
-HoldSpring = 4.3
-RotationTorque = 5.0
-MaxHoldDistance = 1.5
-FacePlayerAxis = 1
-DebugLabel1 = NodePath("Label3D")
-DebugLabel2 = NodePath("Label3D2")
-DebugLabel3 = NodePath("Label3D3")
-DebugLabel4 = NodePath("Label3D4")
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
 
 [node name="train-locomotive-b" parent="." unique_id=2036816041 instance=ExtResource("2_tutl6")]
 transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
 
 [node name="IH" type="MeshInstance3D" parent="train-locomotive-b/train-locomotive-b/wheel" parent_id_path=PackedInt32Array(2036816041, 523158159) index="0" unique_id=100198700]
-visible = false
 mesh = SubResource("ArrayMesh_dy81g")
 surface_material_override/0 = ExtResource("3_tutl6")
 
 [node name="IH" type="MeshInstance3D" parent="train-locomotive-b/train-locomotive-b/wheel_1" parent_id_path=PackedInt32Array(2036816041, 549326784) index="0" unique_id=53509025]
-visible = false
 mesh = SubResource("ArrayMesh_wbqgj")
 surface_material_override/0 = ExtResource("3_tutl6")
 
 [node name="IH" type="MeshInstance3D" parent="train-locomotive-b/train-locomotive-b/wheel_2" parent_id_path=PackedInt32Array(2036816041, 1865332797) index="0" unique_id=1228192537]
-visible = false
 mesh = SubResource("ArrayMesh_12m8u")
 surface_material_override/0 = ExtResource("3_tutl6")
 
 [node name="IH" type="MeshInstance3D" parent="train-locomotive-b/train-locomotive-b/wheel_3" parent_id_path=PackedInt32Array(2036816041, 1624052411) index="0" unique_id=903823713]
-visible = false
 mesh = SubResource("ArrayMesh_behld")
 surface_material_override/0 = ExtResource("3_tutl6")
 
 [node name="IH" type="MeshInstance3D" parent="train-locomotive-b/train-locomotive-b/wheels-front" parent_id_path=PackedInt32Array(2036816041, 1799752012) index="0" unique_id=1923214928]
-visible = false
 mesh = SubResource("ArrayMesh_ew1vv")
 surface_material_override/0 = ExtResource("3_tutl6")
 
 [node name="IH" type="MeshInstance3D" parent="train-locomotive-b/train-locomotive-b" parent_id_path=PackedInt32Array(2036816041, 1797722645) index="5" unique_id=1381787435]
-visible = false
 mesh = SubResource("ArrayMesh_c0qpu")
 surface_material_override/0 = ExtResource("3_tutl6")
 

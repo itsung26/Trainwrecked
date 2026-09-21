@@ -21,13 +21,16 @@ public partial class PlayerHud : Control
 		InteractableNameLabel.Visible = false;
 	}
 
-	public void SetInteractableName(string Name)
+	public void SetInteractableNameText(string Name)
 	{
 		InteractableNameLabel.Text = Name;
 	}
 
 	public void _on_locomotion_state_machine_state_changed(State NewState, State OldState)
 	{
+		if (!IsMultiplayerAuthority()) {
+			return;
+		}
 		if (NewState.Name == "SprintingState")
 		{
 			SprintCrosshair.Visible = true;
@@ -40,19 +43,5 @@ public partial class PlayerHud : Control
 		}
 	}
 
-	public void _on_player_selected_interactable_changed(Node3D NewInteractable)
-	{
-		if ((NewInteractable is IInteractable Interactable) && (Interactable.CanBeSelected == true))
-		{
-			InteractableNameLabel.Visible = true;
-			string NameToDisplay = Interactable.InteractableDisplayName;
-			InteractableNameLabel.Text = "'" + NameToDisplay + "'";
-		}
-		else if (NewInteractable == null)
-		{
-			InteractableNameLabel.Visible = false;
-			InteractableNameLabel.Text = "''";
-		}
-	}
 
 }
