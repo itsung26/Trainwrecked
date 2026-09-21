@@ -19,7 +19,7 @@ public abstract partial class Interactable : RigidBody3D
 	private Array<MeshInstance3D> _invertedHullMeshes = new Array<MeshInstance3D>();
 	private bool _outlineVisible = false;
 	private bool _selectable = true;
-
+	private bool _selected = false;
 	/// <summary>
 	/// Whether the inverted-hull outline meshes are shown.
 	/// Setting this updates every cached IH <see cref="MeshInstance3D"/>'s
@@ -30,11 +30,15 @@ public abstract partial class Interactable : RigidBody3D
 		get { return _outlineVisible; }
 		set { SetOutlineVisible(value); }
 	}
-
 	public bool Selectable
 	{
 		get { return _selectable; }
 		set { SetSelectable(value); }
+	}
+	public bool Selected
+	{
+		get { return _selected; }
+		set { SetSelected(value); }
 	}
 
 	/// <summary>
@@ -112,9 +116,32 @@ public abstract partial class Interactable : RigidBody3D
 		return descendants;
 	}
 
-	private void SetSelectable(bool value)
+	public void SetSelectable(bool value)
 	{
 		_selectable = value;
+
+		if (value == false)
+		{
+			Selected = false;
+		}
 	}
 
+	public void SetSelected(bool value)
+	{
+		if (!Selectable && value == true)
+		{
+			return;
+		}
+
+		_selected = value;
+
+		if (value == true)
+		{
+			OutlineVisible = true;
+		}
+		else
+		{
+			OutlineVisible = false;
+		}
+	}
 }

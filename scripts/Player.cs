@@ -5,7 +5,7 @@ public partial class Player : CharacterBody3D
 {
 	#region Regular Variables
 	// The interactable that the player is currently looking at. Can be a button, a holdable object, etc.
-
+	public Interactable CurrentSelection { get; private set; }
 	#endregion
 
 	#region Exported Variables
@@ -97,11 +97,13 @@ public partial class Player : CharacterBody3D
 
 	public override void _Process(double delta)
 	{
+		// Skip player logic if this player is a peer puppet.
 		if (!IsMultiplayerAuthority())
 		{
 			return;
 		}
 
+		// Restrict input if typing in chat detected.
 		if (SessionChat is not null)
 		{
 			bool typing = SessionChat.IsTyping;
@@ -109,6 +111,7 @@ public partial class Player : CharacterBody3D
 			LookDisabled = typing;
 		}
 
+		UpdateInteractableSelection();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -208,6 +211,41 @@ public partial class Player : CharacterBody3D
 
 		Velocity = velocity;
 		MoveAndSlide();
+	}
+
+	public void UpdateInteractableSelection()
+	{
+		Interactable hitInteractable = InteractRaycast.GetCollider() as Interactable;
+
+		// prevent reselecting the same thing
+		if (CurrentSelection.Equals(hitInteractable))
+		{
+			return;
+		}
+
+		// looking off of a selected object into nothing
+		if (hitInteractable is null && CurrentSelection is not null)
+		{
+			CurrentSelection.Selected = false;
+
+			CurrentSelection = hitInteractable;
+		}
+		// Selected object -> different selected object
+		// looking from a selected object onto a different object
+		else if (hitInteractable is not null && CurrentSelection is not null)
+		{
+			CurrentSelection.Selected = false;
+			hitInteractable.Selected = true;
+			
+			CurrentSelection = hitInteractable;
+		}
+		// looking onto a selected object from nothing
+		else if (hitInteractable is not null && CurrentSelection is null)
+		{
+			hitInteractable.Selected = true;
+
+			CurrentSelection = hitInteractable;
+		}
 	}
 
 }
