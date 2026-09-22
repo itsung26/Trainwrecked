@@ -32,6 +32,9 @@ public partial class PickupableBody : Interactable
 	/// <summary>Speed used when returning toward the hold target.</summary>
 	[Export] public float ReturnSpeed { get; set; } = 8.0f;
 
+	/// <summary>Gain for upright and yaw angular correction while held.</summary>
+	[Export] public float AngularCorrectionSpeed { get; set; } = 8.0f;
+
 	[Export] public float WalkSpeedMultiplier { get; set; } = 1.0f;
 
 	/// <summary>Peer id of the current holder, or <c>0</c> when free.</summary>
@@ -81,8 +84,90 @@ public partial class PickupableBody : Interactable
 			{
 				LinearVelocity = toTarget.Normalized() * Mathf.Min(ReturnSpeed * distance, distance / (float)delta);
 			}
+
+			UpdateHoldFacingAngularVelocity(holderPlayer, (float)delta);
 		}
     }
+
+	/// <summary>
+	/// Softly rights the body and yaws it so <see cref="PreferredHoldFace"/> faces the camera.
+	/// Pitch/roll stay free but are pulled back upright; yaw tracks the holder.
+	/// </summary>
+	private void UpdateHoldFacingAngularVelocity(Player holderPlayer, float delta)
+	{
+		Vector3 angular = Vector3.Zero;
+
+		// Soft upright: align body up with world up.
+		Vector3 currentUp = GlobalTransform.Basis.Y;
+		Vector3 uprightCross = currentUp.Cross(Vector3.Up);
+		float uprightCrossLen = uprightCross.Length();
+		float uprightDot = Mathf.Clamp(currentUp.Dot(Vector3.Up), -1f, 1f);
+
+		if (uprightCrossLen < 0.001f)
+		{
+			if (uprightDot <= 0f)
+			{
+				float flipSpeed = Mathf.Min(AngularCorrectionSpeed * Mathf.Pi, Mathf.Pi / delta);
+				angular += GlobalTransform.Basis.X * flipSpeed;
+			}
+		}
+		else
+		{
+			float uprightAngle = Mathf.Atan2(uprightCrossLen, uprightDot);
+			float uprightSpeed = Mathf.Min(AngularCorrectionSpeed * uprightAngle, uprightAngle / delta);
+			angular += (uprightCross / uprightCrossLen) * uprightSpeed;
+		}
+
+		// Yaw: PreferredHoldFace toward camera on the XZ plane.
+		if (holderPlayer.PlayerCamera is not null)
+		{
+			Vector3 toCamera = holderPlayer.PlayerCamera.GlobalPosition - GlobalPosition;
+			toCamera.Y = 0f;
+
+			Vector3 currentDir = GlobalTransform.Basis * GetPreferredHoldFaceLocal();
+			currentDir.Y = 0f;
+
+			if (toCamera.LengthSquared() >= 0.0001f && currentDir.LengthSquared() >= 0.0001f)
+			{
+				currentDir = currentDir.Normalized();
+				Vector3 desiredDir = toCamera.Normalized();
+
+				Vector3 yawCross = currentDir.Cross(desiredDir);
+				float yawCrossLen = yawCross.Length();
+				float yawDot = Mathf.Clamp(currentDir.Dot(desiredDir), -1f, 1f);
+
+				if (yawCrossLen < 0.001f)
+				{
+					if (yawDot <= 0f)
+					{
+						float flipSpeed = Mathf.Min(AngularCorrectionSpeed * Mathf.Pi, Mathf.Pi / delta);
+						angular.Y = flipSpeed;
+					}
+				}
+				else
+				{
+					float yawAngle = Mathf.Atan2(yawCrossLen, yawDot);
+					float yawSpeed = Mathf.Min(AngularCorrectionSpeed * yawAngle, yawAngle / delta);
+					angular.Y = Mathf.Sign(yawCross.Y) * yawSpeed;
+				}
+			}
+		}
+
+		AngularVelocity = angular;
+	}
+
+	/// <summary>Local-space unit vector for <see cref="PreferredHoldFace"/>.</summary>
+	private Vector3 GetPreferredHoldFaceLocal()
+	{
+		return PreferredHoldFace switch
+		{
+			HoldFaceAxis.PositiveX => Vector3.Right,
+			HoldFaceAxis.NegativeX => Vector3.Left,
+			HoldFaceAxis.PositiveZ => Vector3.Back,
+			HoldFaceAxis.NegativeZ => Vector3.Forward,
+			_ => Vector3.Forward
+		};
+	}
 
 	/// <summary>
 	/// Requests pickup when free, or drop when the sender already holds this body.
@@ -182,7 +267,7 @@ public partial class PickupableBody : Interactable
 	}
 
 	/// <summary>
-	/// Local enter-hold hook. Disables physics simulation for now; attachment comes later.
+	/// Local enter-hold hook. Disables gravity while held.
 	/// </summary>
 	protected virtual void BeginHold()
 	{
@@ -195,7 +280,7 @@ public partial class PickupableBody : Interactable
 	}
 
 	/// <summary>
-	/// Local exit-hold hook. Re-enables physics simulation for now.
+	/// Local exit-hold hook. Restores gravity after release.
 	/// </summary>
 	protected virtual void EndHold()
 	{

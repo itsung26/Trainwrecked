@@ -110,6 +110,7 @@ properties/5/replication_mode = 1
 
 [node name="ModelTrainPickupableRedLoco" type="RigidBody3D" unique_id=1511877849]
 script = ExtResource("1_j64iu")
+PreferredHoldFace = 1
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
 
 [node name="train-locomotive-b" parent="." unique_id=2036816041 instance=ExtResource("2_tutl6")]
