@@ -26,6 +26,14 @@ public partial class PickupableBody : Interactable
 	/// <summary>Preferred local axis facing the holder when attachment is implemented.</summary>
 	[Export] public HoldFaceAxis PreferredHoldFace { get; set; } = HoldFaceAxis.NegativeZ;
 
+	/// <summary>Maximum distance from the hold target before the body should catch up.</summary>
+	[Export] public float MaxHoldDistance { get; set; } = 2.0f;
+
+	/// <summary>Speed used when returning toward the hold target.</summary>
+	[Export] public float ReturnSpeed { get; set; } = 8.0f;
+
+	[Export] public float WalkSpeedMultiplier { get; set; } = 1.0f;
+
 	/// <summary>Peer id of the current holder, or <c>0</c> when free.</summary>
 	public int HolderPeerId { get; private set; } = 0;
 
@@ -46,10 +54,33 @@ public partial class PickupableBody : Interactable
     public override void _PhysicsProcess(double delta)
     {
         base._PhysicsProcess(delta);
+
+		if (!NetworkManager.IsServer())
+		{
+			return;
+		}
+
 		Player holderPlayer = NetworkManager.GetPlayerByPeerId(HolderPeerId);
 		if (holderPlayer is not null)
 		{
-			LinearVelocity = holderPlayer.PickupableBodyTarget.GlobalPosition - GlobalPosition;
+			Vector3 toTarget = holderPlayer.PickupableBodyTarget.GlobalPosition - GlobalPosition;
+			float distance = toTarget.Length();
+
+			// Drop if too far.
+			if (distance > MaxHoldDistance)
+			{
+				ServerRelease(HolderPeerId);
+				return;
+			}
+
+			if (distance < 0.05f)
+			{
+				LinearVelocity = Vector3.Zero;
+			}
+			else
+			{
+				LinearVelocity = toTarget.Normalized() * Mathf.Min(ReturnSpeed * distance, distance / (float)delta);
+			}
 		}
     }
 
@@ -155,7 +186,12 @@ public partial class PickupableBody : Interactable
 	/// </summary>
 	protected virtual void BeginHold()
 	{
-		// Debug.Log($"client {HolderPeerId} has picked me up");
+		Player player = NetworkManager.GetPlayerByPeerId(HolderPeerId);
+		if (player is not null)
+		{
+			player.GlobalSpeedModifier = player.GlobalSpeedModifier * WalkSpeedMultiplier;
+		}
+		GravityScale = 0.0f;
 	}
 
 	/// <summary>
@@ -163,9 +199,12 @@ public partial class PickupableBody : Interactable
 	/// </summary>
 	protected virtual void EndHold()
 	{
-		LinearVelocity = Vector3.Zero;
-		AngularVelocity = Vector3.Zero;
-		// Debug.Log($"a client has dropped me");
+		Player player = NetworkManager.GetPlayerByPeerId(HolderPeerId);
+		if (player is not null)
+		{
+			player.GlobalSpeedModifier = 1.0f;
+		}
+		GravityScale = 1.0f;
 	}
 
 	public override string ToString()

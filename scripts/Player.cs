@@ -107,13 +107,12 @@ public partial class Player : CharacterBody3D
 
 		else if (NewEvent is InputEventKey NewKeyEvent)
 		{
-			if (Input.IsActionJustPressed("Interact"))
+			if (Input.IsActionJustPressed("Interact") && !InputDisabled)
 			{
 				// Drop logic for held body
 				if (CurrentHeldBody is not null)
 				{
 					CurrentHeldBody.Rpc(Interactable.MethodName.Interact);
-					CurrentHeldBody = null;
 				}
 				// interact logic for currently highlighted selectable.
 				else if (CurrentSelection is not null)
@@ -131,6 +130,7 @@ public partial class Player : CharacterBody3D
 		{
 			return;
 		}
+
 
 		UpdateInteractableSelection();
 	}
