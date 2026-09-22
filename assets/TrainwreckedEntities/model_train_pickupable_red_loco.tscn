@@ -101,6 +101,12 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath(".:angular_velocity")
 properties/3/spawn = true
 properties/3/replication_mode = 1
+properties/4/path = NodePath(".:freeze")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath(".:sleeping")
+properties/5/spawn = true
+properties/5/replication_mode = 1
 
 [node name="ModelTrainPickupableRedLoco" type="RigidBody3D" unique_id=1511877849]
 script = ExtResource("1_j64iu")
@@ -136,30 +142,6 @@ surface_material_override/0 = ExtResource("3_tutl6")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=958314524]
 transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_opjlc")
-
-[node name="Label3D" type="Label3D" parent="." unique_id=780822637]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.44279265, 0)
-billboard = 1
-text = "is held: false"
-font_size = 15
-
-[node name="Label3D2" type="Label3D" parent="." unique_id=11094989]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.57969654, 0)
-billboard = 1
-text = "is selected: false"
-font_size = 15
-
-[node name="Label3D3" type="Label3D" parent="." unique_id=223413172]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7081626, 0)
-billboard = 1
-text = "can be selected: false"
-font_size = 15
-
-[node name="Label3D4" type="Label3D" parent="." unique_id=888479091]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.81493205, 0)
-billboard = 1
-text = "can be selected: false"
-font_size = 15
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="." unique_id=446905549]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00012207031, 0.08243561, -0.008178711)

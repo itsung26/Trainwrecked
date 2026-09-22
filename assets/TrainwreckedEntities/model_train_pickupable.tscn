@@ -65,8 +65,15 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath(".:angular_velocity")
 properties/3/spawn = true
 properties/3/replication_mode = 1
+properties/4/path = NodePath(".:sleeping")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+properties/5/path = NodePath(".:freeze")
+properties/5/spawn = true
+properties/5/replication_mode = 1
 
 [node name="ModelTrainPickupable" type="RigidBody3D" unique_id=1554800455]
+collision_mask = 3
 mass = 0.7
 script = ExtResource("1_4jfv1")
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
@@ -97,30 +104,6 @@ shape = SubResource("ConvexPolygonShape3D_x2pf3")
 [node name="CollisionShape3D3" type="CollisionShape3D" parent="." unique_id=1780322468]
 transform = Transform3D(0.215, 0, 0, 0, 0.215, 0, 0, 0, 0.215, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_ixv1d")
-
-[node name="Label3D" type="Label3D" parent="." unique_id=127038048]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.44279265, 0)
-billboard = 1
-text = "is held: false"
-font_size = 15
-
-[node name="Label3D2" type="Label3D" parent="." unique_id=1183601453]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.57969654, 0)
-billboard = 1
-text = "is selected: false"
-font_size = 15
-
-[node name="Label3D3" type="Label3D" parent="." unique_id=1452908951]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7081626, 0)
-billboard = 1
-text = "can be selected: false"
-font_size = 15
-
-[node name="Label3D4" type="Label3D" parent="." unique_id=1823717781]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8498816, 0)
-billboard = 1
-text = "can be selected: false"
-font_size = 15
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1474865473]
 replication_config = SubResource("SceneReplicationConfig_s3fmo")

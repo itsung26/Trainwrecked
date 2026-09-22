@@ -43,6 +43,16 @@ public partial class PickupableBody : Interactable
 		base._Process(delta);
 	}
 
+    public override void _PhysicsProcess(double delta)
+    {
+        base._PhysicsProcess(delta);
+		Player holderPlayer = NetworkManager.GetPlayerByPeerId(HolderPeerId);
+		if (holderPlayer is not null)
+		{
+			LinearVelocity = holderPlayer.PickupableBodyTarget.GlobalPosition - GlobalPosition;
+		}
+    }
+
 	/// <summary>
 	/// Requests pickup when free, or drop when the sender already holds this body.
 	/// </summary>
@@ -145,9 +155,7 @@ public partial class PickupableBody : Interactable
 	/// </summary>
 	protected virtual void BeginHold()
 	{
-		Freeze = true;
-		Sleeping = true;
-		Debug.Log($"client {HolderPeerId} has picked me up");
+		// Debug.Log($"client {HolderPeerId} has picked me up");
 	}
 
 	/// <summary>
@@ -155,11 +163,9 @@ public partial class PickupableBody : Interactable
 	/// </summary>
 	protected virtual void EndHold()
 	{
-		Freeze = false;
-		Sleeping = false;
 		LinearVelocity = Vector3.Zero;
 		AngularVelocity = Vector3.Zero;
-		Debug.Log($"a client has dropped me");
+		// Debug.Log($"a client has dropped me");
 	}
 
 	public override string ToString()
