@@ -144,4 +144,6 @@ public abstract partial class Interactable : RigidBody3D
 			OutlineVisible = false;
 		}
 	}
+
+	public abstract void Interact();
 }

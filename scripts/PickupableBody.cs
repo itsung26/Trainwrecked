@@ -24,6 +24,11 @@ public partial class PickupableBody : Interactable
         base._Process(delta);
     }
 
+    public override void Interact()
+    {
+        throw new NotImplementedException();
+    }
+
 	public override string ToString()
 	{
 		return Debug.GenerateInstanceToString(this);

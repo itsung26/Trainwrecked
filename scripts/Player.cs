@@ -53,6 +53,12 @@ public partial class Player : CharacterBody3D
 			return;
 		}
 
+		if (SessionChat is not null)
+		{
+			SessionChat.TypingChanged += _on_session_chat_typing_changed;
+			_on_session_chat_typing_changed(SessionChat.IsTyping);
+		}
+
 		Input.SetMouseMode(Input.MouseModeEnum.Captured);
 		// Initialize locomotion state
 		if (!IsOnFloor())
@@ -65,6 +71,14 @@ public partial class Player : CharacterBody3D
 		}
 		PlayerIdLabel.Visible = false;
 		PlayerModelTreeRoot.Visible = false;
+	}
+
+	public override void _ExitTree()
+	{
+		if (SessionChat is not null)
+		{
+			SessionChat.TypingChanged -= _on_session_chat_typing_changed;
+		}
 	}
 
 
@@ -91,7 +105,13 @@ public partial class Player : CharacterBody3D
 
 		else if (NewEvent is InputEventKey NewKeyEvent)
 		{
-
+			if (Input.IsActionJustPressed("Interact"))
+			{
+				if (CurrentSelection is not null)
+				{
+					CurrentSelection.Rpc(Interactable.MethodName.Interact);
+				}
+			}
 		}
 	}
 
@@ -103,15 +123,13 @@ public partial class Player : CharacterBody3D
 			return;
 		}
 
-		// Restrict input if typing in chat detected.
-		if (SessionChat is not null)
-		{
-			bool typing = SessionChat.IsTyping;
-			InputDisabled = typing;
-			LookDisabled = typing;
-		}
-
 		UpdateInteractableSelection();
+	}
+
+	private void _on_session_chat_typing_changed(bool isTyping)
+	{
+		InputDisabled = isTyping;
+		LookDisabled = isTyping;
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -218,7 +236,7 @@ public partial class Player : CharacterBody3D
 		Interactable hitInteractable = InteractRaycast.GetCollider() as Interactable;
 
 		// prevent reselecting the same thing
-		if (CurrentSelection.Equals(hitInteractable))
+		if (CurrentSelection is not null && CurrentSelection.Equals(hitInteractable))
 		{
 			return;
 		}

@@ -44,6 +44,9 @@ public partial class SessionChat : Control
 	private bool _fadingOut = false;
 	private StyleBoxFlat _panelStyleBox;
 
+	/// <summary>Emitted when the chat input starts or stops being edited.</summary>
+	[Signal] public delegate void TypingChangedEventHandler(bool isTyping);
+
 	public override void _Ready()
 	{
 		CachePanelStyleBox();
@@ -213,6 +216,8 @@ public partial class SessionChat : Control
 		{
 			DelayBeforeFadeoutTimer.Start(DelayBeforeFadeoutBegin);
 		}
+
+		EmitSignal(SignalName.TypingChanged, toggledOn);
 	}
 
 	private void _on_delay_before_fadeout_timer_timeout()
@@ -223,5 +228,6 @@ public partial class SessionChat : Control
 	private void _on_visibility_changed()
 	{
 		CanEnterChat = Visible;
+		
 	}
 }

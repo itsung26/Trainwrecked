@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://7m652s8f6gpa"]
+
+[ext_resource type="Script" uid="uid://2irpluexrox5" path="res://scripts/PauseMenu.cs" id="1_n87rw"]
+
+[node name="PauseMenu" type="Control" unique_id=727864065]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_n87rw")
+
+[node name="PauseMenuBgColor" type="ColorRect" parent="." unique_id=1875797317]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.34509805)
+
+[node name="TitleStuff" type="Control" parent="." unique_id=328542508]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="TitleStuff" unique_id=337710091]
+layout_mode = 0
+anchor_left = 0.0328125
+anchor_top = 0.05648148
+anchor_right = 0.54322916
+anchor_bottom = 0.21851853
+theme_override_font_sizes/font_size = 128
+text = "TRAINWRECKED"
+metadata/_edit_use_anchors_ = true
+
+[node name="TitleSubLabel" type="Label" parent="TitleStuff" unique_id=685823506]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.041145835
+anchor_top = 0.22777778
+anchor_right = 0.26145834
+anchor_bottom = 0.27685186
+theme_override_font_sizes/font_size = 38
+text = "Alpha build - prototype"
+metadata/_edit_use_anchors_ = true
+
+[node name="DividerLine" type="Line2D" parent="TitleStuff" unique_id=945800863]
+position = Vector2(83, 228)
+points = PackedVector2Array(-18.655, 0, 992, 0)
