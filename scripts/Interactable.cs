@@ -4,14 +4,16 @@ using System;
 using System.Linq;
 
 /// <summary>
-/// Abstract base class for world objects that can be highlighted when looked at (becomes selected)
-/// and activated when the player presses Interact. Players will not see interactables highlight when other players select them.
+/// Abstract base for world objects that can be highlighted when looked at and
+/// activated when the player presses Interact.
 /// </summary>
 /// <remarks>
-/// Selection outline VFX uses descendant <see cref="MeshInstance3D"/> nodes whose
-/// name contains <c>IH</c> (inverted hull). Subclasses such as
-/// <see cref="PickupableBody"/> and <see cref="ButtonInteractable"/> add interaction
-/// behavior; outline visibility is shared here via <see cref="OutlineVisible"/>.
+/// Selection and outline are local visual state: peers do not see each other's
+/// highlights. Outline VFX uses descendant <see cref="MeshInstance3D"/> nodes
+/// whose name contains <c>IH</c> (inverted hull). Subclasses such as
+/// <see cref="PickupableBody"/> and <see cref="ButtonInteractable"/> implement
+/// <see cref="Interact"/>. <see cref="Player"/> drives <see cref="Selected"/>
+/// from its interact raycast.
 /// </remarks>
 [GlobalClass]
 public abstract partial class Interactable : RigidBody3D
@@ -20,6 +22,7 @@ public abstract partial class Interactable : RigidBody3D
 	private bool _outlineVisible = false;
 	private bool _selectable = true;
 	private bool _selected = false;
+
 	/// <summary>
 	/// Whether the inverted-hull outline meshes are shown.
 	/// Setting this updates every cached IH <see cref="MeshInstance3D"/>'s
@@ -30,11 +33,29 @@ public abstract partial class Interactable : RigidBody3D
 		get { return _outlineVisible; }
 		set { SetOutlineVisible(value); }
 	}
+
+	/// <summary>
+	/// Whether this interactable can become <see cref="Selected"/>.
+	/// </summary>
+	/// <remarks>
+	/// Setting this to <see langword="false"/> clears <see cref="Selected"/>.
+	/// Setting <see cref="Selected"/> to <see langword="true"/> while this is
+	/// <see langword="false"/> is ignored.
+	/// </remarks>
 	public bool Selectable
 	{
 		get { return _selectable; }
 		set { SetSelectable(value); }
 	}
+
+	/// <summary>
+	/// Whether the local player currently has this interactable targeted.
+	/// </summary>
+	/// <remarks>
+	/// When set to <see langword="true"/>, shows the outline via
+	/// <see cref="OutlineVisible"/>; when <see langword="false"/>, hides it.
+	/// Requires <see cref="Selectable"/> to be <see langword="true"/> to select.
+	/// </remarks>
 	public bool Selected
 	{
 		get { return _selected; }
@@ -42,7 +63,7 @@ public abstract partial class Interactable : RigidBody3D
 	}
 
 	/// <summary>
-	/// Logs an error when no inverted-hull meshes were cached, then hides the outline.
+	/// Caches inverted-hull meshes, warns if none were found, then hides the outline.
 	/// </summary>
 	public override void _Ready()
 	{
@@ -116,6 +137,13 @@ public abstract partial class Interactable : RigidBody3D
 		return descendants;
 	}
 
+	/// <summary>
+	/// Sets whether this interactable may be selected.
+	/// </summary>
+	/// <param name="value">
+	/// <see langword="true"/> to allow selection; <see langword="false"/> to
+	/// disallow it and clear <see cref="Selected"/>.
+	/// </param>
 	public void SetSelectable(bool value)
 	{
 		_selectable = value;
@@ -126,6 +154,18 @@ public abstract partial class Interactable : RigidBody3D
 		}
 	}
 
+	/// <summary>
+	/// Sets whether this interactable is the local player's current target and
+	/// syncs <see cref="OutlineVisible"/> to match.
+	/// </summary>
+	/// <param name="value">
+	/// <see langword="true"/> to select and show the outline;
+	/// <see langword="false"/> to deselect and hide it.
+	/// </param>
+	/// <remarks>
+	/// Does nothing when selecting while <see cref="Selectable"/> is
+	/// <see langword="false"/>.
+	/// </remarks>
 	public void SetSelected(bool value)
 	{
 		if (!Selectable && value == true)
@@ -145,5 +185,12 @@ public abstract partial class Interactable : RigidBody3D
 		}
 	}
 
+	/// <summary>
+	/// Performs this interactable's activation when the player presses Interact.
+	/// </summary>
+	/// <remarks>
+	/// Subclasses define the behavior. Networking (for example an <c>[Rpc]</c> on
+	/// an override) is the subclass's responsibility; this base method is not an RPC.
+	/// </remarks>
 	public abstract void Interact();
 }

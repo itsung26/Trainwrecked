@@ -280,6 +280,23 @@ public partial class NetworkManager : Node
 	}
 
 	/// <summary>
+	/// Searches the current scene's immediate children for the player whose
+	/// name matches <paramref name="id"/> and returns that player.
+	/// </summary>
+	/// <param name="id">Multiplayer peer id (matches the player node's name).</param>
+	/// <returns>The matching <see cref="Player"/>, or <see langword="null"/> if not found.</returns>
+	public static Player GetPlayerByPeerId(int id)
+	{
+		Node currentScene = Instance.GetTree()?.CurrentScene;
+		if (currentScene is null)
+		{
+			return null;
+		}
+
+		return currentScene.GetNodeOrNull<Player>(id.ToString());
+	}
+
+	/// <summary>
 	/// Returns the IPv4 loopback address for localhost as a string ("127.0.0.1").
 	/// </summary>
 	/// <returns>A string representing the IPv4 loopback address.</returns>

@@ -12,6 +12,9 @@
 radius = 0.109375
 height = 1.6657715
 
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_fjrip"]
+auto_exposure_enabled = true
+
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qlg0r"]
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
@@ -26,7 +29,7 @@ properties/3/path = NodePath("PlayerCameraPivot:rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
 
-[node name="Player" type="CharacterBody3D" unique_id=320653181 node_paths=PackedStringArray("PlayerCameraPivot", "PlayerCamera", "LocomotionStateMachine", "InteractRaycast", "PlayerIdLabel", "PlayerModelTreeRoot")]
+[node name="Player" type="CharacterBody3D" unique_id=320653181 node_paths=PackedStringArray("PlayerCameraPivot", "PlayerCamera", "LocomotionStateMachine", "InteractRaycast", "PlayerIdLabel", "PickupableBodyTarget", "PlayerModelTreeRoot")]
 collision_layer = 2
 script = ExtResource("1_3vyb7")
 PlayerCameraPivot = NodePath("PlayerCameraPivot")
@@ -34,6 +37,7 @@ PlayerCamera = NodePath("PlayerCameraPivot/PlayerCamera")
 LocomotionStateMachine = NodePath("LocomotionStateMachine")
 InteractRaycast = NodePath("PlayerCameraPivot/PlayerCamera/InteractRaycast")
 PlayerIdLabel = NodePath("PlayerIdLabel")
+PickupableBodyTarget = NodePath("PlayerCameraPivot/PlayerCamera/PickupableBodyTarget")
 PlayerModelTreeRoot = NodePath("male_base")
 LoggingDebug = true
 MouseSensitivity = 0.015
@@ -98,6 +102,7 @@ bones/49/rotation = Quaternion(-0.24398565, -0.025197305, -0.08141447, 0.9660268
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="PlayerCamera" type="Camera3D" parent="PlayerCameraPivot" unique_id=1218769642]
+attributes = SubResource("CameraAttributesPractical_fjrip")
 script = ExtResource("2_g2els")
 
 [node name="InteractRaycast" type="RayCast3D" parent="PlayerCameraPivot/PlayerCamera" unique_id=2084647628]
@@ -105,6 +110,11 @@ target_position = Vector3(0, 0, -2.08)
 
 [node name="PickupableBodyTarget" type="Marker3D" parent="PlayerCameraPivot/PlayerCamera" unique_id=869740125]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.2)
+gizmo_extents = 0.39
+
+[node name="FlashLight" type="SpotLight3D" parent="PlayerCameraPivot/PlayerCamera" unique_id=693309151]
+light_energy = 0.0
+spot_angle = 10.9823265
 
 [node name="PlayerHud" parent="." unique_id=1268189311 instance=ExtResource("3_qhqgy")]
 

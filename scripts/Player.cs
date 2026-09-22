@@ -6,6 +6,7 @@ public partial class Player : CharacterBody3D
 	#region Regular Variables
 	// The interactable that the player is currently looking at. Can be a button, a holdable object, etc.
 	public Interactable CurrentSelection { get; private set; }
+	public PickupableBody CurrentHeldBody { get; set; }
 	#endregion
 
 	#region Exported Variables
@@ -14,6 +15,7 @@ public partial class Player : CharacterBody3D
 	[Export] public StateMachine LocomotionStateMachine { get; set; }
 	[Export] public RayCast3D InteractRaycast { get; set; }
 	[Export] public Label3D PlayerIdLabel { get; set; }
+	[Export] public Node3D PickupableBodyTarget { get; set; }
 	/// <summary>Level session chat; used to block input while typing.</summary>
 	[Export] public SessionChat SessionChat { get; set; }
 	[Export] public Node3D PlayerModelTreeRoot { get; set; }
@@ -107,7 +109,14 @@ public partial class Player : CharacterBody3D
 		{
 			if (Input.IsActionJustPressed("Interact"))
 			{
-				if (CurrentSelection is not null)
+				// Drop logic for held body
+				if (CurrentHeldBody is not null)
+				{
+					CurrentHeldBody.Rpc(Interactable.MethodName.Interact);
+					CurrentHeldBody = null;
+				}
+				// interact logic for currently highlighted selectable.
+				else if (CurrentSelection is not null)
 				{
 					CurrentSelection.Rpc(Interactable.MethodName.Interact);
 				}

@@ -21,6 +21,7 @@ public partial class PauseMenu : Control
 
 	public override void _ExitTree()
 	{
+
 		if (CanvasLayerParent is not null)
 		{
 			CanvasLayerParent.VisibilityChanged -= _on_canvas_layer_visibility_changed;
@@ -29,6 +30,11 @@ public partial class PauseMenu : Control
 
 	public override void _Input(InputEvent @event)
 	{
+		if (!IsMultiplayerAuthority())
+		{
+			return;
+		}
+
 		if (@event is not InputEventKey)
 		{
 			return;
@@ -50,6 +56,7 @@ public partial class PauseMenu : Control
 
 	private void _on_canvas_layer_visibility_changed()
 	{
+
 		if (CanvasLayerParent is null)
 		{
 			return;
