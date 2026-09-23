@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://assets/TrainwreckedEntities/model_train_pickupable_red_loco.tscn" id="7_lg35i"]
 [ext_resource type="PackedScene" uid="uid://4cw0uqimmt3h" path="res://scenes/button_interactable.tscn" id="8_8msnd"]
 [ext_resource type="PackedScene" uid="uid://boi5es405i8mg" path="res://scenes/session_chat.tscn" id="10_nihl2"]
+[ext_resource type="PackedScene" uid="uid://ci6yovrxt2vcx" path="res://assets/TrainwreckedEntities/curly_poo_pickupable.tscn" id="10_tvk4s"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_iraov"]
 shader = ExtResource("1_srtiu")
@@ -140,6 +141,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3749151, 1.0278907, -1.132
 
 [node name="ButtonInteractable" parent="." unique_id=751981149 instance=ExtResource("8_8msnd")]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -2.332851, 0.64291996, 0.55616164)
+
+[node name="CurlyPooPickupable" parent="." unique_id=1762888275 instance=ExtResource("10_tvk4s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3729159, 0.08500612, 0.48163772)
 
 [node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1175847090]
 _spawnable_scenes = PackedStringArray("uid://bnhq8tk5or7vo")

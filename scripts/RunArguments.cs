@@ -30,17 +30,17 @@ public partial class RunArguments : Node
     /// <summary>
     /// <see langword="true"/> when launch args request hosting a session.
     /// </summary>
-    public static bool HasHostFlag { get; private set; }
+    public static bool HasHostFlag { get; private set; } = false;
 
     /// <summary>
     /// <see langword="true"/> when launch args request joining a session.
     /// </summary>
-    public static bool HasJoinFlag { get; private set; }
+    public static bool HasJoinFlag { get; private set; } = false;
 
     /// <summary>
     /// IPv4 address to join when <see cref="HasJoinFlag"/> is set; otherwise empty.
     /// </summary>
-    public static string JoinFlagAddress { get; private set; }
+    public static string JoinFlagAddress { get; private set; } = "";
 
     /// <summary>
     /// Parses <see cref="OS.GetCmdlineUserArgs"/> into the static flag properties.
@@ -63,7 +63,7 @@ public partial class RunArguments : Node
         Array<string>arguments = new Array<string>(args);
 
         // No arguments to parse.
-        if (arguments.Count <= 0)
+        if (arguments.Count <= 0 || arguments.Contains("--ignoreall"))
         {
             return;
         }

@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://blmsbqcfgvwyd"]
+
+[ext_resource type="Script" uid="uid://ch650xj4vrlih" path="res://scripts/FreeCamera.cs" id="1_yyynn"]
+
+[node name="FreeCamera" type="Camera3D" unique_id=90580429]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+script = ExtResource("1_yyynn")
+RotationLockAxis = 2
+LookSensitivity = 0.01

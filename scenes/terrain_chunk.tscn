@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://17rehvcrs1sg"]
+
+[ext_resource type="Script" uid="uid://comojtb6wigl2" path="res://scripts/TerrainChunk.cs" id="1_6g70i"]
+
+[node name="TerrainChunk" type="Node3D" unique_id=1188616272]
+script = ExtResource("1_6g70i")
