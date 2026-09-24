@@ -1,35 +1,30 @@
-[gd_scene format=4 uid="uid://c58gckeg4226m"]
+[gd_scene format=3 uid="uid://c58gckeg4226m"]
 
 [ext_resource type="PackedScene" uid="uid://bnhq8tk5or7vo" path="res://scenes/player.tscn" id="1_ifns1"]
 [ext_resource type="Script" uid="uid://4x8elhhftwqh" path="res://scripts/TrainwreckedLevel.cs" id="1_ltgxd"]
 [ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="1_srtiu"]
-[ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="3_dh6dg"]
-[ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="3_v6rby"]
-[ext_resource type="Texture2D" uid="uid://dba5njw461t7m" path="res://assets/2d assets/textures/prototype_textures/Dark/texture_07.png" id="4_65vkx"]
-[ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://assets/TrainwreckedEntities/model_train_pickupable.tscn" id="5_ejtda"]
-[ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://assets/TrainwreckedEntities/model_train_pickupable_red_loco.tscn" id="7_lg35i"]
-[ext_resource type="PackedScene" uid="uid://4cw0uqimmt3h" path="res://scenes/button_interactable.tscn" id="8_8msnd"]
+[ext_resource type="Script" uid="uid://pnn6fwlgih3b" path="res://scripts/TerrainGenerator.cs" id="6_srtiu"]
 [ext_resource type="PackedScene" uid="uid://boi5es405i8mg" path="res://scenes/session_chat.tscn" id="10_nihl2"]
-[ext_resource type="PackedScene" uid="uid://ci6yovrxt2vcx" path="res://assets/TrainwreckedEntities/curly_poo_pickupable.tscn" id="10_tvk4s"]
+[ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="12_65vkx"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_iraov"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lg35i"]
 shader = ExtResource("1_srtiu")
-shader_parameter/day_top_color = Color(0.6269943, 0.45844406, 0.117892645, 1)
-shader_parameter/day_bottom_color = Color(0.52278095, 0.30031046, 0.17298615, 1)
+shader_parameter/day_top_color = Color(0.38431373, 0.45490196, 0.54901963, 1)
+shader_parameter/day_bottom_color = Color(0.6627451, 0.67058825, 0.6862745, 1)
 shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
 shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
 shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
 shader_parameter/night_bottom_color = Color(0.1, 0, 0.2, 1)
-shader_parameter/horizon_color = Color(0, 0.7, 0.8, 1)
+shader_parameter/horizon_color = Color(0.6627451, 0.67058825, 0.6862745, 1)
 shader_parameter/horizon_blur = 0.05
 shader_parameter/sun_color = Color(10, 8, 1, 1)
 shader_parameter/sun_sunset_color = Color(10, 0, 0, 1)
-shader_parameter/sun_size = 0.2
-shader_parameter/sun_blur = 10.0
+shader_parameter/sun_size = 0.39900001825398
+shader_parameter/sun_blur = 6.44900030562898
 shader_parameter/moon_color = Color(1, 0.95, 0.7, 1)
 shader_parameter/moon_size = 0.06
 shader_parameter/moon_blur = 0.1
-shader_parameter/clouds_edge_color = Color(0.9577505, 0.77992535, 0.6423334, 1)
+shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
 shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
 shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
 shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
@@ -37,117 +32,51 @@ shader_parameter/clouds_speed = 2.0
 shader_parameter/clouds_direction = 0.2
 shader_parameter/clouds_scale = 1.0
 shader_parameter/clouds_cutoff = 0.43999999016512
-shader_parameter/clouds_fuzziness = 1.06999997608336
+shader_parameter/clouds_fuzziness = 1.01999997720096
 shader_parameter/clouds_weight = 0.0
 shader_parameter/clouds_blur = 0.25
 shader_parameter/stars_speed = 1.0
 shader_parameter/overwritten_time = 0.0
 
 [sub_resource type="Sky" id="Sky_2j2p2"]
-sky_material = SubResource("ShaderMaterial_iraov")
+sky_material = SubResource("ShaderMaterial_lg35i")
 
-[sub_resource type="Environment" id="Environment_v6rby"]
+[sub_resource type="Environment" id="Environment_8msnd"]
 background_mode = 2
 sky = SubResource("Sky_2j2p2")
 glow_enabled = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qlg0r"]
-albedo_texture = ExtResource("4_65vkx")
-uv1_scale = Vector3(1600, 1600, 1600)
-
-[sub_resource type="ArrayMesh" id="ArrayMesh_65vkx"]
-_surfaces = [{
-"aabb": AABB(-800, -12.5, -800, 1600, 25, 1600),
-"attribute_data": PackedByteArray("AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/AACAPwAAgD8AAIA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAPwAAgD8AAIA/"),
-"format": 34359738391,
-"material": SubResource("StandardMaterial3D_qlg0r"),
-"primitive": 3,
-"uv_scale": Vector4(0, 0, 0, 0),
-"vertex_count": 36,
-"vertex_data": PackedByteArray("AABIxAAASMEAAEhEAABIxAAASMEAAEjEAABIxAAASEEAAEjEAABIRAAASMEAAEjEAABIxAAASMEAAEjEAABIxAAASMEAAEhEAABIxAAASEEAAEjEAABIxAAASMEAAEjEAABIRAAASMEAAEjEAABIxAAASEEAAEjEAABIxAAASEEAAEhEAABIxAAASMEAAEhEAABIxAAASMEAAEhEAABIxAAASEEAAEhEAABIRAAASEEAAEhEAABIRAAASEEAAEhEAABIxAAASEEAAEhEAABIxAAASEEAAEjEAABIxAAASMEAAEhEAABIRAAASMEAAEhEAABIRAAASMEAAEjEAABIRAAASEEAAEhEAABIRAAASMEAAEhEAABIxAAASMEAAEhEAABIRAAASMEAAEjEAABIRAAASMEAAEhEAABIRAAASEEAAEhEAABIRAAASMEAAEjEAABIRAAASEEAAEjEAABIxAAASEEAAEjEAABIxAAASEEAAEjEAABIRAAASEEAAEjEAABIRAAASEEAAEhEAABIRAAASEEAAEhEAABIRAAASEEAAEjEAABIRAAASMEAAEjEAAD/f/9//n8AAP9//3/+fwAA/3//f/5//38AAP//AAD/fwAA//8AAP9/AAD//wAA/////wAA/z//////AAD/P/////8AAP8/AAD/f/9//n8AAP9//3/+fwAA/3//f/5//3//fwAA/z//f/9/AAD/P/9//38AAP8//3//////AAD/f/////8AAP9//////wAA/38AAP//AAD/fwAA//8AAP9/AAD//wAA/3//fwAA/z//f/9/AAD/P/9//38AAP8/////f/9//n////9//3/+f////3//f/5//////wAA/z//////AAD/P/////8AAP8//3//////AAD/f/////8AAP9//////wAA////f/9//n////9//3/+f////3//f/5/")
-}]
-
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_2j2p2"]
-data = PackedVector3Array(-800, -12.5, 800, -800, -12.5, -800, -800, 12.5, -800, 800, -12.5, -800, -800, -12.5, -800, -800, -12.5, 800, -800, 12.5, -800, -800, -12.5, -800, 800, -12.5, -800, -800, 12.5, -800, -800, 12.5, 800, -800, -12.5, 800, -800, -12.5, 800, -800, 12.5, 800, 800, 12.5, 800, 800, 12.5, 800, -800, 12.5, 800, -800, 12.5, -800, -800, -12.5, 800, 800, -12.5, 800, 800, -12.5, -800, 800, 12.5, 800, 800, -12.5, 800, -800, -12.5, 800, 800, -12.5, -800, 800, -12.5, 800, 800, 12.5, 800, 800, -12.5, -800, 800, 12.5, -800, -800, 12.5, -800, -800, 12.5, -800, 800, 12.5, -800, 800, 12.5, 800, 800, 12.5, 800, 800, 12.5, -800, 800, -12.5, -800)
-
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_ejtda"]
-data = PackedVector3Array(-0.5, -0.70871735, 0.5, -0.5, -0.70871735, -0.5, -0.5, 0.70871735, -0.5, 0.5, -0.70871735, -0.5, -0.5, -0.70871735, -0.5, -0.5, -0.70871735, 0.5, -0.5, 0.70871735, -0.5, -0.5, -0.70871735, -0.5, 0.5, -0.70871735, -0.5, -0.5, 0.70871735, -0.5, -0.5, 0.70871735, 0.5, -0.5, -0.70871735, 0.5, -0.5, -0.70871735, 0.5, -0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, -0.5, 0.70871735, 0.5, -0.5, 0.70871735, -0.5, -0.5, -0.70871735, 0.5, 0.5, -0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, 0.70871735, 0.5, 0.5, -0.70871735, 0.5, -0.5, -0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, -0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, 0.70871735, -0.5, -0.5, 0.70871735, -0.5, -0.5, 0.70871735, -0.5, 0.5, 0.70871735, -0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, -0.5, 0.5, -0.70871735, -0.5)
-
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_8msnd"]
-data = PackedVector3Array(-0.5, -0.70871735, 0.5, -0.5, -0.70871735, -0.5, -0.5, 0.70871735, -0.5, 0.5, -0.70871735, -0.5, -0.5, -0.70871735, -0.5, -0.5, -0.70871735, 0.5, -0.5, 0.70871735, -0.5, -0.5, -0.70871735, -0.5, 0.5, -0.70871735, -0.5, -0.5, 0.70871735, -0.5, -0.5, 0.70871735, 0.5, -0.5, -0.70871735, 0.5, -0.5, -0.70871735, 0.5, -0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, -0.5, 0.70871735, 0.5, -0.5, 0.70871735, -0.5, -0.5, -0.70871735, 0.5, 0.5, -0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, 0.70871735, 0.5, 0.5, -0.70871735, 0.5, -0.5, -0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, -0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, -0.70871735, -0.5, 0.5, 0.70871735, -0.5, -0.5, 0.70871735, -0.5, -0.5, 0.70871735, -0.5, 0.5, 0.70871735, -0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, 0.5, 0.5, 0.70871735, -0.5, 0.5, -0.70871735, -0.5)
-
-[sub_resource type="Curve3D" id="Curve3D_dh6dg"]
-_data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 21.935669, 0, 0, 0, 0, 0, 0, 0, 0, 8.715668, 0, 0, 0, 0, 0, 0, 0, 0, -13.120897, 0, 0, 0, 0, 0, 0, 0, 0, -1.0596409),
-"tilts": PackedFloat32Array(0, 0, 0, 0)
-}
-point_count = 4
-
 [node name="TestingScene" type="Node3D" unique_id=1386985927 node_paths=PackedStringArray("PlayerSpawner", "PlayerSpawnPoints")]
 script = ExtResource("1_ltgxd")
+SpawningPlayersEnabled = false
 PlayerScene = ExtResource("1_ifns1")
 PlayerSpawner = NodePath("PlayerSpawner")
-PlayerSpawnPoints = [NodePath("SpawnPoint1"), NodePath("SpawnPoint2"), NodePath("SpawnPoint3"), NodePath("SpawnPoint4")]
+PlayerSpawnPoints = [NodePath("PlayerSpawner/SpawnPoint1"), NodePath("PlayerSpawner/SpawnPoint2"), NodePath("PlayerSpawner/SpawnPoint3"), NodePath("PlayerSpawner/SpawnPoint4")]
 metadata/_custom_type_script = "uid://4x8elhhftwqh"
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1818100782]
-environment = SubResource("Environment_v6rby")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=555761083]
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=87188359]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+light_color = Color(0.8468644, 0.69709957, 0.2643382, 1)
 shadow_enabled = true
 
-[node name="FloorMesh" type="MeshInstance3D" parent="." unique_id=1362338603]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -12.5, 0)
-mesh = SubResource("ArrayMesh_65vkx")
-
-[node name="pedestal" type="CSGBox3D" parent="." unique_id=1436103879]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3687172, 0.28316307, 0.01147449)
-size = Vector3(1, 1.4174347, 1)
-
-[node name="pedestal2" type="CSGBox3D" parent="." unique_id=976794787]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3687172, 0.28316307, -1.1224885)
-size = Vector3(1, 1.4174347, 1)
-
-[node name="WorldCollider" type="StaticBody3D" parent="." unique_id=1984701233]
-
-[node name="CSGBakedCollisionShape3D" type="CollisionShape3D" parent="WorldCollider" unique_id=1351637302]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -12.5, 0)
-shape = SubResource("ConcavePolygonShape3D_2j2p2")
-
-[node name="CSGBakedCollisionShape3D2" type="CollisionShape3D" parent="WorldCollider" unique_id=1105099829]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3687172, 0.28316307, 0.01147449)
-shape = SubResource("ConcavePolygonShape3D_ejtda")
-
-[node name="CSGBakedCollisionShape3D3" type="CollisionShape3D" parent="WorldCollider" unique_id=1902379204]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3687172, 0.28316307, -1.1224885)
-shape = SubResource("ConcavePolygonShape3D_8msnd")
-
-[node name="TrackPath" type="Path3D" parent="." unique_id=1309963775]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.133974, 0, 0)
-curve = SubResource("Curve3D_dh6dg")
-script = ExtResource("3_v6rby")
-TrackScene = ExtResource("3_dh6dg")
-TrackCount = 13
-TrackSpacing = 2.288
-TrackMeshScale = 2.299
-metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
-
-[node name="ModelTrainPickupable" parent="." unique_id=1554800455 instance=ExtResource("5_ejtda")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3382738, 0.99168885, 0.0021985471)
-
-[node name="ModelTrainPickupableRedLoco" parent="." unique_id=1511877849 instance=ExtResource("7_lg35i")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3749151, 1.0278907, -1.1323593)
-
-[node name="ButtonInteractable" parent="." unique_id=751981149 instance=ExtResource("8_8msnd")]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -2.332851, 0.64291996, 0.55616164)
-
-[node name="CurlyPooPickupable" parent="." unique_id=1762888275 instance=ExtResource("10_tvk4s")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3729159, 0.08500612, 0.48163772)
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1632789143]
+environment = SubResource("Environment_8msnd")
 
 [node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1175847090]
 _spawnable_scenes = PackedStringArray("uid://bnhq8tk5or7vo")
 spawn_path = NodePath("..")
+
+[node name="SpawnPoint1" type="Marker3D" parent="PlayerSpawner" unique_id=1992487019]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44340432, 0, 1.0939505)
+
+[node name="SpawnPoint2" type="Marker3D" parent="PlayerSpawner" unique_id=1848290497]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.60928094, 0, 0.4300117)
+
+[node name="SpawnPoint3" type="Marker3D" parent="PlayerSpawner" unique_id=111884536]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27061355, 0, -0.3551771)
+
+[node name="SpawnPoint4" type="Marker3D" parent="PlayerSpawner" unique_id=1603357715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5567194, 0, -1.1320279)
 
 [node name="SessionChat" parent="." unique_id=292976534 instance=ExtResource("10_nihl2")]
 anchor_left = 0.696875
@@ -155,14 +84,12 @@ anchor_top = 0.7462963
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="SpawnPoint1" type="Marker3D" parent="." unique_id=1992487019]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44340432, 0, 1.0939505)
+[node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("12_65vkx")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.57241774, 4.4463234, 0)
 
-[node name="SpawnPoint2" type="Marker3D" parent="." unique_id=1848290497]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.60928094, 0, 0.4300117)
-
-[node name="SpawnPoint3" type="Marker3D" parent="." unique_id=111884536]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.27061355, 0, -0.3551771)
-
-[node name="SpawnPoint4" type="Marker3D" parent="." unique_id=1603357715]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5567194, 0, -1.1320279)
+[node name="TerrainGenerator" type="Node3D" parent="." unique_id=1834277106 node_paths=PackedStringArray("Camera")]
+script = ExtResource("6_srtiu")
+Camera = NodePath("../FreeCamera")
+ChunkSize = 512.0
+MaxDrawDistance = 16
+metadata/_custom_type_script = "uid://pnn6fwlgih3b"

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 [GlobalClass]
 public partial class TrainwreckedLevel : Node3D
 {
+	[Export] public bool SpawningPlayersEnabled { get; set; } = true;
 	/// <summary>
 	/// Packed scene instantiated for each player. Must match a scene listed on
 	/// <see cref="PlayerSpawner"/>.
@@ -41,6 +42,7 @@ public partial class TrainwreckedLevel : Node3D
 	public override void _Ready()
 	{
 		NetworkManager.Instance.PeerConnected += _on_peer_connected;
+		
 		// Export config validation.
 		if (PlayerSpawner is null)
 		{
@@ -89,6 +91,10 @@ public partial class TrainwreckedLevel : Node3D
 	/// </param>
 	public void CreatePlayer(int peerId, int playerIndex)
 	{
+		if (!SpawningPlayersEnabled)
+		{
+			return;
+		}
 		Player newPlayer = PlayerScene.Instantiate<Player>();
 		newPlayer.Name = peerId.ToString();
 		AddChild(newPlayer, true);

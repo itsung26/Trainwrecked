@@ -82,7 +82,8 @@ public partial class FreeCamera : Camera3D
 		}
 
 		Basis basis = GlobalTransform.Basis;
-		Vector3 direction = (-basis.Z * planar.Y) + (basis.X * planar.X) + (Vector3.Up * vertical);
+		// GetVector maps Forwards to -Y, matching Godot's -Z forward via basis.Z * planar.Y.
+		Vector3 direction = (basis.Z * planar.Y) + (basis.X * planar.X) + (Vector3.Up * vertical);
 		if (direction.LengthSquared() > 0.0f)
 		{
 			direction = direction.Normalized();
