@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://n4soaq78456t"]
+
+[ext_resource type="Script" uid="uid://4x8elhhftwqh" path="res://scripts/TrainwreckedLevel.cs" id="1_mq806"]
+[ext_resource type="Script" uid="uid://pnn6fwlgih3b" path="res://scripts/TerrainGenerator.cs" id="2_jnyv1"]
+
+[node name="TerrainGenTestScene" type="Node3D" unique_id=150279354]
+script = ExtResource("1_mq806")
+metadata/_custom_type_script = "uid://4x8elhhftwqh"
+
+[node name="TerrainGenerator" type="Node3D" parent="." unique_id=2096038790]
+script = ExtResource("2_jnyv1")
+ChunkSize = 512.0
+MaxDrawDistance = 16
+metadata/_custom_type_script = "uid://pnn6fwlgih3b"
