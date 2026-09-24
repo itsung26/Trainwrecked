@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://deq41uk0o76ct"
 path.s3tc="res://.godot/imported/spike2.png_rgba.png-65084f3d6ba4872afe579b8e1ab0b2ed.s3tc.ctex"
+path.etc2="res://.godot/imported/spike2.png_rgba.png-65084f3d6ba4872afe579b8e1ab0b2ed.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={}
@@ -13,7 +14,7 @@ generator_parameters={}
 [deps]
 
 source_file="res://assets/3d assets/cactus/textures/spike2.png_rgba.png"
-dest_files=["res://.godot/imported/spike2.png_rgba.png-65084f3d6ba4872afe579b8e1ab0b2ed.s3tc.ctex"]
+dest_files=["res://.godot/imported/spike2.png_rgba.png-65084f3d6ba4872afe579b8e1ab0b2ed.s3tc.ctex", "res://.godot/imported/spike2.png_rgba.png-65084f3d6ba4872afe579b8e1ab0b2ed.etc2.ctex"]
 
 [params]
 

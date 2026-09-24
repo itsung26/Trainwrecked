@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://vhb3eysg3vfj"
 path.s3tc="res://.godot/imported/opacity.png-95f364d183ef1795de45346b77cde845.s3tc.ctex"
+path.etc2="res://.godot/imported/opacity.png-95f364d183ef1795de45346b77cde845.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/3d assets/tumbleweed/textures/opacity.png"
-dest_files=["res://.godot/imported/opacity.png-95f364d183ef1795de45346b77cde845.s3tc.ctex"]
+dest_files=["res://.godot/imported/opacity.png-95f364d183ef1795de45346b77cde845.s3tc.ctex", "res://.godot/imported/opacity.png-95f364d183ef1795de45346b77cde845.etc2.ctex"]
 
 [params]
 

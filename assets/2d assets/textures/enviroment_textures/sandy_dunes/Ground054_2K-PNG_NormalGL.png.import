@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dyghu3l0oi5a1"
 path.s3tc="res://.godot/imported/Ground054_2K-PNG_NormalGL.png-69c4e6b06d3afc01367fddaba509fe11.s3tc.ctex"
+path.etc2="res://.godot/imported/Ground054_2K-PNG_NormalGL.png-69c4e6b06d3afc01367fddaba509fe11.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/2d assets/textures/enviroment_textures/sandy_dunes/Ground054_2K-PNG_NormalGL.png"
-dest_files=["res://.godot/imported/Ground054_2K-PNG_NormalGL.png-69c4e6b06d3afc01367fddaba509fe11.s3tc.ctex"]
+dest_files=["res://.godot/imported/Ground054_2K-PNG_NormalGL.png-69c4e6b06d3afc01367fddaba509fe11.s3tc.ctex", "res://.godot/imported/Ground054_2K-PNG_NormalGL.png-69c4e6b06d3afc01367fddaba509fe11.etc2.ctex"]
 
 [params]
 
