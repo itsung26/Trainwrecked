@@ -12,3 +12,6 @@ noise = SubResource("FastNoiseLite_lg35i")
 [node name="TerrainGenerator" type="Node3D" unique_id=384643362]
 script = ExtResource("1_vj78e")
 BaseHeightmap = SubResource("NoiseTexture2D_vj78e")
+FullLodResolution = 512
+ChunkSize = 512.0
+MaxDrawDistance = 1

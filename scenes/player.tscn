@@ -45,10 +45,7 @@ MouseSensitivity = 0.015
 [node name="PlayerIdLabel" type="Label3D" parent="." unique_id=1711463337]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2329323, 0)
 billboard = 2
-text = "!!LOOKUP FAILED!!"
-
-[node name="Marker3D" type="Marker3D" parent="PlayerIdLabel" unique_id=922706084]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.244168, -2.8751335)
+text = "-1"
 
 [node name="PlayerCollider" type="CollisionShape3D" parent="." unique_id=1010997347]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.83288574, 0)
@@ -102,12 +99,12 @@ bones/48/rotation = Quaternion(-0.032831494, -0.06140409, -0.4002582, 0.91375333
 bones/49/rotation = Quaternion(-0.24398565, -0.025197305, -0.08141447, 0.96602684)
 
 [node name="LookAtModifier3D" type="LookAtModifier3D" parent="male_base/male_base_rig/Skeleton3D" index="1" unique_id=1964397751]
-target_node = NodePath("../../../../PlayerIdLabel/Marker3D")
+target_node = NodePath("../../../../PlayerCameraPivot/IkLookMarker")
 bone_name = "spine.002"
 bone = 2
 
 [node name="PlayerCameraPivot" type="Node3D" parent="." unique_id=39234166]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.9999999, 0, 1.5, 0)
 
 [node name="PlayerCamera" type="Camera3D" parent="PlayerCameraPivot" unique_id=1218769642]
 attributes = SubResource("CameraAttributesPractical_fjrip")
@@ -123,6 +120,10 @@ gizmo_extents = 0.39
 [node name="FlashLight" type="SpotLight3D" parent="PlayerCameraPivot/PlayerCamera" unique_id=693309151]
 light_energy = 0.0
 spot_angle = 10.9823265
+
+[node name="IkLookMarker" type="Marker3D" parent="PlayerCameraPivot" unique_id=922706084]
+editor_description = "Targeted by the spine for the bend body on look. Do not move or rotate."
+transform = Transform3D(0.9982377, 0.039895676, 0.043927025, -0.054946583, 0.90098375, 0.43035942, -0.02240805, -0.4320147, 0.90158814, -0.04392703, -0.43035924, -0.9015881)
 
 [node name="PlayerHud" parent="." unique_id=1268189311 instance=ExtResource("3_qhqgy")]
 
