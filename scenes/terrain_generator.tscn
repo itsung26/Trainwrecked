@@ -14,4 +14,4 @@ script = ExtResource("1_vj78e")
 BaseHeightmap = SubResource("NoiseTexture2D_vj78e")
 FullLodResolution = 512
 ChunkSize = 512.0
-MaxDrawDistance = 1
+RingLods = Array[int]([0])
