@@ -57,6 +57,9 @@ sky_material = SubResource("ShaderMaterial_j45et")
 [sub_resource type="Environment" id="Environment_fx8ei"]
 background_mode = 2
 sky = SubResource("Sky_2j2p2")
+ssao_enabled = true
+ssao_intensity = 6.9
+sdfgi_enabled = true
 glow_enabled = true
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_dehhp"]

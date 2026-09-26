@@ -1,22 +1,24 @@
 using Godot;
 using Godot.Collections;
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Generates and manages a grid of <see cref="TerrainChunk"/> children.
 /// </summary>
 /// <remarks>
-/// This node's origin sits at the shared corner of four chunks; there is no center chunk.
-/// Active chunks form an even grid spanning indices <c>[-rings, rings)</c> on X and Z,
-/// so at <c>rings == 1</c> the four chunks <c>(-1,-1)</c>, <c>(-1,0)</c>, <c>(0,-1)</c>,
-/// and <c>(0,0)</c> meet at the generator origin.
+/// Chunks extend in +X and -Z from their origins. Active chunks stream around the
+/// <see cref="Camera"/>: each frame (when the camera enters a new chunk cell) the
+/// generator keeps chunks whose ring distance is within <see cref="RingLods"/> and
+/// rebuilds them when their ring LOD changes. Chunks are created and freed directly
+/// (no pool).
 /// </remarks>
 [Tool]
 [GlobalClass]
 public partial class TerrainGenerator : Node3D
 {
 	public enum LOD
-    {
+	{
 		// Represents full vertex resolution.
 		Full = 0,
 		// Represents half vertex resolution.
@@ -32,10 +34,9 @@ public partial class TerrainGenerator : Node3D
 	/// camera's position.
 	/// </summary>
 	/// <remarks>
-	/// Chunk indices are relative to this node's origin (the corner where four chunks meet):
-	/// <c>floor(localX / ChunkSize)</c> and <c>floor(localZ / ChunkSize)</c>.
-	/// There is no center chunk; the camera always lies in one of the four quadrants
-	/// adjacent to the generator origin when near it.
+	/// Chunk indices are relative to this node's origin (the corner where four chunks meet).
+	/// X uses <c>floor(localX / ChunkSize)</c>; Z uses <c>ceil(localZ / ChunkSize)</c>
+	/// because each chunk origin is the max-Z corner of its cell.
 	/// </remarks>
 	[Export] public Camera3D Camera { get; set; }
 	[Export] public Texture2D BaseHeightmap { get; set; }
@@ -45,22 +46,19 @@ public partial class TerrainGenerator : Node3D
 	/// Length and width of each chunk.
 	/// </summary>
 	/// <remarks>
-	/// Each chunk node's <see cref="Node3D.Position"/> is the min corner of that chunk.
-	/// The chunk occupies <c>[Position.X, Position.X + ChunkSize]</c> on X and
-	/// <c>[Position.Z, Position.Z + ChunkSize]</c> on Z. Local placement for grid
-	/// indices <c>(cx, cz)</c> is <c>(cx * ChunkSize, 0, cz * ChunkSize)</c>,
-	/// with the generator origin at the corner shared by the four chunks around
-	/// indices <c>(-1,-1)</c>, <c>(-1,0)</c>, <c>(0,-1)</c>, and <c>(0,0)</c>.
+	/// Each chunk node's <see cref="Node3D.Position"/> is the corner origin of that chunk
+	/// (min X, max Z). The chunk occupies <c>[Position.X, Position.X + ChunkSize]</c> on X and
+	/// <c>[Position.Z - ChunkSize, Position.Z]</c> on Z. Local placement for grid
+	/// indices <c>(cx, cz)</c> is <c>(cx * ChunkSize, 0, cz * ChunkSize)</c>.
 	/// </remarks>
 	[Export] public float ChunkSize { get; set; }
 	/// <summary>
-	/// LOD applied at each ring distance from the generator origin.
+	/// LOD applied at each ring distance from the camera's chunk.
 	/// </summary>
 	/// <remarks>
-	/// Index <c>i</c> is ring <c>i + 1</c> (the innermost four chunks are ring 1 at index 0).
-	/// <see cref="Array.Count"/> is the max draw distance in rings: a length of <c>R</c>
-	/// yields a <c>2R × 2R</c> grid (no center chunk). Use <see cref="LOD.Skipdraw"/> to
-	/// omit a ring. See <see cref="GetLodForRing"/>.
+	/// Index <c>i</c> is ring <c>i + 1</c>. <see cref="Array.Count"/> is the max draw
+	/// distance in rings. Use <see cref="LOD.Skipdraw"/> to omit a ring.
+	/// See <see cref="GetLodForRing"/>.
 	/// </remarks>
 	[Export] public Array<LOD> RingLods { get; set; } = new Array<LOD>();
 	/// <summary>
@@ -70,14 +68,36 @@ public partial class TerrainGenerator : Node3D
 
 	public Image BaseHeightmapImage { get; private set; }
 
+	private readonly System.Collections.Generic.Dictionary<Vector2I, TerrainChunk> _activeChunks = new System.Collections.Generic.Dictionary<Vector2I, TerrainChunk>();
+	private Vector2I _lastCameraChunk;
+	private bool _hasLastCameraChunk;
+
 	[ExportToolButton("Generate Terrain", Icon = "MeshInstance3D")]
 	public Callable GenerateTerrainButton => Callable.From(GenerateTerrain);
 
 
-    public override void _Ready()
-    {
+	public override void _Ready()
+	{
 		RefreshHeightmapImage();
-    }
+
+		if (Engine.IsEditorHint())
+		{
+			return;
+		}
+
+		// Defer first stream so NoiseTexture2D / Camera are ready to sample.
+		Callable.From(() => UpdateChunks(force: true)).CallDeferred();
+	}
+
+	public override void _Process(double delta)
+	{
+		if (Engine.IsEditorHint())
+		{
+			return;
+		}
+
+		UpdateChunks();
+	}
 
 	/// <summary>
 	/// Rebuilds <see cref="BaseHeightmapImage"/> from <see cref="BaseHeightmap"/>.
@@ -95,6 +115,26 @@ public partial class TerrainGenerator : Node3D
 		{
 			BaseHeightmapImage.Decompress();
 		}
+	}
+
+	/// <summary>
+	/// Ensures <see cref="BaseHeightmapImage"/> is loaded. Returns
+	/// <see langword="true"/> if the image became available this call.
+	/// </summary>
+	private bool TryAcquireHeightmapImage()
+	{
+		if (BaseHeightmap is null)
+		{
+			return false;
+		}
+
+		if (BaseHeightmapImage is not null)
+		{
+			return false;
+		}
+
+		RefreshHeightmapImage();
+		return BaseHeightmapImage is not null;
 	}
 
 	/// <summary>
@@ -150,31 +190,159 @@ public partial class TerrainGenerator : Node3D
 		return ((index % size) + size) % size;
 	}
 
+	/// <summary>
+	/// Clears active chunks, refreshes the heightmap cache, and force-streams around the camera.
+	/// </summary>
 	public void GenerateTerrain()
 	{
 		RefreshHeightmapImage();
+		ClearActiveChunks();
+		_hasLastCameraChunk = false;
+		UpdateChunks(force: true);
+	}
 
-		// Clear existing terrain first.
-		foreach (Node child in GetChildren())
+	/// <summary>
+	/// Syncs active chunks to the camera: spawn/free by ring, rebuild when LOD changes.
+	/// </summary>
+	/// <param name="force">When <see langword="true"/>, runs even if the camera chunk is unchanged.</param>
+	private void UpdateChunks(bool force = false)
+	{
+		if (Camera is null || ChunkSize == 0f || RingLods is null || RingLods.Count == 0)
 		{
-			if (child is not null)
+			return;
+		}
+
+		// NoiseTexture2D.GetImage() is often unavailable during _Ready; retry until loaded.
+		bool heightmapJustReady = TryAcquireHeightmapImage();
+		if (heightmapJustReady)
+		{
+			RebuildAllActiveChunkMeshes();
+		}
+
+		Vector2I cameraChunk = GetChunkCoordinatesFromWorldCoordinates(Camera.GlobalPosition);
+		if (!force && !heightmapJustReady && _hasLastCameraChunk && cameraChunk == _lastCameraChunk)
+		{
+			return;
+		}
+
+		_lastCameraChunk = cameraChunk;
+		_hasLastCameraChunk = true;
+
+		int maxRing = RingLods.Count;
+		HashSet<Vector2I> desired = new HashSet<Vector2I>();
+
+		for (int dz = -maxRing; dz <= maxRing; dz++)
+		{
+			for (int dx = -maxRing; dx <= maxRing; dx++)
 			{
-				child.Free();
+				Vector2I coord = new Vector2I(cameraChunk.X + dx, cameraChunk.Y + dz);
+				int ring = GetRingFromChunkCoordinate(coord);
+				if (ring < 1 || ring > maxRing)
+				{
+					continue;
+				}
+
+				if (GetLodForRing(ring) == LOD.Skipdraw)
+				{
+					continue;
+				}
+
+				desired.Add(coord);
 			}
 		}
 
-		// Single test chunk at grid (0, 0) — min corner at the generator origin.
-		TerrainChunk testChunk = new TerrainChunk();
-		AddChild(testChunk);
-		testChunk.Position = Vector3.Zero;
-		testChunk.Generate();
-		testChunk.GetChild<MeshInstance3D>(0).MaterialOverride = TerrainMaterial;
+		List<Vector2I> toRemove = new List<Vector2I>();
+		foreach (KeyValuePair<Vector2I, TerrainChunk> pair in _activeChunks)
+		{
+			if (!desired.Contains(pair.Key))
+			{
+				toRemove.Add(pair.Key);
+			}
+		}
+
+		foreach (Vector2I coord in toRemove)
+		{
+			TerrainChunk chunk = _activeChunks[coord];
+			_activeChunks.Remove(coord);
+			chunk.QueueFree();
+		}
+
+		foreach (Vector2I coord in desired)
+		{
+			LOD neededLod = GetLodForRing(GetRingFromChunkCoordinate(coord));
+
+			if (_activeChunks.TryGetValue(coord, out TerrainChunk existing))
+			{
+				if (existing.BuiltLod != neededLod)
+				{
+					existing.Generate();
+					ApplyTerrainMaterial(existing);
+				}
+				continue;
+			}
+
+			TerrainChunk chunk = new TerrainChunk();
+			AddChild(chunk);
+			chunk.Setup(coord);
+			chunk.Generate();
+			ApplyTerrainMaterial(chunk);
+			_activeChunks[coord] = chunk;
+		}
+	}
+
+	private void RebuildAllActiveChunkMeshes()
+	{
+		foreach (KeyValuePair<Vector2I, TerrainChunk> pair in _activeChunks)
+		{
+			if (!GodotObject.IsInstanceValid(pair.Value))
+			{
+				continue;
+			}
+
+			pair.Value.Generate();
+			ApplyTerrainMaterial(pair.Value);
+		}
+	}
+
+	private void ClearActiveChunks()
+	{
+		foreach (KeyValuePair<Vector2I, TerrainChunk> pair in _activeChunks)
+		{
+			if (GodotObject.IsInstanceValid(pair.Value))
+			{
+				pair.Value.QueueFree();
+			}
+		}
+		_activeChunks.Clear();
+
+		// Also free any leftover terrain children (e.g. from earlier test spawns).
+		Array<Node> children = GetChildren();
+		foreach (Node child in children)
+		{
+			if (child is TerrainChunk)
+			{
+				child.QueueFree();
+			}
+		}
+	}
+
+	private void ApplyTerrainMaterial(TerrainChunk chunk)
+	{
+		if (TerrainMaterial is null || chunk.GetChildCount() == 0)
+		{
+			return;
+		}
+
+		if (chunk.GetChild(0) is MeshInstance3D meshInstance)
+		{
+			meshInstance.MaterialOverride = TerrainMaterial;
+		}
 	}
 
 	/// <summary>
 	/// Returns the <see cref="LOD"/> configured for the given 1-based ring distance.
 	/// </summary>
-	/// <param name="ring">Ring distance; <c>1</c> is the innermost four chunks.</param>
+	/// <param name="ring">Ring distance; <c>1</c> is the camera chunk and its neighbors.</param>
 	/// <returns>
 	/// The mapped LOD, or <see cref="LOD.Skipdraw"/> if <paramref name="ring"/> is
 	/// out of range or missing from <see cref="RingLods"/>.
@@ -189,20 +357,31 @@ public partial class TerrainGenerator : Node3D
 	}
 
 	/// <summary>
-	/// Returns the total amount of chunks that would fill
-	/// <paramref name="rings"/> rings around the generator origin.
+	/// Returns the ring index that the chunk in <paramref name="chunkCoord"/> is in.
+	/// Rings are around the camera.
 	/// </summary>
-	/// <remarks>
-	/// Because the generator origin is the corner of four chunks (no center chunk),
-	/// radius <c>R</c> fills an even square of side <c>2R</c> spanning indices
-	/// <c>[-R, R)</c> on X and Z.
-	/// </remarks>
-	/// <returns></returns>
-	private int GetChunkCount(int rings)
+	/// <param name="chunkCoord"></param>
+	/// <returns>
+	/// Ring distance from the camera's chunk (Chebyshev). The camera's own chunk and its
+	/// neighbors are ring 1; a chunk two steps away is ring 2; and so on. Without a
+	/// camera, falls back to rings around the generator origin under the +X/-Z layout.
+	/// </returns>
+	public int GetRingFromChunkCoordinate(Vector2I chunkCoord)
 	{
-		// Even grid: radius R fills a square of side 2R (four chunks meet at the origin).
-		int side = 2 * rings;
-		return side * side;
+		if (Camera is not null)
+		{
+			Vector2I cameraChunk = GetChunkCoordinatesFromWorldCoordinates(Camera.GlobalPosition);
+			int dx = Mathf.Abs(chunkCoord.X - cameraChunk.X);
+			int dz = Mathf.Abs(chunkCoord.Y - cameraChunk.Y);
+			int distance = Mathf.Max(dx, dz);
+			// Camera chunk (distance 0) shares ring 1 with immediate neighbors.
+			return distance == 0 ? 1 : distance;
+		}
+
+		// Generator-origin rings (+X/-Z): ring 1 is (-1,0), (-1,1), (0,0), (0,1).
+		int ringX = chunkCoord.X >= 0 ? chunkCoord.X + 1 : -chunkCoord.X;
+		int ringZ = chunkCoord.Y <= 0 ? 1 - chunkCoord.Y : chunkCoord.Y;
+		return Mathf.Max(ringX, ringZ);
 	}
 
 	public int GetResolutionByLod(TerrainGenerator.LOD lod)
@@ -211,16 +390,16 @@ public partial class TerrainGenerator : Node3D
 		{
 			case LOD.Full:
 				return FullLodResolution;
-			
+
 			case LOD.Half:
 				return FullLodResolution / 2;
 
 			case LOD.Quarter:
 				return FullLodResolution / 4;
-			
+
 			case LOD.Skipdraw:
 				return 0;
-			
+
 			default:
 				return 0;
 		}
@@ -243,8 +422,8 @@ public partial class TerrainGenerator : Node3D
 	/// </summary>
 	/// <remarks>
 	/// Converts <paramref name="pos"/> into this node's local space, then uses
-	/// <c>floor(localX / ChunkSize)</c> and <c>floor(localZ / ChunkSize)</c>.
-	/// Local Y (up) is ignored.
+	/// <c>floor(localX / ChunkSize)</c> and <c>ceil(localZ / ChunkSize)</c>
+	/// (chunk origin is the max-Z corner). Local Y (up) is ignored.
 	/// </remarks>
 	public Vector2I GetChunkCoordinatesFromWorldCoordinates(Vector3 pos)
 	{
@@ -255,7 +434,7 @@ public partial class TerrainGenerator : Node3D
 
 		Vector3 local = ToLocal(pos);
 		int cx = Mathf.FloorToInt(local.X / ChunkSize);
-		int cz = Mathf.FloorToInt(local.Z / ChunkSize);
+		int cz = Mathf.CeilToInt(local.Z / ChunkSize);
 		return new Vector2I(cx, cz);
 	}
 

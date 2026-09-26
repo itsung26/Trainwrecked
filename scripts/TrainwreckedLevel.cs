@@ -43,19 +43,7 @@ public partial class TrainwreckedLevel : Node3D
 	{
 		NetworkManager.Instance.PeerConnected += _on_peer_connected;
 		
-		// Export config validation.
-		if (PlayerSpawner is null)
-		{
-			Debug.LogError($"Player spawner must be assigned and configured.");
-			return;
-		}
-		if (PlayerSpawnPoints.Count != 4)
-		{
-			Debug.LogError($"Player spawn points must be of length 4.");
-			return;
-		}
-
-		if (NetworkManager.IsServer() && NetworkManager.IsConnected())
+		if (NetworkManager.IsServer() && NetworkManager.IsConnected() && SpawningPlayersEnabled)
 		{
 			// Create and spawn the host player first.
 			CreatePlayer(1, 1);
@@ -91,10 +79,11 @@ public partial class TrainwreckedLevel : Node3D
 	/// </param>
 	public void CreatePlayer(int peerId, int playerIndex)
 	{
-		if (!SpawningPlayersEnabled)
+		if (!SpawningPlayersEnabled || PlayerSpawner is null || PlayerSpawnPoints.Count != 4)
 		{
 			return;
 		}
+		
 		Player newPlayer = PlayerScene.Instantiate<Player>();
 		newPlayer.Name = peerId.ToString();
 		AddChild(newPlayer, true);

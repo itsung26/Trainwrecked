@@ -22,5 +22,18 @@
 			"[Export] public ${1:Node3D} ${2:NodeName} { get; set; }",
 		],
 		"description": "autoproperty node export template"
+	},
+
+	"Is Editor Hint Early Return": {
+		"scope": "csharp",
+		"prefix": "iseditorhint",
+		"body": [
+			"if (Engine.IsEditorHint())",
+			"{",
+			"\treturn;",
+			"}",
+			"$0"
+		],
+		"description": "Skip logic while running in the Godot editor"
 	}
 }
