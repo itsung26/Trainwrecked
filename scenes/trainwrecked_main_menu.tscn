@@ -51,12 +51,12 @@ shader_parameter/clouds_blur = 0.25
 shader_parameter/stars_speed = 1.0
 shader_parameter/overwritten_time = 0.0
 
-[sub_resource type="Sky" id="Sky_2j2p2"]
+[sub_resource type="Sky" id="Sky_6ycsm"]
 sky_material = SubResource("ShaderMaterial_j45et")
 
 [sub_resource type="Environment" id="Environment_fx8ei"]
 background_mode = 2
-sky = SubResource("Sky_2j2p2")
+sky = SubResource("Sky_6ycsm")
 ssao_enabled = true
 ssao_intensity = 6.9
 sdfgi_enabled = true
@@ -195,10 +195,10 @@ transform = Transform3D(-0.9999925, 0, 0.0038734078, 0, 1, 0, -0.0038734078, 0, 
 
 [node name="CactusMultiMesh" type="MultiMeshInstance3D" parent="." unique_id=1084200366]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4350556, 0)
+visible = false
 multimesh = SubResource("MultiMesh_px1wt")
 
 [node name="cactus" parent="CactusMultiMesh" unique_id=1617991212 instance=ExtResource("7_8qy8p")]
-visible = false
 
 [node name="TrackPath" type="Path3D" parent="." unique_id=834448277]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.904385, -1.4527671, -5.351773)

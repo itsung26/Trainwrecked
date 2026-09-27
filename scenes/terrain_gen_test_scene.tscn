@@ -4,7 +4,8 @@
 [ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="2_7ev6c"]
 [ext_resource type="Script" uid="uid://pnn6fwlgih3b" path="res://scripts/TerrainGenerator.cs" id="2_jnyv1"]
 [ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="3_jnyv1"]
-[ext_resource type="Script" uid="uid://4ayks3yjei8s" path="res://scripts/RockyDesertHeightFunctionSampler.cs" id="4_sd5j3"]
+[ext_resource type="Resource" uid="uid://d1m5i3ck8bdxn" path="res://assets/height_functions/rocky_desert/rocky_desert_gentle_slopes.tres" id="6_6wivg"]
+[ext_resource type="Texture2D" uid="uid://60xua2es7vvs" path="res://assets/2d assets/textures/prototype_textures/Light/texture_06.png" id="7_6wivg"]
 [ext_resource type="PackedScene" uid="uid://bu4cg633kbvyi" path="res://assets/TrainwreckedEntities/terrain_generator_sprite_3d.tscn" id="7_gen_icon"]
 [ext_resource type="PackedScene" uid="uid://cki47msp7qihh" path="res://assets/TrainwreckedEntities/terrain_chunk_sprite_3d.tscn" id="8_chunk_icon"]
 
@@ -50,20 +51,8 @@ ssao_intensity = 6.9
 sdfgi_enabled = true
 glow_enabled = true
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_1imva"]
-noise_type = 0
-frequency = 0.0011
-fractal_type = 2
-fractal_octaves = 1
-fractal_lacunarity = -2.92
-
-[sub_resource type="Resource" id="Resource_mwhpe"]
-script = ExtResource("4_sd5j3")
-DuneHeightNoise = SubResource("FastNoiseLite_1imva")
-HeightFunctionScale = 1.5
-metadata/_custom_type_script = "uid://4ayks3yjei8s"
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jnyv1"]
+albedo_texture = ExtResource("7_6wivg")
 normal_enabled = true
 ao_enabled = true
 uv1_scale = Vector3(5, 5, 5)
@@ -86,7 +75,7 @@ script = ExtResource("2_jnyv1")
 IconScene = ExtResource("7_gen_icon")
 ChunkIconScene = ExtResource("8_chunk_icon")
 Camera = NodePath("../FreeCamera")
-HeightFunction = SubResource("Resource_mwhpe")
+HeightFunction = ExtResource("6_6wivg")
 TerrainMaterial = SubResource("StandardMaterial3D_jnyv1")
 FullLodCollsionResolution = 64
 FullLodResolution = 256
@@ -95,5 +84,5 @@ RingLods = Array[int]([0, 1, 2, 2, 2, 2])
 metadata/_custom_type_script = "uid://pnn6fwlgih3b"
 
 [node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("3_jnyv1")]
-transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 2.0973241, 0)
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 5.165, 0)
 MoveSpeed = 40.0
