@@ -105,6 +105,23 @@ public partial class TerrainChunk : Node3D
 		// Displaced mesh is already corner-origin in [0, Size] on X and [-Size, 0] on Z.
 		meshInstance.Mesh = BuildDisplacedMesh();
 		meshInstance.Position = Vector3.Zero;
+
+		HeightMapShape3D heightMapShape = BuildDisplacedMeshCollisionShape();
+		if (heightMapShape is not null)
+		{
+			StaticBody3D staticBody = new StaticBody3D();
+			AddChild(staticBody);
+
+			CollisionShape3D collisionShape = new CollisionShape3D();
+			staticBody.AddChild(collisionShape);
+			collisionShape.Shape = heightMapShape;
+			// HeightMapShape3D is centered with 1-unit spacing; align to chunk +X/-Z extent.
+			int collisionResolution = parent.FullLodCollsionResolution;
+			collisionShape.Position = new Vector3(Size / 2f, 0f, -Size / 2f);
+			float cellSize = Size / collisionResolution;
+			collisionShape.Scale = new Vector3(cellSize, 1f, cellSize);
+		}
+
 		BuiltLod = lod;
 	}
 
@@ -211,6 +228,65 @@ public partial class TerrainChunk : Node3D
 		ArrayMesh mesh = new ArrayMesh();
 		mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays);
 		return mesh;
+	}
+
+	/// <summary>
+	/// Generates a <see cref="HeightMapShape3D"/> for collision using the parent's heightmap.
+	/// Only generates for the <see cref="TerrainGenerator.LOD.Full"/> LOD; lower LODs return
+	/// <see langword="null"/>.
+	/// </summary>
+	/// <remarks>
+	/// Uses <see cref="TerrainGenerator.FullLodCollsionResolution"/> (not visual mesh resolution).
+	/// The shape is centered with 1-unit vertex spacing; place the <see cref="CollisionShape3D"/> at
+	/// <c>(Size / 2, 0, -Size / 2)</c> and scale XZ by
+	/// <c>Size / FullLodCollsionResolution</c>.
+	/// </remarks>
+	/// <returns></returns>
+	private HeightMapShape3D BuildDisplacedMeshCollisionShape()
+	{
+		TerrainGenerator generator = GetParent() as TerrainGenerator;
+		if (generator is null || Lod != TerrainGenerator.LOD.Full)
+		{
+			return null;
+		}
+
+		int resolution = generator.FullLodCollsionResolution;
+		float size = Size;
+		if (resolution <= 0 || size <= 0f)
+		{
+			return null;
+		}
+
+		int vertsPerSide = resolution + 1;
+		float invRes = 1f / resolution;
+		float[] heights = new float[vertsPerSide * vertsPerSide];
+
+		// HeightMapShape3D depth increases in +Z. With a CollisionShape centered at
+		// (size/2, 0, -size/2), zi=0 maps to world z=-size and zi=max to z=0.
+		for (int zi = 0; zi < vertsPerSide; zi++)
+		{
+			for (int xi = 0; xi < vertsPerSide; xi++)
+			{
+				float u = xi * invRes;
+				float v = zi * invRes;
+				float x = u * size;
+				float z = -size + v * size;
+
+				Vector3 world = ToGlobal(new Vector3(x, 0f, z));
+				float height = generator.SampleHeightmap(new Vector2(
+						world.X / generator.ChunkSize,
+						world.Z / generator.ChunkSize))
+					* generator.HeightScale;
+
+				heights[zi * vertsPerSide + xi] = height;
+			}
+		}
+
+		HeightMapShape3D shape = new HeightMapShape3D();
+		shape.MapWidth = vertsPerSide;
+		shape.MapDepth = vertsPerSide;
+		shape.MapData = heights;
+		return shape;
 	}
 
 	/// <summary>

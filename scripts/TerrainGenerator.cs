@@ -41,6 +41,12 @@ public partial class TerrainGenerator : Node3D
 	[Export] public Camera3D Camera { get; set; }
 	[Export] public Texture2D BaseHeightmap { get; set; }
 	[Export] public BaseMaterial3D TerrainMaterial { get; set; }
+	/// <summary>
+	/// Vertex resolution (quads per axis) used when building Full-LOD
+	/// <see cref="HeightMapShape3D"/> collision. Independent of <see cref="FullLodResolution"/>
+	/// so collision can stay cheaper than the visual mesh.
+	/// </summary>
+	[Export] public int FullLodCollsionResolution { get; set; }
 	[Export] int FullLodResolution { get; set; }
 	/// <summary>
 	/// Length and width of each chunk.

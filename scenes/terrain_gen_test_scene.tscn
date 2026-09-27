@@ -1,29 +1,51 @@
 [gd_scene format=3 uid="uid://n4soaq78456t"]
 
 [ext_resource type="Script" uid="uid://4x8elhhftwqh" path="res://scripts/TrainwreckedLevel.cs" id="1_mq806"]
+[ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="2_7ev6c"]
 [ext_resource type="Script" uid="uid://pnn6fwlgih3b" path="res://scripts/TerrainGenerator.cs" id="2_jnyv1"]
 [ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="3_jnyv1"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jnyv1"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sd5j3"]
+shader = ExtResource("2_7ev6c")
+shader_parameter/day_top_color = Color(0.38431373, 0.45490196, 0.54901963, 1)
+shader_parameter/day_bottom_color = Color(0.6627451, 0.67058825, 0.6862745, 1)
+shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
+shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
+shader_parameter/night_bottom_color = Color(0.1, 0, 0.2, 1)
+shader_parameter/horizon_color = Color(0.6627451, 0.67058825, 0.6862745, 1)
+shader_parameter/horizon_blur = 0.05
+shader_parameter/sun_color = Color(10, 8, 1, 1)
+shader_parameter/sun_sunset_color = Color(10, 0, 0, 1)
+shader_parameter/sun_size = 0.39900001825398
+shader_parameter/sun_blur = 6.44900030562898
+shader_parameter/moon_color = Color(1, 0.95, 0.7, 1)
+shader_parameter/moon_size = 0.06
+shader_parameter/moon_blur = 0.1
+shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
+shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
+shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
+shader_parameter/clouds_speed = 2.0
+shader_parameter/clouds_direction = 0.2
+shader_parameter/clouds_scale = 1.0
+shader_parameter/clouds_cutoff = 0.43999999016512
+shader_parameter/clouds_fuzziness = 1.01999997720096
+shader_parameter/clouds_weight = 0.0
+shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_speed = 1.0
+shader_parameter/overwritten_time = 0.0
 
-[sub_resource type="Sky" id="Sky_7ev6c"]
-sky_material = SubResource("ProceduralSkyMaterial_jnyv1")
+[sub_resource type="Sky" id="Sky_mwhpe"]
+sky_material = SubResource("ShaderMaterial_sd5j3")
 
-[sub_resource type="Environment" id="Environment_sd5j3"]
+[sub_resource type="Environment" id="Environment_1imva"]
 background_mode = 2
-sky = SubResource("Sky_7ev6c")
+sky = SubResource("Sky_mwhpe")
+ssao_enabled = true
+ssao_intensity = 6.9
+sdfgi_enabled = true
 glow_enabled = true
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_jnyv1"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_7ev6c"]
-width = 4096
-height = 4096
-noise = SubResource("FastNoiseLite_jnyv1")
-seamless = true
-invert = true
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_7ev6c"]
 
@@ -44,17 +66,19 @@ script = ExtResource("1_mq806")
 SpawningPlayersEnabled = false
 metadata/_custom_type_script = "uid://4x8elhhftwqh"
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=783362070]
-transform = Transform3D(1, 0, 0, 0, 0.96095246, 0.27671358, 0, -0.27671358, 0.96095246, 0, 0, 0)
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=258630340]
+environment = SubResource("Environment_1imva")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1235725205]
-environment = SubResource("Environment_sd5j3")
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=1878201601]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+light_color = Color(0.8468644, 0.69709957, 0.2643382, 1)
+shadow_enabled = true
 
 [node name="TerrainGenerator" type="Node3D" parent="." unique_id=2096038790 node_paths=PackedStringArray("Camera")]
 script = ExtResource("2_jnyv1")
 Camera = NodePath("../FreeCamera")
-BaseHeightmap = SubResource("NoiseTexture2D_7ev6c")
 TerrainMaterial = SubResource("StandardMaterial3D_jnyv1")
+FullLodCollsionResolution = 128
 FullLodResolution = 128
 ChunkSize = 128.0
 RingLods = Array[int]([0, 1, 1, 2, 2, 2])
@@ -62,4 +86,4 @@ HeightScale = 1.0
 metadata/_custom_type_script = "uid://pnn6fwlgih3b"
 
 [node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("3_jnyv1")]
-transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 1.4248109, 0)
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 1.9554124, 0)
