@@ -4,6 +4,7 @@
 [ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="2_7ev6c"]
 [ext_resource type="Script" uid="uid://pnn6fwlgih3b" path="res://scripts/TerrainGenerator.cs" id="2_jnyv1"]
 [ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="3_jnyv1"]
+[ext_resource type="Script" uid="uid://4ayks3yjei8s" path="res://scripts/DesertHeightFunctionSampler.cs" id="4_sd5j3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sd5j3"]
 shader = ExtResource("2_7ev6c")
@@ -47,6 +48,21 @@ ssao_intensity = 6.9
 sdfgi_enabled = true
 glow_enabled = true
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_6wivg"]
+noise_type = 0
+seed = 1267
+frequency = 0.0008
+fractal_type = 2
+fractal_octaves = 3
+fractal_lacunarity = 0.93
+fractal_weighted_strength = 0.18
+
+[sub_resource type="Resource" id="Resource_1imva"]
+script = ExtResource("4_sd5j3")
+DuneHeightNoise = SubResource("FastNoiseLite_6wivg")
+HeightFunctionScale = 16.0
+metadata/_custom_type_script = "uid://4ayks3yjei8s"
+
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_7ev6c"]
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sd5j3"]
@@ -77,13 +93,14 @@ shadow_enabled = true
 [node name="TerrainGenerator" type="Node3D" parent="." unique_id=2096038790 node_paths=PackedStringArray("Camera")]
 script = ExtResource("2_jnyv1")
 Camera = NodePath("../FreeCamera")
+HeightFunction = SubResource("Resource_1imva")
 TerrainMaterial = SubResource("StandardMaterial3D_jnyv1")
-FullLodCollsionResolution = 128
+FullLodCollsionResolution = 64
 FullLodResolution = 128
 ChunkSize = 128.0
-RingLods = Array[int]([0, 1, 1, 2, 2, 2])
-HeightScale = 1.0
+RingLods = Array[int]([0, 1, 2, 2, 2])
 metadata/_custom_type_script = "uid://pnn6fwlgih3b"
 
 [node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("3_jnyv1")]
-transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 1.9554124, 0)
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 62.387512, 0)
+MoveSpeed = 40.0

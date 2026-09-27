@@ -14,7 +14,7 @@ using System.Collections.Generic;
 /// (no pool).
 /// </remarks>
 [Tool]
-[GlobalClass]
+[GlobalClass, Icon("res://addons/at-icons/mesh/mountains.svg")]
 public partial class TerrainGenerator : Node3D
 {
 	public enum LOD
@@ -39,7 +39,10 @@ public partial class TerrainGenerator : Node3D
 	/// because each chunk origin is the max-Z corner of its cell.
 	/// </remarks>
 	[Export] public Camera3D Camera { get; set; }
-	[Export] public Texture2D BaseHeightmap { get; set; }
+	/// <summary>
+	/// Height provider sampled when building chunk meshes and collision.
+	/// </summary>
+	[Export] public HeightFunctionSampler HeightFunction { get; set; }
 	[Export] public BaseMaterial3D TerrainMaterial { get; set; }
 	/// <summary>
 	/// Vertex resolution (quads per axis) used when building Full-LOD
@@ -67,12 +70,6 @@ public partial class TerrainGenerator : Node3D
 	/// See <see cref="GetLodForRing"/>.
 	/// </remarks>
 	[Export] public Array<LOD> RingLods { get; set; } = new Array<LOD>();
-	/// <summary>
-	/// Multiplier applied to sampled heightmap values (typically 0–1) when displacing mesh vertices.
-	/// </summary>
-	[Export] public float HeightScale { get; set; } = 64f;
-
-	public Image BaseHeightmapImage { get; private set; }
 
 	private readonly System.Collections.Generic.Dictionary<Vector2I, TerrainChunk> _activeChunks = new System.Collections.Generic.Dictionary<Vector2I, TerrainChunk>();
 	private Vector2I _lastCameraChunk;
@@ -84,14 +81,11 @@ public partial class TerrainGenerator : Node3D
 
 	public override void _Ready()
 	{
-		RefreshHeightmapImage();
-
 		if (Engine.IsEditorHint())
 		{
 			return;
 		}
 
-		// Defer first stream so NoiseTexture2D / Camera are ready to sample.
 		Callable.From(() => UpdateChunks(force: true)).CallDeferred();
 	}
 
@@ -106,102 +100,27 @@ public partial class TerrainGenerator : Node3D
 	}
 
 	/// <summary>
-	/// Rebuilds <see cref="BaseHeightmapImage"/> from <see cref="BaseHeightmap"/>.
+	/// Returns the height from <see cref="HeightFunction"/> at <paramref name="uv"/>.
 	/// </summary>
-	public void RefreshHeightmapImage()
+	/// <param name="uv">World XZ sample position forwarded to <see cref="HeightFunctionSampler.Sample(Vector2)"/>.</param>
+	/// <returns>
+	/// Sampled height, or <c>0</c> when <see cref="HeightFunction"/> is unset.
+	/// </returns>
+	public float SampleHeight(Vector2 uv)
 	{
-		if (BaseHeightmap is null)
-		{
-			BaseHeightmapImage = null;
-			return;
-		}
-
-		BaseHeightmapImage = BaseHeightmap.GetImage();
-		if (BaseHeightmapImage is not null && BaseHeightmapImage.IsCompressed())
-		{
-			BaseHeightmapImage.Decompress();
-		}
-	}
-
-	/// <summary>
-	/// Ensures <see cref="BaseHeightmapImage"/> is loaded. Returns
-	/// <see langword="true"/> if the image became available this call.
-	/// </summary>
-	private bool TryAcquireHeightmapImage()
-	{
-		if (BaseHeightmap is null)
-		{
-			return false;
-		}
-
-		if (BaseHeightmapImage is not null)
-		{
-			return false;
-		}
-
-		RefreshHeightmapImage();
-		return BaseHeightmapImage is not null;
-	}
-
-	/// <summary>
-	/// Returns a heightmap value for a normalized sampling coord uv. Sample filtering is
-	/// interpolated. Sampling past 1.0 bounds returns repeating values.
-	/// </summary>
-	/// <param name="uv"></param>
-	/// <returns></returns>
-	public float SampleHeightmap(Vector2 uv)
-	{
-		if (BaseHeightmapImage is null)
+		if (HeightFunction is null)
 		{
 			return 0f;
 		}
 
-		int width = BaseHeightmapImage.GetWidth();
-		int height = BaseHeightmapImage.GetHeight();
-		if (width <= 0 || height <= 0)
-		{
-			return 0f;
-		}
-
-		// Repeat: wrap UV into [0, 1).
-		float u = uv.X - Mathf.Floor(uv.X);
-		float v = uv.Y - Mathf.Floor(uv.Y);
-
-		// Continuous pixel space; bilinear across wrapped texel neighbors.
-		float x = u * width - 0.5f;
-		float y = v * height - 0.5f;
-
-		int x0 = Mathf.FloorToInt(x);
-		int y0 = Mathf.FloorToInt(y);
-		float tx = x - x0;
-		float ty = y - y0;
-
-		int x0w = WrapIndex(x0, width);
-		int x1w = WrapIndex(x0 + 1, width);
-		int y0w = WrapIndex(y0, height);
-		int y1w = WrapIndex(y0 + 1, height);
-
-		float h00 = BaseHeightmapImage.GetPixel(x0w, y0w).R;
-		float h10 = BaseHeightmapImage.GetPixel(x1w, y0w).R;
-		float h01 = BaseHeightmapImage.GetPixel(x0w, y1w).R;
-		float h11 = BaseHeightmapImage.GetPixel(x1w, y1w).R;
-
-		float h0 = Mathf.Lerp(h00, h10, tx);
-		float h1 = Mathf.Lerp(h01, h11, tx);
-		return Mathf.Lerp(h0, h1, ty);
-	}
-
-	private int WrapIndex(int index, int size)
-	{
-		return ((index % size) + size) % size;
+		return HeightFunction.Sample(uv);
 	}
 
 	/// <summary>
-	/// Clears active chunks, refreshes the heightmap cache, and force-streams around the camera.
+	/// Clears active chunks and force-streams around the camera.
 	/// </summary>
 	public void GenerateTerrain()
 	{
-		RefreshHeightmapImage();
 		ClearActiveChunks();
 		_hasLastCameraChunk = false;
 		UpdateChunks(force: true);
@@ -218,15 +137,8 @@ public partial class TerrainGenerator : Node3D
 			return;
 		}
 
-		// NoiseTexture2D.GetImage() is often unavailable during _Ready; retry until loaded.
-		bool heightmapJustReady = TryAcquireHeightmapImage();
-		if (heightmapJustReady)
-		{
-			RebuildAllActiveChunkMeshes();
-		}
-
 		Vector2I cameraChunk = GetChunkCoordinatesFromWorldCoordinates(Camera.GlobalPosition);
-		if (!force && !heightmapJustReady && _hasLastCameraChunk && cameraChunk == _lastCameraChunk)
+		if (!force && _hasLastCameraChunk && cameraChunk == _lastCameraChunk)
 		{
 			return;
 		}
@@ -293,20 +205,6 @@ public partial class TerrainGenerator : Node3D
 			chunk.Generate();
 			ApplyTerrainMaterial(chunk);
 			_activeChunks[coord] = chunk;
-		}
-	}
-
-	private void RebuildAllActiveChunkMeshes()
-	{
-		foreach (KeyValuePair<Vector2I, TerrainChunk> pair in _activeChunks)
-		{
-			if (!GodotObject.IsInstanceValid(pair.Value))
-			{
-				continue;
-			}
-
-			pair.Value.Generate();
-			ApplyTerrainMaterial(pair.Value);
 		}
 	}
 

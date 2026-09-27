@@ -11,9 +11,9 @@ shader = ExtResource("1_3bpyq")
 shader_parameter/texture_1 = ExtResource("2_4avwj")
 shader_parameter/texture_2 = ExtResource("3_5gpo6")
 shader_parameter/texture_scale = 0.004
-shader_parameter/p1 = 12.765
+shader_parameter/p1 = 13.145
 shader_parameter/p2 = 8.17
-shader_parameter/p3 = -3.34
+shader_parameter/p3 = 0.77
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_3bpyq"]
 material = SubResource("ShaderMaterial_3bpyq")
@@ -39,6 +39,7 @@ shader_parameter/xy_sharpness = 4.0
 [node name="ShaderTestingScene" type="Node3D" unique_id=2064292606]
 
 [node name="DesertBiomeTerrain" type="MeshInstance3D" parent="." unique_id=1902669167]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
 mesh = SubResource("PlaneMesh_3bpyq")
 
 [node name="TriplanarTestCube" type="MeshInstance3D" parent="." unique_id=2078206173]

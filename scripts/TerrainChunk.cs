@@ -11,6 +11,7 @@ using System;
 /// <c>[-size, 0]</c> on Z).
 /// </remarks>
 [Tool]
+[Icon("res://addons/at-icons/mesh/subdivision.svg")]
 public partial class TerrainChunk : Node3D
 {
 	private Vector2I _chunkCoordinate;
@@ -126,35 +127,12 @@ public partial class TerrainChunk : Node3D
 	}
 
 	/// <summary>
-	/// Returns an ArrayMesh corresponding to a flat plane with a subdivide
-	/// width and depth equal to quadCount and a size equal to size.
-	/// </summary>
-	/// <remarks>
-	/// The plane is centered on its mesh origin. Callers must offset by
-	/// <c>(size / 2, 0, -size / 2)</c> so the plane occupies the chunk's +X/-Z extent
-	/// relative to the chunk's corner origin.
-	/// </remarks>
-	/// <returns></returns>
-	private ArrayMesh BuildFlatPlane()
-	{
-		PlaneMesh basePlane = new PlaneMesh();
-		basePlane.SubdivideDepth = Resolution;
-		basePlane.SubdivideWidth = Resolution;
-		basePlane.Size = new Vector2(Size, Size);
-
-		ArrayMesh flatPlaneArrayMesh = new ArrayMesh();
-		flatPlaneArrayMesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, basePlane.GetMeshArrays());
-
-		return flatPlaneArrayMesh;
-	}
-
-	/// <summary>
-	/// Generates a displaced plane based on sampling the parent's heightmap, the 
+	/// Generates a displaced plane based on sampling the parent's height function, the 
 	/// current LOD, the current size, and the current resolution.
 	/// </summary>
 	/// <remarks>
 	/// Vertices occupy local <c>[0, Size]</c> on X and <c>[-Size, 0]</c> on Z (corner origin).
-	/// Normals are set to <see cref="Vector3.Up"/> to avoid lighting seams at chunk borders.
+	/// Normals are derived from the finished height grid via central differences.
 	/// </remarks>
 	private ArrayMesh BuildDisplacedMesh()
 	{
@@ -185,18 +163,15 @@ public partial class TerrainChunk : Node3D
 				float z = -v * size;
 
 				Vector3 world = ToGlobal(new Vector3(x, 0f, z));
-				// One heightmap tile per chunk: UV advances by 1 across each ChunkSize.
-				float height = generator.SampleHeightmap(new Vector2(
-						world.X / generator.ChunkSize,
-						world.Z / generator.ChunkSize))
-					* generator.HeightScale;
+				float height = generator.SampleHeight(new Vector2(world.X, world.Z));
 
 				int i = zi * vertsPerSide + xi;
 				vertices[i] = new Vector3(x, height, z);
 				uvs[i] = new Vector2(u, v);
-				normals[i] = Vector3.Up;
 			}
 		}
+
+		ComputeGridNormals(vertices, normals, vertsPerSide);
 
 		int[] indices = new int[resolution * resolution * 6];
 		int idx = 0;
@@ -231,7 +206,32 @@ public partial class TerrainChunk : Node3D
 	}
 
 	/// <summary>
-	/// Generates a <see cref="HeightMapShape3D"/> for collision using the parent's heightmap.
+	/// Fills <paramref name="normals"/> from the regular height grid in <paramref name="vertices"/>.
+	/// Uses central differences where possible and one-sided differences on borders.
+	/// </summary>
+	private static void ComputeGridNormals(Vector3[] vertices, Vector3[] normals, int vertsPerSide)
+	{
+		for (int zi = 0; zi < vertsPerSide; zi++)
+		{
+			for (int xi = 0; xi < vertsPerSide; xi++)
+			{
+				int row = zi * vertsPerSide;
+				Vector3 left = vertices[row + Math.Max(xi - 1, 0)];
+				Vector3 right = vertices[row + Math.Min(xi + 1, vertsPerSide - 1)];
+				// Grid +zi goes toward world -Z; world +Z neighbor is smaller zi.
+				Vector3 towardNegZ = vertices[Math.Min(zi + 1, vertsPerSide - 1) * vertsPerSide + xi];
+				Vector3 towardPosZ = vertices[Math.Max(zi - 1, 0) * vertsPerSide + xi];
+
+				Vector3 tangentX = right - left;
+				Vector3 tangentZ = towardPosZ - towardNegZ;
+				Vector3 normal = tangentZ.Cross(tangentX);
+				normals[row + xi] = normal.LengthSquared() > 1e-12f ? normal.Normalized() : Vector3.Up;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Generates a <see cref="HeightMapShape3D"/> for collision using the parent's height function.
 	/// Only generates for the <see cref="TerrainGenerator.LOD.Full"/> LOD; lower LODs return
 	/// <see langword="null"/>.
 	/// </summary>
@@ -273,10 +273,7 @@ public partial class TerrainChunk : Node3D
 				float z = -size + v * size;
 
 				Vector3 world = ToGlobal(new Vector3(x, 0f, z));
-				float height = generator.SampleHeightmap(new Vector2(
-						world.X / generator.ChunkSize,
-						world.Z / generator.ChunkSize))
-					* generator.HeightScale;
+				float height = generator.SampleHeight(new Vector2(world.X, world.Z));
 
 				heights[zi * vertsPerSide + xi] = height;
 			}
