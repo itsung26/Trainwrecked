@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://cki47msp7qihh"]
+
+[ext_resource type="Texture2D" uid="uid://dq7n2m8k4p1xw" path="res://assets/TrainwreckedEntities/terrain_chunk_icon.svg" id="1_n2c3h"]
+
+[node name="TerrainChunkSprite3d" type="Sprite3D" unique_id=1112430383]
+pixel_size = 0.0015
+billboard = 1
+fixed_size = true
+texture = ExtResource("1_n2c3h")

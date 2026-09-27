@@ -30,6 +30,16 @@ public partial class TerrainGenerator : Node3D
 	}
 
 	/// <summary>
+	/// Editor gizmo scene instantiated under this node while running in the editor.
+	/// </summary>
+	[Export] public PackedScene IconScene { get; set; }
+
+	/// <summary>
+	/// Editor gizmo scene assigned to spawned <see cref="TerrainChunk"/> instances.
+	/// </summary>
+	[Export] public PackedScene ChunkIconScene { get; set; }
+
+	/// <summary>
 	/// The camera that perceives the chunks. Chunk coordinate is derived from the
 	/// camera's position.
 	/// </summary>
@@ -83,10 +93,14 @@ public partial class TerrainGenerator : Node3D
 	{
 		if (Engine.IsEditorHint())
 		{
+			if (IconScene is not null)
+			{
+				AddChild(IconScene.Instantiate());
+			}
 			return;
 		}
 
-		Callable.From(() => UpdateChunks(force: true)).CallDeferred();
+		CallDeferred(MethodName.UpdateChunks, true);
 	}
 
 	public override void _Process(double delta)
@@ -201,6 +215,7 @@ public partial class TerrainGenerator : Node3D
 
 			TerrainChunk chunk = new TerrainChunk();
 			AddChild(chunk);
+			chunk.IconScene = ChunkIconScene;
 			chunk.Setup(coord);
 			chunk.Generate();
 			ApplyTerrainMaterial(chunk);
@@ -232,14 +247,18 @@ public partial class TerrainGenerator : Node3D
 
 	private void ApplyTerrainMaterial(TerrainChunk chunk)
 	{
-		if (TerrainMaterial is null || chunk.GetChildCount() == 0)
+		if (TerrainMaterial is null)
 		{
 			return;
 		}
 
-		if (chunk.GetChild(0) is MeshInstance3D meshInstance)
+		foreach (Node child in chunk.GetChildren())
 		{
-			meshInstance.MaterialOverride = TerrainMaterial;
+			if (child is MeshInstance3D meshInstance)
+			{
+				meshInstance.MaterialOverride = TerrainMaterial;
+				return;
+			}
 		}
 	}
 

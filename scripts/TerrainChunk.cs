@@ -18,6 +18,11 @@ public partial class TerrainChunk : Node3D
 	private bool _hasCoordinate;
 
 	/// <summary>
+	/// Editor gizmo scene instantiated at the chunk center while running in the editor.
+	/// </summary>
+	public PackedScene IconScene { get; set; }
+
+	/// <summary>
 	/// The grid coordinate of this chunk. Set via <see cref="Setup"/> when spawned.
 	/// </summary>
 	public Vector2I ChunkCoordinate => _hasCoordinate ? _chunkCoordinate : GetChunkCoordinateFromPosition();
@@ -41,9 +46,12 @@ public partial class TerrainChunk : Node3D
 	public override void _Ready()
 	{
 		// Prevent logic running when it is in tool in it's own scene.
-		if (Engine.IsEditorHint() && GetParent() is null)
+		if (Engine.IsEditorHint())
 		{
-			return;
+            if (GetParent() is null)
+            {
+                return;
+            }
 		}
 
 		if (GetParent() is not TerrainGenerator)
@@ -99,6 +107,18 @@ public partial class TerrainChunk : Node3D
 		{
 			BuiltLod = TerrainGenerator.LOD.Skipdraw;
 			return;
+		}
+
+		// Add an icon in the editor to show chunk centers.
+		if (Engine.IsEditorHint() && IconScene is not null)
+		{
+			Node icon = IconScene.Instantiate();
+			AddChild(icon);
+			if (icon is Node3D icon3D)
+			{
+				Vector2 center = GetChunkCenter();
+				icon3D.GlobalPosition = new Vector3(center.X, parent.HeightFunction.HeightFunctionScale, center.Y);
+			}
 		}
 
 		MeshInstance3D meshInstance = new MeshInstance3D();
@@ -358,5 +378,15 @@ public partial class TerrainChunk : Node3D
 		}
 
 		return generator.ChunkSize;
+	}
+
+	/// <summary>
+	/// Returns the horizontal center of the chunk in world XZ.
+	/// Local center is <c>(Size / 2, -Size / 2)</c> from the corner origin.
+	/// </summary>
+	public Vector2 GetChunkCenter()
+	{
+		Vector3 world = ToGlobal(new Vector3(Size / 2f, 0f, -Size / 2f));
+		return new Vector2(world.X, world.Z);
 	}
 }

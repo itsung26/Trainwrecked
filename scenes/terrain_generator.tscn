@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://c1tgfqnfimfsu"]
 
 [ext_resource type="Script" uid="uid://pnn6fwlgih3b" path="res://scripts/TerrainGenerator.cs" id="1_vj78e"]
+[ext_resource type="PackedScene" uid="uid://bu4cg633kbvyi" path="res://assets/TrainwreckedEntities/terrain_generator_sprite_3d.tscn" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://cki47msp7qihh" path="res://assets/TrainwreckedEntities/terrain_chunk_sprite_3d.tscn" id="3_chunk_icon"]
 
 [node name="TerrainGenerator" type="Node3D" unique_id=384643362]
 script = ExtResource("1_vj78e")
+IconScene = ExtResource("2_icon")
+ChunkIconScene = ExtResource("3_chunk_icon")

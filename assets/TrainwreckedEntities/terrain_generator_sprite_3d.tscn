@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://bu4cg633kbvyi"]
+
+[ext_resource type="Texture2D" uid="uid://cr5h3n9j2v6tb" path="res://assets/TrainwreckedEntities/terrain_generator_icon.svg" id="1_1llye"]
+
+[node name="TerrainGeneratorSprite3D" type="Sprite3D" unique_id=1112430383]
+pixel_size = 0.0045
+billboard = 1
+fixed_size = true
+texture = ExtResource("1_1llye")

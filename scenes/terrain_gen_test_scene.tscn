@@ -4,7 +4,13 @@
 [ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="2_7ev6c"]
 [ext_resource type="Script" uid="uid://pnn6fwlgih3b" path="res://scripts/TerrainGenerator.cs" id="2_jnyv1"]
 [ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="3_jnyv1"]
-[ext_resource type="Script" uid="uid://4ayks3yjei8s" path="res://scripts/DesertHeightFunctionSampler.cs" id="4_sd5j3"]
+[ext_resource type="Script" uid="uid://4ayks3yjei8s" path="res://scripts/RockyDesertHeightFunctionSampler.cs" id="4_sd5j3"]
+[ext_resource type="Texture2D" uid="uid://5dt0i7v0h75f" path="res://assets/2d assets/textures/enviroment_textures/rocks_29/Rock029_2K-PNG_Color.png" id="5_1imva"]
+[ext_resource type="Texture2D" uid="uid://b6itv54yepx8d" path="res://assets/2d assets/textures/enviroment_textures/rocks_29/Rock029_2K-PNG_NormalGL.png" id="6_6wivg"]
+[ext_resource type="PackedScene" uid="uid://bu4cg633kbvyi" path="res://assets/TrainwreckedEntities/terrain_generator_sprite_3d.tscn" id="7_gen_icon"]
+[ext_resource type="Texture2D" uid="uid://c3d7abgltf6mr" path="res://assets/2d assets/textures/enviroment_textures/rocks_29/Rock029_2K-PNG_AmbientOcclusion.png" id="8_1gkdh"]
+[ext_resource type="PackedScene" uid="uid://cki47msp7qihh" path="res://assets/TrainwreckedEntities/terrain_chunk_sprite_3d.tscn" id="8_chunk_icon"]
+[ext_resource type="Texture2D" uid="uid://bnh4o5847qb2e" path="res://assets/2d assets/textures/enviroment_textures/rocks_29/Rock029_2K-PNG_Roughness.png" id="9_7b0nc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sd5j3"]
 shader = ExtResource("2_7ev6c")
@@ -48,34 +54,26 @@ ssao_intensity = 6.9
 sdfgi_enabled = true
 glow_enabled = true
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_6wivg"]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_1imva"]
 noise_type = 0
-seed = 1267
-frequency = 0.0008
 fractal_type = 2
-fractal_octaves = 3
-fractal_lacunarity = 0.93
-fractal_weighted_strength = 0.18
+fractal_octaves = 1
+fractal_lacunarity = -2.92
 
-[sub_resource type="Resource" id="Resource_1imva"]
+[sub_resource type="Resource" id="Resource_mwhpe"]
 script = ExtResource("4_sd5j3")
-DuneHeightNoise = SubResource("FastNoiseLite_6wivg")
-HeightFunctionScale = 16.0
+DuneHeightNoise = SubResource("FastNoiseLite_1imva")
+HeightFunctionScale = 1.5
 metadata/_custom_type_script = "uid://4ayks3yjei8s"
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_7ev6c"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_sd5j3"]
-width = 4096
-height = 4096
-noise = SubResource("FastNoiseLite_7ev6c")
-seamless = true
-invert = true
-as_normal_map = true
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jnyv1"]
+albedo_texture = ExtResource("5_1imva")
+roughness_texture = ExtResource("9_7b0nc")
 normal_enabled = true
-normal_texture = SubResource("NoiseTexture2D_sd5j3")
+normal_texture = ExtResource("6_6wivg")
+ao_enabled = true
+ao_texture = ExtResource("8_1gkdh")
+uv1_scale = Vector3(5, 5, 5)
 
 [node name="TerrainGenTestScene" type="Node3D" unique_id=150279354]
 script = ExtResource("1_mq806")
@@ -92,15 +90,17 @@ shadow_enabled = true
 
 [node name="TerrainGenerator" type="Node3D" parent="." unique_id=2096038790 node_paths=PackedStringArray("Camera")]
 script = ExtResource("2_jnyv1")
+IconScene = ExtResource("7_gen_icon")
+ChunkIconScene = ExtResource("8_chunk_icon")
 Camera = NodePath("../FreeCamera")
-HeightFunction = SubResource("Resource_1imva")
+HeightFunction = SubResource("Resource_mwhpe")
 TerrainMaterial = SubResource("StandardMaterial3D_jnyv1")
 FullLodCollsionResolution = 64
-FullLodResolution = 128
-ChunkSize = 128.0
-RingLods = Array[int]([0, 1, 2, 2, 2])
+FullLodResolution = 256
+ChunkSize = 512.0
+RingLods = Array[int]([0, 1, 2, 2, 2, 2])
 metadata/_custom_type_script = "uid://pnn6fwlgih3b"
 
 [node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("3_jnyv1")]
-transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 62.387512, 0)
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 2.0973241, 0)
 MoveSpeed = 40.0
