@@ -39,7 +39,29 @@ import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
-_subresources={}
+_subresources={
+"meshes": {
+"phone_Cube": {
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/phone/mesh resources/phone_Cube.res",
+"save_to_file/path": "uid://cyaq3wh105khy"
+},
+"phone_Cube_002": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/phone/mesh resources/phone_Cube_002.res",
+"save_to_file/path": "uid://bj5fsjo2thhak"
+}
+},
+"nodes": {
+"PATH:phone_high": {
+"import/skip_import": true
+}
+}
+}
 blender/nodes/visible=0
 blender/nodes/active_collection_only=false
 blender/nodes/punctual_lights=true

@@ -1,0 +1,198 @@
+[gd_scene format=3 uid="uid://be3ic2sindgeo"]
+
+[ext_resource type="Script" uid="uid://cq2yjsqnbyyj2" path="res://scripts/PhysicsTestingLab.cs" id="1_5w60x"]
+[ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="2_1nlrt"]
+[ext_resource type="Texture2D" uid="uid://dba5njw461t7m" path="res://assets/2d assets/textures/prototype_textures/Dark/texture_07.png" id="3_cv46p"]
+[ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="4_cv46p"]
+[ext_resource type="PackedScene" uid="uid://digwaj4k0bxcq" path="res://assets/3d assets/phone/phone.blend" id="5_8lsgc"]
+[ext_resource type="PackedScene" uid="uid://ci6yovrxt2vcx" path="res://assets/TrainwreckedEntities/curly_poo_pickupable.tscn" id="6_5w60x"]
+[ext_resource type="Script" uid="uid://bskpevcm4lp77" path="res://scripts/TestAnimatableBody2.cs" id="7_2nmu6"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8lsgc"]
+shader = ExtResource("2_1nlrt")
+shader_parameter/day_top_color = Color(0.38431373, 0.45490196, 0.54901963, 1)
+shader_parameter/day_bottom_color = Color(0.6627451, 0.67058825, 0.6862745, 1)
+shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
+shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
+shader_parameter/night_bottom_color = Color(0.1, 0, 0.2, 1)
+shader_parameter/horizon_color = Color(0.6627451, 0.67058825, 0.6862745, 1)
+shader_parameter/horizon_blur = 0.05
+shader_parameter/sun_color = Color(10, 8, 1, 1)
+shader_parameter/sun_sunset_color = Color(10, 0, 0, 1)
+shader_parameter/sun_size = 0.39900001825398
+shader_parameter/sun_blur = 6.44900030562898
+shader_parameter/moon_color = Color(1, 0.95, 0.7, 1)
+shader_parameter/moon_size = 0.06
+shader_parameter/moon_blur = 0.1
+shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
+shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
+shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
+shader_parameter/clouds_speed = 2.0
+shader_parameter/clouds_direction = 0.2
+shader_parameter/clouds_scale = 1.0
+shader_parameter/clouds_cutoff = 0.43999999016512
+shader_parameter/clouds_fuzziness = 1.01999997720096
+shader_parameter/clouds_weight = 0.0
+shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_speed = 1.0
+shader_parameter/overwritten_time = 0.0
+
+[sub_resource type="Sky" id="Sky_mwhpe"]
+sky_material = SubResource("ShaderMaterial_8lsgc")
+
+[sub_resource type="Environment" id="Environment_5w60x"]
+background_mode = 2
+sky = SubResource("Sky_mwhpe")
+ssao_enabled = true
+ssao_intensity = 6.9
+sdfgi_enabled = true
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dehhp"]
+albedo_texture = ExtResource("3_cv46p")
+uv1_scale = Vector3(25, 25, 25)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_dehhp"]
+size = Vector2(500, 500)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_1nlrt"]
+data = PackedVector3Array(250, 0, 250, -250, 0, 250, 250, 0, -250, -250, 0, 250, -250, 0, -250, 250, 0, -250)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dehhp"]
+size = Vector3(1, 2.1342773, 1)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_2nmu6"]
+data = PackedVector3Array(-0.5, 1.0670999, 0.5, 0.5, 1.0670999, 0.5, -0.5, -1.0670999, 0.5, 0.5, 1.0670999, 0.5, 0.5, -1.0670999, 0.5, -0.5, -1.0670999, 0.5, 0.5, 1.0670999, -0.5, -0.5, 1.0670999, -0.5, 0.5, -1.0670999, -0.5, -0.5, 1.0670999, -0.5, -0.5, -1.0670999, -0.5, 0.5, -1.0670999, -0.5, 0.5, 1.0670999, 0.5, 0.5, 1.0670999, -0.5, 0.5, -1.0670999, 0.5, 0.5, 1.0670999, -0.5, 0.5, -1.0670999, -0.5, 0.5, -1.0670999, 0.5, -0.5, 1.0670999, -0.5, -0.5, 1.0670999, 0.5, -0.5, -1.0670999, -0.5, -0.5, 1.0670999, 0.5, -0.5, -1.0670999, 0.5, -0.5, -1.0670999, -0.5, 0.5, 1.0670999, 0.5, -0.5, 1.0670999, 0.5, 0.5, 1.0670999, -0.5, -0.5, 1.0670999, 0.5, -0.5, 1.0670999, -0.5, 0.5, 1.0670999, -0.5, -0.5, -1.0670999, 0.5, 0.5, -1.0670999, 0.5, -0.5, -1.0670999, -0.5, 0.5, -1.0670999, 0.5, 0.5, -1.0670999, -0.5, -0.5, -1.0670999, -0.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_5w60x"]
+points = PackedVector3Array(1.7295818, 0.2001232, 2.7261617, 1.6896267, 0.2001232, 2.9633334, 1.7295818, -0.20016237, 2.7261617, 1.7295818, 0.2001232, -2.7268167, 1.6896267, -0.20016237, 2.9633334, 1.5768721, 0.2001232, 3.1644704, 1.7295818, -0.20016237, -2.7268167, 1.6896267, 0.2001232, -2.9639883, 1.5768721, -0.20016237, 3.1644704, 1.408248, 0.2001232, 3.2987802, 1.6896267, -0.20016237, -2.9639883, 1.5768721, 0.2001232, -3.1651254, 1.408248, -0.20016237, 3.2987802, 1.2091496, 0.2001232, 3.3466074, 1.5768721, -0.20016237, -3.1651254, 1.408248, 0.2001232, -3.2994351, 1.2091496, -0.20016237, 3.3466074, -1.209827, 0.2001232, 3.3466074, 1.408248, -0.20016237, -3.2994351, 1.2091496, 0.2001232, -3.3466074, -1.209827, -0.20016237, 3.3466074, -1.4085866, 0.2001232, 3.2987802, 1.2091496, -0.20016237, -3.3466074, -1.209827, 0.2001232, -3.3466074, -1.4085866, -0.20016237, 3.2987802, -1.5775493, 0.2001232, 3.1644704, -1.209827, -0.20016237, -3.3466074, -1.4085866, 0.2001232, -3.2994351, -1.5775493, -0.20016237, 3.1644704, -1.6903039, 0.2001232, 2.9633334, -1.4085866, -0.20016237, -3.2994351, -1.5775493, 0.2001232, -3.1651254, -1.6903039, -0.20016237, 2.9633334, -1.7295818, 0.2001232, 2.7261617, -1.5775493, -0.20016237, -3.1651254, -1.6903039, 0.2001232, -2.9639883, -1.7295818, -0.20016237, 2.7261617, -1.7295818, 0.2001232, -2.7268167, -1.6903039, -0.20016237, -2.9639883, -1.7295818, -0.20016237, -2.7268167)
+
+[sub_resource type="Animation" id="Animation_2nmu6"]
+resource_name = "RESET"
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Testing/TestAnimatableBody:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.024922848, 2.366341, 9.039071)]
+}
+
+[sub_resource type="Animation" id="Animation_5w60x"]
+resource_name = "test_move"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Testing/TestAnimatableBody:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.024922848, 3.2294178, 9.039071), Vector3(16.251, 3.229, 9.039)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_2nmu6"]
+_data = {
+&"RESET": SubResource("Animation_2nmu6"),
+&"test_move": SubResource("Animation_5w60x")
+}
+
+[node name="PhysicsTestingLab" type="Node3D" unique_id=1147018344 node_paths=PackedStringArray("AnimationPlayer")]
+script = ExtResource("1_5w60x")
+AnimationPlayer = NodePath("AnimationPlayer")
+AnimationName = "test_move"
+metadata/_custom_type_script = "uid://4x8elhhftwqh"
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=915737280]
+environment = SubResource("Environment_5w60x")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=986052916]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=925279999]
+material_override = SubResource("StandardMaterial3D_dehhp")
+mesh = SubResource("PlaneMesh_dehhp")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Floor" unique_id=1895009624]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor/StaticBody3D" unique_id=1416103350]
+shape = SubResource("ConcavePolygonShape3D_1nlrt")
+
+[node name="Pedestal" type="MeshInstance3D" parent="." unique_id=1640848365]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6993446, 1.0671387, 9.078241)
+mesh = SubResource("BoxMesh_dehhp")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Pedestal" unique_id=1666740352]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestal/StaticBody3D" unique_id=1100831354]
+shape = SubResource("ConcavePolygonShape3D_2nmu6")
+
+[node name="Pedestal2" type="MeshInstance3D" parent="." unique_id=794709689]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.7142463, 1.0670999, 17.780512)
+mesh = SubResource("BoxMesh_dehhp")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Pedestal2" unique_id=1412168390]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestal2/StaticBody3D" unique_id=1886289453]
+shape = SubResource("ConcavePolygonShape3D_2nmu6")
+
+[node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("4_cv46p")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 2.0465007, 0)
+
+[node name="Testing" type="Node3D" parent="." unique_id=432192888]
+
+[node name="TestAnimatableBody" type="AnimatableBody3D" parent="Testing" unique_id=1818934097]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.024922848, 2.366341, 9.039071)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Testing/TestAnimatableBody" unique_id=328698025]
+shape = SubResource("ConvexPolygonShape3D_5w60x")
+
+[node name="phone" parent="Testing/TestAnimatableBody" unique_id=1448532242 instance=ExtResource("5_8lsgc")]
+
+[node name="CurlyPooPickupable" parent="Testing" unique_id=1762888275 instance=ExtResource("6_5w60x")]
+transform = Transform3D(8.175, 0, 0, 0, 8.175, 0, 0, 0, 8.175, 6.6993446, 2.8291638, 9.078241)
+continuous_cd = true
+
+[node name="CurlyPooPickupable2" parent="Testing" unique_id=357970861 instance=ExtResource("6_5w60x")]
+transform = Transform3D(8.175, 0, 0, 0, 8.175, 0, 0, 0, 8.175, 6.6993446, 2.8291254, 17.759205)
+continuous_cd = true
+
+[node name="TestAnimatableBody2" type="AnimatableBody3D" parent="Testing" unique_id=1049478997]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.024922848, 2.971497, 17.771181)
+script = ExtResource("7_2nmu6")
+Speed = 53.333
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Testing/TestAnimatableBody2" unique_id=716539196]
+shape = SubResource("ConvexPolygonShape3D_5w60x")
+
+[node name="phone" parent="Testing/TestAnimatableBody2" unique_id=1645685557 instance=ExtResource("5_8lsgc")]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1931425251]
+libraries/ = SubResource("AnimationLibrary_2nmu6")
+speed_scale = 16.0
+
+[node name="SimulationsPrompt" type="Label" parent="." unique_id=1011580135]
+anchors_preset = -1
+anchor_left = 0.44010416
+anchor_right = 0.56041664
+anchor_bottom = 0.021296296
+grow_horizontal = 2
+grow_vertical = 2
+text = "Press \"P\" to begin simulations"
+metadata/_edit_use_anchors_ = true
+
+[editable path="Testing/TestAnimatableBody/phone"]
+[editable path="Testing/CurlyPooPickupable"]
+[editable path="Testing/CurlyPooPickupable2"]
+[editable path="Testing/TestAnimatableBody2/phone"]

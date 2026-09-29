@@ -157,7 +157,8 @@ public partial class TrackPath : Path3D
 		CurveChanged -= _on_curve_changed;
 		try
 		{
-			// Order does matter here.
+			// Order does matter here- tangents will not calculate correctly if
+			// elevation of the track is not uniform.
 			EnforceCurveElevation();
 			EnforceCurveTangents();
 		}
