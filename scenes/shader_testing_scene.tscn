@@ -5,7 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://b5enmq6ojk4yi" path="res://assets/2d assets/textures/enviroment_textures/rocks_017/Rocks017_2K-PNG_Color.png" id="3_5gpo6"]
 [ext_resource type="Shader" uid="uid://b5t5jfl5qyfvn" path="res://assets/shaders/triplanar_mapping_snippet.gdshader" id="4_5kfpf"]
 [ext_resource type="Shader" uid="uid://cgn78274no7o1" path="res://assets/shaders/face_quad_test.gdshader" id="5_rxo82"]
+[ext_resource type="Shader" uid="uid://c6uugj3onhill" path="res://assets/shaders/heightmap_visualizer.gdshader" id="6_0wayb"]
 [ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="6_rvqgu"]
+[ext_resource type="Texture2D" uid="uid://60xua2es7vvs" path="res://assets/2d assets/textures/prototype_textures/Light/texture_06.png" id="7_slbsu"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3bpyq"]
 render_priority = 0
@@ -46,6 +48,18 @@ shader = ExtResource("5_rxo82")
 flip_faces = true
 size = Vector2(2, 2)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rvqgu"]
+render_priority = 0
+shader = ExtResource("6_0wayb")
+shader_parameter/band_width = 0.017
+shader_parameter/band_spacing = 0.152
+shader_parameter/band_color = Color(0.609005, 0.51027685, 9.62615e-07, 1)
+shader_parameter/underlying_texture = ExtResource("7_slbsu")
+shader_parameter/uv_scale = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+
+[sub_resource type="SphereMesh" id="SphereMesh_dehhp"]
+
 [node name="ShaderTestingScene" type="Node3D" unique_id=2064292606]
 
 [node name="DesertBiomeTerrain" type="MeshInstance3D" parent="." unique_id=1902669167]
@@ -67,5 +81,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0917494, -2.199601)
 material_override = SubResource("ShaderMaterial_m7ys3")
 extra_cull_margin = 16384.0
 mesh = SubResource("QuadMesh_dehhp")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1265496351]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.948526, 0)
+material_override = SubResource("ShaderMaterial_rvqgu")
+mesh = SubResource("SphereMesh_dehhp")
 
 [node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("6_rvqgu")]

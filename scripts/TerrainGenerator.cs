@@ -25,6 +25,10 @@ public partial class TerrainGenerator : Node3D
 		Half = 1,
 		// Represents quarter vertex resolution.
 		Quarter = 2,
+		// Represents eighth vertex resolution.
+		Eighth = 3,
+		// Represents sixteenth vertex resolution.
+		Sixteenth = 4,
 		// Represents a no-draw.
 		Skipdraw = -1
 	}
@@ -53,7 +57,7 @@ public partial class TerrainGenerator : Node3D
 	/// Height provider sampled when building chunk meshes and collision.
 	/// </summary>
 	[Export] public HeightFunctionSampler HeightFunction { get; set; }
-	[Export] public BaseMaterial3D TerrainMaterial { get; set; }
+	[Export] public Material TerrainMaterial { get; set; }
 	/// <summary>
 	/// Vertex resolution (quads per axis) used when building Full-LOD
 	/// <see cref="HeightMapShape3D"/> collision. Independent of <see cref="FullLodResolution"/>
@@ -319,6 +323,12 @@ public partial class TerrainGenerator : Node3D
 
 			case LOD.Quarter:
 				return FullLodResolution / 4;
+			
+			case LOD.Eighth:
+				return FullLodResolution / 8;
+			
+			case LOD.Sixteenth:
+				return FullLodResolution / 16;
 
 			case LOD.Skipdraw:
 				return 0;

@@ -18,7 +18,7 @@ public partial class RockyDesertHeightFunctionSampler : HeightFunctionSampler
         // uv.y corresponds to xyz.z
         // Both are expected in world coordinates.
 
-        return DuneHeightNoise is not null ? DuneHeightNoise.GetNoise2Dv(uv) * HeightFunctionScale : 0f;
+        return DuneHeightNoise is not null ? (DuneHeightNoise.GetNoise2Dv(uv) - 0.5f) * HeightFunctionScale : 0f;
     }
 
 	public override float Sample(float u, float v)

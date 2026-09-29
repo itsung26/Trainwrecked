@@ -5,9 +5,10 @@
 [ext_resource type="Script" uid="uid://pnn6fwlgih3b" path="res://scripts/TerrainGenerator.cs" id="2_jnyv1"]
 [ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="3_jnyv1"]
 [ext_resource type="Resource" uid="uid://d1m5i3ck8bdxn" path="res://assets/height_functions/rocky_desert/rocky_desert_gentle_slopes.tres" id="6_6wivg"]
-[ext_resource type="Texture2D" uid="uid://60xua2es7vvs" path="res://assets/2d assets/textures/prototype_textures/Light/texture_06.png" id="7_6wivg"]
+[ext_resource type="Shader" uid="uid://c6uugj3onhill" path="res://assets/shaders/heightmap_visualizer.gdshader" id="7_6wivg"]
 [ext_resource type="PackedScene" uid="uid://bu4cg633kbvyi" path="res://assets/TrainwreckedEntities/terrain_generator_sprite_3d.tscn" id="7_gen_icon"]
 [ext_resource type="PackedScene" uid="uid://cki47msp7qihh" path="res://assets/TrainwreckedEntities/terrain_chunk_sprite_3d.tscn" id="8_chunk_icon"]
+[ext_resource type="Texture2D" uid="uid://dba5njw461t7m" path="res://assets/2d assets/textures/prototype_textures/Dark/texture_07.png" id="8_gntkl"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_sd5j3"]
 shader = ExtResource("2_7ev6c")
@@ -51,11 +52,15 @@ ssao_intensity = 6.9
 sdfgi_enabled = true
 glow_enabled = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jnyv1"]
-albedo_texture = ExtResource("7_6wivg")
-normal_enabled = true
-ao_enabled = true
-uv1_scale = Vector3(5, 5, 5)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6wivg"]
+render_priority = 0
+shader = ExtResource("7_6wivg")
+shader_parameter/band_width = -0.381
+shader_parameter/band_spacing = 16.2
+shader_parameter/band_color = Color(0.6784314, 0.84705883, 0.9019608, 1)
+shader_parameter/underlying_texture = ExtResource("8_gntkl")
+shader_parameter/uv_scale = Vector2(5, 5)
+shader_parameter/uv_offset = Vector2(0, 0)
 
 [node name="TerrainGenTestScene" type="Node3D" unique_id=150279354]
 script = ExtResource("1_mq806")
@@ -67,7 +72,6 @@ environment = SubResource("Environment_1imva")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=1878201601]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
-light_color = Color(0.8468644, 0.69709957, 0.2643382, 1)
 shadow_enabled = true
 
 [node name="TerrainGenerator" type="Node3D" parent="." unique_id=2096038790 node_paths=PackedStringArray("Camera")]
@@ -76,13 +80,13 @@ IconScene = ExtResource("7_gen_icon")
 ChunkIconScene = ExtResource("8_chunk_icon")
 Camera = NodePath("../FreeCamera")
 HeightFunction = ExtResource("6_6wivg")
-TerrainMaterial = SubResource("StandardMaterial3D_jnyv1")
+TerrainMaterial = SubResource("ShaderMaterial_6wivg")
 FullLodCollsionResolution = 64
-FullLodResolution = 256
+FullLodResolution = 128
 ChunkSize = 512.0
-RingLods = Array[int]([0, 1, 2, 2, 2, 2])
+RingLods = Array[int]([0, 2, 3, 4, 4, 4])
 metadata/_custom_type_script = "uid://pnn6fwlgih3b"
 
 [node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("3_jnyv1")]
-transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, 5.165, 0)
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 0, -11.13772, 0)
 MoveSpeed = 40.0

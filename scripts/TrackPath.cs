@@ -8,22 +8,6 @@ public partial class TrackPath : Path3D
 	private const String GeneratedTrackMeta = "generated_track";
 
 	[Export] public PackedScene TrackScene = null;
-
-	private int _trackCount = 1;
-	[Export]
-	public int TrackCount
-	{
-		get { return _trackCount; }
-		set
-		{
-			_trackCount = value;
-			if (IsNodeReady())
-			{
-				RebuildTracks();
-			}
-		}
-	}
-
 	private float _trackSpacing = 1.0f;
 	[Export]
 	public float TrackSpacing
@@ -38,7 +22,6 @@ public partial class TrackPath : Path3D
 			}
 		}
 	}
-
 	private float _trackMeshScale = 1.0f;
 	[Export]
 	public float TrackMeshScale
@@ -53,6 +36,11 @@ public partial class TrackPath : Path3D
 			}
 		}
 	}
+	// [Export] public float MaxCurvature { get; set; }
+	// [Export] public float MaxGrade { get; set; }
+
+	[ExportToolButton("Enforce Curve Restrictions", Icon = "Curve3D")]
+	public Callable EnforceCurveRestrictionsButton => Callable.From(EnforceCurveRestrictions);
 
 	public override void _Ready()
 	{
@@ -60,30 +48,36 @@ public partial class TrackPath : Path3D
 		RebuildTracks();
 	}
 
-	// Creates instances of TrackScene at the specified track count and spacing along the path.
+	/// <summary>
+	/// Instantiates <see cref="TrackScene"/> along the curve at <see cref="TrackSpacing"/>
+	/// intervals so the full baked length is covered.
+	/// </summary>
 	public void RebuildTracks()
 	{
 		ClearGeneratedTracks();
 
-		if (TrackScene == null || Curve == null || TrackCount <= 0)
+		if (TrackScene == null || Curve == null || TrackSpacing <= 0f)
 		{
 			return;
 		}
 
-		float PathLength = Curve.GetBakedLength();
-		for (int i = 0; i < TrackCount; i++)
+		float pathLength = Curve.GetBakedLength();
+		if (pathLength <= 0f)
 		{
-			float Offset = i * TrackSpacing;
-			if (PathLength > 0.0f)
-			{
-				Offset = Mathf.Min(Offset, PathLength);
-			}
+			return;
+		}
 
-			Node3D Track = TrackScene.Instantiate<Node3D>();
-			Track.SetMeta(GeneratedTrackMeta, true);
-			AddChild(Track);
-			Track.Transform = Curve.SampleBakedWithRotation(Offset);
-			Track.Scale = new Vector3(TrackMeshScale, TrackMeshScale, TrackMeshScale);
+		// Include both endpoints: 0, spacing, ..., floor(length/spacing)*spacing, and length if needed.
+		int trackCount = Mathf.FloorToInt(pathLength / TrackSpacing) + 1;
+		for (int i = 0; i < trackCount; i++)
+		{
+			float offset = Mathf.Min(i * TrackSpacing, pathLength);
+
+			Node3D track = TrackScene.Instantiate<Node3D>();
+			track.SetMeta(GeneratedTrackMeta, true);
+			AddChild(track);
+			track.Transform = Curve.SampleBakedWithRotation(offset, cubic: false, applyTilt: true);
+			track.Scale = new Vector3(TrackMeshScale, TrackMeshScale, TrackMeshScale);
 		}
 	}
 
@@ -111,8 +105,74 @@ public partial class TrackPath : Path3D
 		return ret;
 	}
 
+	/// <summary>
+	/// Sets each control point's in/out handles from neighbor positions (Catmull-Rom style)
+	/// so the curve stays G1-smooth through the waypoints.
+	/// </summary>
+	/// <returns>The modified <see cref="Path3D.Curve"/>, or <see langword="null"/> if unavailable.</returns>
+	private void EnforceCurveTangents()
+	{
+		Curve3D curve = Curve;
+		if (curve is null)
+		{
+			return;
+		}
+
+		int pointCount = curve.PointCount;
+		for (int i = 0; i < pointCount; i++)
+		{
+			Vector3 prev = curve.GetPointPosition(Mathf.Max(i - 1, 0));
+			Vector3 next = curve.GetPointPosition(Mathf.Min(i + 1, pointCount - 1));
+
+			// Bezier handle = Catmull-Rom tangent / 3 = (next - prev) / 6.
+			Vector3 handleOut = (next - prev) / 6.0f;
+			curve.SetPointOut(i, handleOut);
+			curve.SetPointIn(i, -handleOut);
+		}
+	}
+
+	private void EnforceCurveElevation()
+	{
+		Curve3D curve = Curve;
+		if (curve is null)
+		{
+			return;
+		}
+
+		int pointCount = curve.PointCount;
+		for (int i = 0; i < pointCount; i++)
+		{
+			Vector3 pointDisplacedPosition = new Vector3(curve.GetPointPosition(i).X, 0.0f, curve.GetPointPosition(i).Z);
+			curve.SetPointPosition(i, pointDisplacedPosition);
+		}
+	}
+
+	/// <summary>
+	/// Applies track curve restrictions (smooth Catmull-Rom handles for now), then rebuilds meshes.
+	/// </summary>
+	public void EnforceCurveRestrictions()
+	{
+		// Momentarily disconnect the signal to prevent the signal emitting during every
+		// change in the validation cycle.
+		CurveChanged -= _on_curve_changed;
+		try
+		{
+			// Order does matter here.
+			EnforceCurveElevation();
+			EnforceCurveTangents();
+		}
+		finally
+		{
+			CurveChanged += _on_curve_changed;
+		}
+
+		RebuildTracks();
+	}
+
 	public void _on_curve_changed()
 	{
 		RebuildTracks();
 	}
+
+
 }

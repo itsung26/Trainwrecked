@@ -205,7 +205,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.904385, -1.4527671, -5.35
 curve = SubResource("Curve3D_j53pp")
 script = ExtResource("5_r60r8")
 TrackScene = ExtResource("6_fk41g")
-TrackCount = 59
 metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 
 [node name="LensFlareShader" type="CanvasLayer" parent="." unique_id=929262863]
