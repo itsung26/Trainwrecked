@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dd5458rqjm15d"]
+
+[ext_resource type="Script" uid="uid://dthqj8xh0bq5u" path="res://scripts/VoidReturn.cs" id="1_nf57d"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_dehhp"]
+
+[node name="VoidReturn" type="Area3D" unique_id=1920846427]
+collision_mask = 3
+script = ExtResource("1_nf57d")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1225811673]
+shape = SubResource("WorldBoundaryShape3D_dehhp")

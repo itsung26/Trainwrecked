@@ -5,6 +5,9 @@ public partial class PhysicsTestingLab : TrainwreckedLevel
 {
 	[Export] public AnimationPlayer AnimationPlayer { get; set; }
 	[Export] public string AnimationName { get; set; }
+	[Export] public PathFollow3D TestPathFollow { get; set; }
+	[Export] public bool Running { get; set; }
+	[Export] public float Speed { get; set; }
 
     public override void _Ready()
     {
@@ -17,10 +20,16 @@ public partial class PhysicsTestingLab : TrainwreckedLevel
 		if (Input.IsActionJustPressed("Debug Action"))
 		{
 			AnimationPlayer.Play(AnimationName);
+			Running = true;
 		}
 		if (Input.IsActionJustPressed("Debug Action 2"))
 		{
 			GetTree().ReloadCurrentScene();
+		}
+
+		if (Running)
+		{
+			TestPathFollow.ProgressRatio += Speed * (float)delta;
 		}
     }
 

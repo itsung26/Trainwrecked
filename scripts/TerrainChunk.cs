@@ -11,7 +11,7 @@ using System;
 /// <c>[-size, 0]</c> on Z).
 /// </remarks>
 [Tool]
-[Icon("res://addons/at-icons/mesh/subdivision.svg")]
+[Icon("res://assets/TrainwreckedEntities/terrain_chunk_icon.svg")]
 public partial class TerrainChunk : Node3D
 {
 	private Vector2I _chunkCoordinate;

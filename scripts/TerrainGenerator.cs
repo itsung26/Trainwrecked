@@ -14,7 +14,7 @@ using System.Collections.Generic;
 /// (no pool).
 /// </remarks>
 [Tool]
-[GlobalClass, Icon("res://addons/at-icons/mesh/mountains.svg")]
+[GlobalClass, Icon("res://assets/TrainwreckedEntities/terrain_generator_icon.svg")]
 public partial class TerrainGenerator : Node3D
 {
 	public enum LOD
