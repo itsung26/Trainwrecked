@@ -218,7 +218,7 @@ TrackSpacing = 0.925
 metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 
 [node name="TestPathFollow" type="PathFollow3D" parent="Testing/TrackPath" unique_id=1849341662]
-transform = Transform3D(0.9950714, 0, -0.09806248, 0, 1, 0, 0.09806248, 0, 0.9950714, -2, 0.91, -13)
+transform = Transform3D(0.9950715, 0, -0.09806248, 0, 1, 0, 0.09806248, 0, 0.9950715, -2, 0.91, -13)
 v_offset = 0.91
 tilt_enabled = false
 
@@ -227,7 +227,7 @@ remote_path = NodePath("../../AnimatableBody3D")
 update_scale = false
 
 [node name="AnimatableBody3D" type="AnimatableBody3D" parent="Testing/TrackPath" unique_id=388797009]
-transform = Transform3D(0.99517894, 0, -0.09807308, 0, 1, 0, 0.09807308, 0, 0.99517894, -2, 0.91, -13)
+transform = Transform3D(0.9951789, 0, -0.098073065, 0, 1, 0, 0.098073065, 0, 0.9951789, -2, 0.91, -13)
 
 [node name="phone" parent="Testing/TrackPath/AnimatableBody3D" unique_id=248318453 instance=ExtResource("5_8lsgc")]
 
