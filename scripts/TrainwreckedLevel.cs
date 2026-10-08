@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 /// </summary>
 /// <remarks>
 /// Only one level should be configured at a time. Scene changes are driven by
-/// <see cref="LevelLoader"/>. On a connected host, <see cref="_Ready"/> spawns peer
-/// <c>1</c> first, then each id from <see cref="NetworkManager.GetPeerIds"/>.
+/// <see cref="LevelLoader"/>. <see cref="_Ready"/> always spawns peer <c>1</c> on the
+/// server, including offline singleplayer. When a session is connected, it then
+/// spawns each id from <see cref="NetworkManager.GetPeerIds"/>.
 /// </remarks>
 [GlobalClass]
 public partial class TrainwreckedLevel : Node3D
@@ -36,23 +37,27 @@ public partial class TrainwreckedLevel : Node3D
 	[Export] protected Array<Node3D> PlayerSpawnPoints { get; set; } = new Array<Node3D>();
 
 	/// <summary>
-	/// Validates exports, then on a connected server spawns the host player and all
-	/// currently connected clients under this node for <see cref="PlayerSpawner"/> replication.
+	/// On the server, spawns the local player (peer <c>1</c>). When a session is
+	/// connected, also spawns each currently connected client for
+	/// <see cref="PlayerSpawner"/> replication. Offline singleplayer spawns only peer <c>1</c>.
 	/// </summary>
 	public override void _Ready()
 	{
 		NetworkManager.Instance.PeerConnected += _on_peer_connected;
-		
-		if (NetworkManager.IsServer() && NetworkManager.IsConnected() && SpawningPlayersEnabled)
+
+		if (NetworkManager.IsServer() && SpawningPlayersEnabled)
 		{
-			// Create and spawn the host player first.
 			CreatePlayer(1, 1);
-			// Then spawn other players in.
-			int index = 2;
-			foreach (int id in NetworkManager.GetPeerIds())
+
+			// If actually in a session, spawn however many other players exist.
+			if (NetworkManager.IsConnected())
 			{
-				CreatePlayer(id, index);
-				index++;
+				int index = 2;
+				foreach (int id in NetworkManager.GetPeerIds())
+				{
+					CreatePlayer(id, index);
+					index++;
+				}
 			}
 		}
 	}
