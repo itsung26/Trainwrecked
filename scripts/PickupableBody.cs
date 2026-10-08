@@ -63,7 +63,7 @@ public partial class PickupableBody : Interactable
 			return;
 		}
 
-		Player holderPlayer = NetworkManager.GetPlayerByPeerId(HolderPeerId);
+		Player holderPlayer = (GetTree().CurrentScene as TrainwreckedLevel)?.GetPlayerByPeerId(HolderPeerId);
 		if (holderPlayer is not null)
 		{
 			Vector3 toTarget = holderPlayer.PickupableBodyTarget.GlobalPosition - GlobalPosition;
@@ -245,7 +245,7 @@ public partial class PickupableBody : Interactable
 			Selectable = false;
 			BeginHold();
 
-			Player holder = NetworkManager.GetPlayerByPeerId(holderPeerId);
+			Player holder = (GetTree().CurrentScene as TrainwreckedLevel)?.GetPlayerByPeerId(holderPeerId);
 			if (holder is not null)
 			{
 				holder.CurrentHeldBody = this;
@@ -254,7 +254,7 @@ public partial class PickupableBody : Interactable
 		else
 		{
 			int previousHolderPeerId = HolderPeerId;
-			Player holder = NetworkManager.GetPlayerByPeerId(previousHolderPeerId);
+			Player holder = (GetTree().CurrentScene as TrainwreckedLevel)?.GetPlayerByPeerId(previousHolderPeerId);
 			if (holder is not null && holder.CurrentHeldBody == this)
 			{
 				holder.CurrentHeldBody = null;
@@ -271,7 +271,7 @@ public partial class PickupableBody : Interactable
 	/// </summary>
 	protected virtual void BeginHold()
 	{
-		Player player = NetworkManager.GetPlayerByPeerId(HolderPeerId);
+		Player player = (GetTree().CurrentScene as TrainwreckedLevel)?.GetPlayerByPeerId(HolderPeerId);
 		if (player is not null)
 		{
 			player.GlobalSpeedModifier = player.GlobalSpeedModifier * WalkSpeedMultiplier;
@@ -284,7 +284,7 @@ public partial class PickupableBody : Interactable
 	/// </summary>
 	protected virtual void EndHold()
 	{
-		Player player = NetworkManager.GetPlayerByPeerId(HolderPeerId);
+		Player player = (GetTree().CurrentScene as TrainwreckedLevel)?.GetPlayerByPeerId(HolderPeerId);
 		if (player is not null)
 		{
 			player.GlobalSpeedModifier = 1.0f;
