@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://dmbemcpn2ur6"]
+
+[ext_resource type="Script" uid="uid://gdm12gnvxfn" path="res://scripts/MirrorPane.cs" id="1_ahlrg"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_dehhp"]
+size = Vector2(2.405, 3.94)
+
+[node name="MirrorPane" type="Node3D" unique_id=819004532]
+script = ExtResource("1_ahlrg")
+Size = Vector2(2.405, 3.94)
+
+[node name="QuadMesh" type="MeshInstance3D" parent="." unique_id=1618505201]
+unique_name_in_owner = true
+mesh = SubResource("QuadMesh_dehhp")
