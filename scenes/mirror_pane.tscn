@@ -2,13 +2,39 @@
 
 [ext_resource type="Script" uid="uid://gdm12gnvxfn" path="res://scripts/MirrorPane.cs" id="1_ahlrg"]
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_mirror"]
+viewport_path = NodePath("MirrorViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mirror"]
+resource_local_to_scene = true
+shading_mode = 0
+albedo_texture = SubResource("ViewportTexture_mirror")
+
 [sub_resource type="QuadMesh" id="QuadMesh_dehhp"]
+flip_faces = true
 size = Vector2(2.405, 3.94)
 
 [node name="MirrorPane" type="Node3D" unique_id=819004532]
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
 script = ExtResource("1_ahlrg")
 Size = Vector2(2.405, 3.94)
 
 [node name="QuadMesh" type="MeshInstance3D" parent="." unique_id=1618505201]
 unique_name_in_owner = true
+layers = 2
+material_override = SubResource("StandardMaterial3D_mirror")
 mesh = SubResource("QuadMesh_dehhp")
+
+[node name="CameraTransformPusher" type="RemoteTransform3D" parent="." unique_id=1902529737]
+remote_path = NodePath("../MirrorViewport/MirrorCamera")
+
+[node name="MirrorViewport" type="SubViewport" parent="." unique_id=515836049]
+unique_name_in_owner = true
+handle_input_locally = false
+size = Vector2i(512, 839)
+render_target_update_mode = 4
+
+[node name="MirrorCamera" type="Camera3D" parent="MirrorViewport" unique_id=1369198989]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
+current = true

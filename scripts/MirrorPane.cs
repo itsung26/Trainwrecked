@@ -11,10 +11,15 @@ public partial class MirrorPane : Node3D
 		set => SetSize(value);
 	}
 	private MeshInstance3D _quadMesh;
+	private SubViewport _mirrorViewport;
+	private Camera3D _mirrorCamera;
 
     public override void _Ready()
     {
         _quadMesh = GetNode<MeshInstance3D>("%QuadMesh");
+		_mirrorViewport = GetNode<SubViewport>("%MirrorViewport");
+		_mirrorCamera = GetNode<Camera3D>("%MirrorCamera");
+		
 		SetSize(_size);
     }
 

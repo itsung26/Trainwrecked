@@ -98,6 +98,9 @@ bones/47/rotation = Quaternion(0.031560116, 0.11544349, 0.43245384, 0.89367807)
 bones/48/rotation = Quaternion(-0.032831494, -0.06140409, -0.4002582, 0.91375333)
 bones/49/rotation = Quaternion(-0.24398565, -0.025197305, -0.08141447, 0.96602684)
 
+[node name="male_base" parent="male_base/male_base_rig/Skeleton3D" index="0" unique_id=1761765966]
+layers = 2
+
 [node name="LookAtModifier3D" type="LookAtModifier3D" parent="male_base/male_base_rig/Skeleton3D" index="1" unique_id=1964397751]
 target_node = NodePath("../../../../PlayerCameraPivot/IkLookMarker")
 bone_name = "spine.002"
