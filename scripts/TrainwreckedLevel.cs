@@ -1,7 +1,9 @@
-using Godot;
-using Godot.Collections;
 using System;
 using System.Threading.Tasks;
+using Godot;
+using Godot.Collections;
+
+
 
 
 /// <summary>
@@ -18,11 +20,15 @@ using System.Threading.Tasks;
 public partial class TrainwreckedLevel : Node3D
 {
 	[Export] public bool SpawningPlayersEnabled { get; set; } = true;
+
+
 	/// <summary>
 	/// Packed scene instantiated for each player. Must match a scene listed on
 	/// <see cref="PlayerSpawner"/>.
 	/// </summary>
 	[Export] protected PackedScene PlayerScene { get; set; }
+
+
 
 	/// <summary>
 	/// Spawner that replicates player nodes added under this level to remote peers.
@@ -30,11 +36,33 @@ public partial class TrainwreckedLevel : Node3D
 	/// </summary>
 	[Export] protected MultiplayerSpawner PlayerSpawner { get; set; }
 
+
+
 	/// <summary>
 	/// Four spawn markers. Index <c>0</c> is the host spot; indices <c>1</c>–<c>3</c>
 	/// are used for clients in connection order from <see cref="NetworkManager.GetPeerIds"/>.
 	/// </summary>
 	[Export] protected Array<Node3D> PlayerSpawnPoints { get; set; } = new Array<Node3D>();
+
+
+
+
+	/// <summary>
+	/// Emitted when <see cref="PlayerSpawner"/> spawns a player under this level.
+	/// Wraps <see cref="MultiplayerSpawner.Spawned"/> and passes the spawned <see cref="Player"/>.
+	/// </summary>
+	/// <param name="player">The player node that was spawned.</param>
+	[Signal] public delegate void PlayerSpawnedEventHandler(Player player);
+
+
+	/// <summary>
+	/// Emitted when <see cref="PlayerSpawner"/> despawns a player under this level.
+	/// Wraps <see cref="MultiplayerSpawner.Despawned"/> and passes the despawned <see cref="Player"/>.
+	/// </summary>
+	/// <param name="player">The player node that was despawned.</param>
+	[Signal] public delegate void PlayerDespawnedEventHandler(Player player);
+
+
 
 	/// <summary>
 	/// On the server, spawns the local player (peer <c>1</c>). When a session is
@@ -43,6 +71,11 @@ public partial class TrainwreckedLevel : Node3D
 	/// </summary>
 	public override void _Ready()
 	{
+		if (PlayerSpawner is not null)
+		{
+			PlayerSpawner.Spawned += _on_player_spawner_spawned;
+			PlayerSpawner.Despawned += _on_player_spawner_despawned;
+		}
 		NetworkManager.Instance.PeerConnected += _on_peer_connected;
 
 		if (NetworkManager.IsServer() && SpawningPlayersEnabled)
@@ -50,6 +83,8 @@ public partial class TrainwreckedLevel : Node3D
 			CreatePlayer(1, 1);
 
 			// If actually in a session, spawn however many other players exist.
+
+
 			if (NetworkManager.IsConnected())
 			{
 				int index = 2;
@@ -64,8 +99,10 @@ public partial class TrainwreckedLevel : Node3D
 
 	public override void _Process(double delta)
 	{
-		
+
 	}
+
+
 
 	/// <summary>
 	/// Instantiates a <see cref="Player"/> for <paramref name="peerId"/>, parents it under
@@ -82,13 +119,24 @@ public partial class TrainwreckedLevel : Node3D
 	/// One-based spawn spot (<c>1</c>–<c>4</c>). Spot <c>1</c> is always the host.
 	/// Maps to <see cref="PlayerSpawnPoints"/> at <c>playerIndex - 1</c>.
 	/// </param>
+	/// <summary>
+	/// Returns the player parented under this level whose name matches <paramref name="peerId"/>.
+	/// </summary>
+	/// <param name="peerId">Multiplayer peer id (matches the player node's name).</param>
+	/// <returns>The matching <see cref="Player"/>, or <see langword="null"/> if not found.</returns>
+	public Player GetPlayerByPeerId(int peerId)
+	{
+		return GetNodeOrNull<Player>(peerId.ToString());
+	}
+
 	public void CreatePlayer(int peerId, int playerIndex)
 	{
 		if (!SpawningPlayersEnabled || PlayerSpawner is null || PlayerSpawnPoints.Count != 4)
 		{
 			return;
 		}
-		
+
+
 		Player newPlayer = PlayerScene.Instantiate<Player>();
 		newPlayer.Name = peerId.ToString();
 		AddChild(newPlayer, true);
@@ -111,12 +159,30 @@ public partial class TrainwreckedLevel : Node3D
 		{
 			if (NetworkManager.IsServer() && NetworkManager.IsConnected())
 			{
-				Player playerToDespawn = GetNodeOrNull<Player>(id.ToString());
+				Player playerToDespawn = GetPlayerByPeerId((int)id);
 				if (playerToDespawn is not null)
 				{
 					playerToDespawn.QueueFree();
 				}
 			}
 		}
+	}
+
+	private void _on_player_spawner_spawned(Node node)
+	{
+		if (node is not Player)
+		{
+			return;
+		}
+		EmitSignal(SignalName.PlayerSpawned, node as Player);
+	}
+
+	private void _on_player_spawner_despawned(Node node)
+	{
+		if (node is not Player)
+		{
+			return;
+		}
+		EmitSignal(SignalName.PlayerDespawned, node as Player);
 	}
 }
