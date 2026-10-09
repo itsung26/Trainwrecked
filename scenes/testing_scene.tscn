@@ -12,7 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://assets/TrainwreckedEntities/model_train_pickupable_red_loco.tscn" id="11_bwcr2"]
 [ext_resource type="PackedScene" uid="uid://ci6yovrxt2vcx" path="res://assets/TrainwreckedEntities/curly_poo_pickupable.tscn" id="12_glees"]
 [ext_resource type="PackedScene" uid="uid://4cw0uqimmt3h" path="res://scenes/button_interactable.tscn" id="13_bwcr2"]
-[ext_resource type="PackedScene" uid="uid://dmbemcpn2ur6" path="res://scenes/mirror_pane.tscn" id="13_glees"]
+[ext_resource type="PackedScene" uid="uid://c2xyt6b386vvp" path="res://assets/TrainwreckedEntities/mirror_modern_tall_pickupable.tscn" id="14_0vd70"]
 [ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="14_bwcr2"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lg35i"]
@@ -88,6 +88,7 @@ buffer = PackedFloat32Array(0.33172637, 0, 0.94443566, -53.669746, 0, 1.001, 0, 
 
 [node name="TestingScene" type="Node3D" unique_id=1386985927 node_paths=PackedStringArray("PlayerSpawner", "PlayerSpawnPoints")]
 script = ExtResource("1_ltgxd")
+SpawningPlayersEnabled = false
 PlayerScene = ExtResource("1_ifns1")
 PlayerSpawner = NodePath("PlayerSpawner")
 PlayerSpawnPoints = [NodePath("PlayerSpawner/SpawnPoint1"), NodePath("PlayerSpawner/SpawnPoint2"), NodePath("PlayerSpawner/SpawnPoint3"), NodePath("PlayerSpawner/SpawnPoint4")]
@@ -193,11 +194,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8778796, -1.3500495, 0.868
 [node name="ButtonInteractable" parent="." unique_id=1492329018 instance=ExtResource("13_bwcr2")]
 transform = Transform3D(4.371139e-08, 1, -3.821371e-15, 1, -4.371139e-08, -8.742278e-08, -8.742278e-08, 0, -1, -5.501678, -0.38856015, 0.86643916)
 
-[node name="MirrorPane" parent="." unique_id=819004532 node_paths=PackedStringArray("ObserverCamera") instance=ExtResource("13_glees")]
-transform = Transform3D(-0.8660254, 0, -0.5, 0, 0.99999994, 0, 0.49999997, 0, -0.8660255, 5.865097, 0.5349444, 0.16783404)
-ObserverCamera = NodePath("../FreeCamera")
-
 [node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("14_bwcr2")]
-transform = Transform3D(-1, 0, -1.509958e-07, 0, 1, 0, 1.509958e-07, 0, -1, 4.423895, 1.4773207, 2.6306236)
+transform = Transform3D(0.95670193, 0, -0.29106948, 0, 1, 0, 0.29106948, 0, 0.95670193, -2.4931557, 0.71354926, 0.16714859)
+
+[node name="MirrorModernTallPickupable" parent="." unique_id=1531969028 instance=ExtResource("14_0vd70")]
+transform = Transform3D(0.45930755, 0, -0.8882773, 0, 1, 0, 0.8882773, 0, 0.45930755, -2.337669, -0.39428663, -0.9902098)
+
+[node name="MirrorPane" parent="MirrorModernTallPickupable/mirror_modern_tall" parent_id_path=PackedInt32Array(1531969028, 991848805) index="3" unique_id=819004532 node_paths=PackedStringArray("ObserverCamera")]
+ObserverCamera = NodePath("../../../FreeCamera")
 
 [editable path="CactusMultiMesh/cactus"]
+[editable path="MirrorModernTallPickupable"]
+[editable path="MirrorModernTallPickupable/mirror_modern_tall"]

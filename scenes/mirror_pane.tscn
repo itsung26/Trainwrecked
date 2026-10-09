@@ -12,27 +12,29 @@ render_priority = 0
 shader = ExtResource("2_mlgg5")
 shader_parameter/VIEWPORT_SCREEN_TEXTURE = SubResource("ViewportTexture_be7ac")
 
-[sub_resource type="QuadMesh" id="QuadMesh_dehhp"]
+[sub_resource type="QuadMesh" id="QuadMesh_mlgg5"]
 flip_faces = true
-size = Vector2(2.405, 3.94)
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_mlgg5"]
+auto_exposure_enabled = true
 
 [node name="MirrorPane" type="Node3D" unique_id=819004532]
 transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1, 0, 0, 0)
 script = ExtResource("1_ahlrg")
-Size = Vector2(2.405, 3.94)
 
-[node name="QuadMesh" type="MeshInstance3D" parent="." unique_id=1618505201]
+[node name="MirrorMesh" type="MeshInstance3D" parent="." unique_id=1618505201]
 unique_name_in_owner = true
 layers = 2
 material_override = SubResource("ShaderMaterial_ahlrg")
-mesh = SubResource("QuadMesh_dehhp")
+mesh = SubResource("QuadMesh_mlgg5")
 
 [node name="MirrorViewport" type="SubViewport" parent="." unique_id=515836049]
 unique_name_in_owner = true
 handle_input_locally = false
-size = Vector2i(512, 839)
-render_target_update_mode = 4
+size = Vector2i(1920, 1080)
+render_target_update_mode = 3
 
 [node name="MirrorCamera" type="Camera3D" parent="MirrorViewport" unique_id=1369198989]
 unique_name_in_owner = true
+attributes = SubResource("CameraAttributesPractical_mlgg5")
 current = true
