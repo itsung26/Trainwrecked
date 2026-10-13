@@ -110,7 +110,6 @@ use_secondary_rotation = false
 origin_offset = Vector3(0, 0.516, 0)
 
 [node name="PlayerCameraPivot" type="Node3D" parent="." unique_id=39234166]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="PlayerCamera" type="Camera3D" parent="PlayerCameraPivot" unique_id=1218769642]
 attributes = SubResource("CameraAttributesPractical_fjrip")
