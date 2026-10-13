@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://ci6yovrxt2vcx" path="res://assets/TrainwreckedEntities/curly_poo_pickupable.tscn" id="12_glees"]
 [ext_resource type="PackedScene" uid="uid://4cw0uqimmt3h" path="res://scenes/button_interactable.tscn" id="13_bwcr2"]
 [ext_resource type="PackedScene" uid="uid://c2xyt6b386vvp" path="res://assets/TrainwreckedEntities/mirror_modern_tall_pickupable.tscn" id="14_0vd70"]
+[ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="14_bwcr2"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lg35i"]
 shader = ExtResource("1_srtiu")
@@ -87,6 +88,7 @@ buffer = PackedFloat32Array(0.33172637, 0, 0.94443566, -53.669746, 0, 1.001, 0, 
 
 [node name="TestingScene" type="Node3D" unique_id=1386985927 node_paths=PackedStringArray("PlayerSpawner", "PlayerSpawnPoints")]
 script = ExtResource("1_ltgxd")
+SpawningPlayersEnabled = false
 PlayerScene = ExtResource("1_ifns1")
 PlayerSpawner = NodePath("PlayerSpawner")
 PlayerSpawnPoints = [NodePath("PlayerSpawner/SpawnPoint1"), NodePath("PlayerSpawner/SpawnPoint2"), NodePath("PlayerSpawner/SpawnPoint3"), NodePath("PlayerSpawner/SpawnPoint4")]
@@ -195,9 +197,7 @@ transform = Transform3D(4.371139e-08, 1, -3.821371e-15, 1, -4.371139e-08, -8.742
 [node name="MirrorModernTallPickupable" parent="." unique_id=1531969028 instance=ExtResource("14_0vd70")]
 transform = Transform3D(0.45930755, 0, -0.8882773, 0, 1, 0, 0.8882773, 0, 0.45930755, -2.337669, -0.39428663, -0.9902098)
 
-[node name="MirrorPane" parent="MirrorModernTallPickupable/mirror_modern_tall" parent_id_path=PackedInt32Array(1531969028, 991848805) index="3" unique_id=819004532 node_paths=PackedStringArray("ObserverCamera")]
-ObserverCamera = NodePath("")
+[node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("14_bwcr2")]
+transform = Transform3D(0.9802381, 0.101144664, -0.17000888, 0, 0.8594064, 0.5112931, 0.19782129, -0.501189, 0.8424229, -5.055639, 2.5166364, 2.5984278)
 
 [editable path="CactusMultiMesh/cactus"]
-[editable path="MirrorModernTallPickupable"]
-[editable path="MirrorModernTallPickupable/mirror_modern_tall"]
