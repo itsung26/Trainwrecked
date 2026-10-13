@@ -4,10 +4,12 @@ using System.Net.Http.Headers;
 
 /// Owns RailStock objects as children and represents a connected train of either a lone RollingStock
 /// or potentially several connected RollingStocks.
+/// Random train spawning/preconnected train spawning will be implemented later.
 [GlobalClass]
 public partial class TrainConsist : Node
 {
     [Export] public TrackPath Track { get; set; }
+
     public RollingStock Head { get; private set; }
     public RollingStock Tail { get; private set; }
 
@@ -23,34 +25,43 @@ public partial class TrainConsist : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        ClampChildrenStockToTrack();
+        ClampAllChildrenStockToTrack();
     }
 
     /// Clamps all children to the track in their respective order.
-    private void ClampChildrenStockToTrack()
+    private void ClampAllChildrenStockToTrack()
+    {
+        int childCount = GetChildCount();
+        for (int i = 0; i < childCount; i++)
+        {
+            ClampChildStockToTrack(i);
+        }
+    }
+
+    /// Clamps the child at childIndex to the track, including global pos and global rotation.
+    /// The car's z- axis always faces the forwards direction on the track.
+    private void ClampChildStockToTrack(int childIndex)
     {
         if (Track is null)
         {
             throw new NullReferenceException("No track to clamp to.");
         }
 
-        if (GetChildCount() == 0)
+        if (childIndex < 0 || childIndex >= GetChildCount())
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        if (GetChild(childIndex) is not RollingStock car)
         {
             return;
         }
 
-        RollingStock CurrentCar = Head;
-        while (CurrentCar is not null)
-        {
-            Vector3 newPosition = new Vector3(
-                Track.GetClosestPathPoint(CurrentCar.GlobalPosition).X,
-                Track.GetClosestPathPoint(CurrentCar.GlobalPosition).Y + CurrentCar.VerticalOffset,
-                Track.GetClosestPathPoint(CurrentCar.GlobalPosition).Z
-                );
-            CurrentCar.GlobalPosition = newPosition;
+        Transform3D pathTransform = Track.GetClosestPathTransform(car.GlobalPosition);
+        Vector3 position = pathTransform.Origin;
+        position.Y += car.VerticalOffset;
 
-            CurrentCar = CurrentCar.CoupledBehind;
-        }
+        car.GlobalTransform = new Transform3D(pathTransform.Basis, position);
     }
 
     public void Split()
