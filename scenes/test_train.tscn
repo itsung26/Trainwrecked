@@ -1,0 +1,77 @@
+[gd_scene format=3 uid="uid://hd22umosg8ht"]
+
+[ext_resource type="Script" uid="uid://dmng1kajcssbw" path="res://scripts/TrainConsist.cs" id="1_c7d61"]
+[ext_resource type="Script" uid="uid://clqr77tgjrxw5" path="res://scripts/RailCar.cs" id="2_rkt2r"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_dehhp"]
+size = Vector3(3.293, 3.293, 12.224)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_banjh"]
+size = Vector3(3.293, 3.293, 12.224)
+
+[sub_resource type="BoxMesh" id="BoxMesh_c7d61"]
+size = Vector3(3.293, 3.293, 12.224)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c7d61"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rkt2r"]
+size = Vector3(3.293, 3.293, 12.224)
+
+[node name="TestTrain" type="Node" unique_id=1571218383]
+script = ExtResource("1_c7d61")
+metadata/_custom_type_script = "uid://dmng1kajcssbw"
+
+[node name="TestRailCarBody" type="AnimatableBody3D" parent="." unique_id=1496173653 node_paths=PackedStringArray("FrontCouplerPos", "RearCouplerPos")]
+script = ExtResource("2_rkt2r")
+FrontCouplerPos = NodePath("FrontCoupler")
+RearCouplerPos = NodePath("BackCoupler")
+metadata/_custom_type_script = "uid://clqr77tgjrxw5"
+
+[node name="RailCarVisual" type="MeshInstance3D" parent="TestRailCarBody" unique_id=89919993]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8091516, 0)
+mesh = SubResource("BoxMesh_dehhp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TestRailCarBody" unique_id=969306038]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8091516, 0)
+shape = SubResource("BoxShape3D_banjh")
+
+[node name="Forwards" type="RayCast3D" parent="TestRailCarBody" unique_id=1885718255]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.81496, -6.112)
+target_position = Vector3(0, 0, -5)
+
+[node name="FrontCoupler" type="Marker3D" parent="TestRailCarBody" unique_id=1444522699]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45605636, -6.8200397)
+gizmo_extents = 1.0
+
+[node name="BackCoupler" type="Marker3D" parent="TestRailCarBody" unique_id=1582646849]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45605636, 6.8152847)
+gizmo_extents = 1.0
+
+[node name="TestRailCarBody2" type="AnimatableBody3D" parent="." unique_id=2139975253 node_paths=PackedStringArray("FrontCouplerPos", "RearCouplerPos")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 14.8925495)
+script = ExtResource("2_rkt2r")
+FrontCouplerPos = NodePath("FrontCoupler")
+RearCouplerPos = NodePath("BackCoupler")
+metadata/_custom_type_script = "uid://clqr77tgjrxw5"
+
+[node name="RailCarVisual" type="MeshInstance3D" parent="TestRailCarBody2" unique_id=2033455341]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8091516, 0)
+mesh = SubResource("BoxMesh_c7d61")
+surface_material_override/0 = SubResource("StandardMaterial3D_c7d61")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TestRailCarBody2" unique_id=1953326560]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8091516, 0)
+shape = SubResource("BoxShape3D_rkt2r")
+
+[node name="Forwards" type="RayCast3D" parent="TestRailCarBody2" unique_id=1660719963]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.81496, -6.112)
+target_position = Vector3(0, 0, -5)
+
+[node name="FrontCoupler" type="Marker3D" parent="TestRailCarBody2" unique_id=99068687]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45605636, -6.8678665)
+gizmo_extents = 1.0
+
+[node name="BackCoupler" type="Marker3D" parent="TestRailCarBody2" unique_id=957354810]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45605636, 6.9741297)
+gizmo_extents = 1.0

@@ -25,19 +25,20 @@ public partial class TrainConsist : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        // Ensure all Carts (RollingStocks) stay clamped to the railroad.
-        ClampAllChildrenStockToTrack();
+        // Ensure the head RollingStock stays clamped to the railroad.
+        ClampChildStockToTrack(0);
+        // Ensure the connected RollingStocks stay connected in order behind the head.
     }
 
-    /// Clamps all children to the track in their respective order.
-    private void ClampAllChildrenStockToTrack()
-    {
-        int childCount = GetChildCount();
-        for (int i = 0; i < childCount; i++)
-        {
-            ClampChildStockToTrack(i);
-        }
-    }
+    // /// Clamps all children to the track in their respective order.
+    // private void ClampAllChildrenStockToTrack()
+    // {
+    //     int childCount = GetChildCount();
+    //     for (int i = 0; i < childCount; i++)
+    //     {
+    //         ClampChildStockToTrack(i);
+    //     }
+    // }
 
     /// Clamps the child at childIndex to the track, including global pos and global rotation.
     /// The car's z- axis always faces the forwards direction on the track.
