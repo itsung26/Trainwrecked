@@ -28,4 +28,18 @@ public partial class TrainwreckedPath : Path3D
         Vector3 closestLocal = curve.GetClosestPoint(ToLocal(worldPos));
         return ToGlobal(closestLocal);
     }
+
+    /// Returns the closest baked pose in world space. The basis -Z axis points along increasing offset.
+    public Transform3D GetClosestPathTransform(Vector3 worldPos)
+    {
+        Curve3D curve = Curve;
+        if (curve == null || curve.PointCount == 0 || curve.GetBakedLength() <= 0f)
+        {
+            return new Transform3D(Basis.Identity, worldPos);
+        }
+
+        float offset = curve.GetClosestOffset(ToLocal(worldPos));
+        Transform3D localOnCurve = curve.SampleBakedWithRotation(offset, cubic: false, applyTilt: true);
+        return GlobalTransform * localOnCurve;
+    }
 }
