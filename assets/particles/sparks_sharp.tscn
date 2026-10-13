@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://bvelk045t4ser"]
+
+[sub_resource type="Gradient" id="Gradient_spark"]
+offsets = PackedFloat32Array(0, 0.12, 0.45, 1)
+colors = PackedColorArray(1, 0.97, 0.85, 1, 1, 0.72, 0.18, 1, 1, 0.28, 0.02, 0.85, 0.35, 0.04, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_spark"]
+gradient = SubResource("Gradient_spark")
+
+[sub_resource type="Curve" id="Curve_scale"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.35, 0.85), 0.0, 0.0, 0, 0, Vector2(1, 0), -1.2, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_scale"]
+curve = SubResource("Curve_scale")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_homih"]
+direction = Vector3(0, 1, 0)
+spread = 75.0
+initial_velocity_min = 4.5
+initial_velocity_max = 10.0
+gravity = Vector3(0, -16, 0)
+damping_min = 0.8
+damping_max = 2.4
+scale_min = 0.45
+scale_max = 1.15
+scale_curve = SubResource("CurveTexture_scale")
+color_ramp = SubResource("GradientTexture1D_spark")
+
+[sub_resource type="Curve" id="Curve_ribbon"]
+_data = [Vector2(0, 1), 0.0, -3.2, 0, 0, Vector2(0.18, 0.35), -1.4, -1.4, 0, 0, Vector2(1, 0), -0.25, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+use_particle_trails = true
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_sb740"]
+material = SubResource("StandardMaterial3D_spark")
+size = 0.035
+sections = 6
+section_length = 0.045
+section_segments = 2
+curve = SubResource("Curve_ribbon")
+
+[node name="SparksSharp" type="GPUParticles3D" unique_id=1345218585]
+emitting = false
+amount = 36
+lifetime = 0.55
+one_shot = true
+explosiveness = 1.0
+randomness = 0.4
+fixed_fps = 0
+visibility_aabb = AABB(-7, -8, -7, 14, 12, 14)
+transform_align = 2
+trail_enabled = true
+trail_lifetime = 0.16
+process_material = SubResource("ParticleProcessMaterial_homih")
+draw_pass_1 = SubResource("RibbonTrailMesh_sb740")
