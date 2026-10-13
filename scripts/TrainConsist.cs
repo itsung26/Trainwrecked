@@ -25,6 +25,7 @@ public partial class TrainConsist : Node
 
     public override void _PhysicsProcess(double delta)
     {
+        // Ensure all Carts (RollingStocks) stay clamped to the railroad.
         ClampAllChildrenStockToTrack();
     }
 
