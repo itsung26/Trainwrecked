@@ -58,7 +58,7 @@ classDiagram
         +void Split(RollingStock at)
     }
 
-    Node3D <|-- RollingStock
+    AnimatableBody3D <|-- RollingStock
     RollingStock <|-- Locomotive
     RollingStock <|-- Railcar
     Locomotive <|-- DieselLocomotive

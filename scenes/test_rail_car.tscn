@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://dfsfegljsk2de"]
+
+[ext_resource type="Script" uid="uid://dmng1kajcssbw" path="res://scripts/TrainConsist.cs" id="1_70luh"]
+[ext_resource type="Script" uid="uid://clqr77tgjrxw5" path="res://scripts/RailCar.cs" id="2_banjh"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_dehhp"]
+size = Vector3(3.293, 3.293, 12.224)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_banjh"]
+size = Vector3(3.293, 3.293, 12.224)
+
+[node name="TestRailCar" type="Node" unique_id=1571218383]
+script = ExtResource("1_70luh")
+metadata/_custom_type_script = "uid://dmng1kajcssbw"
+
+[node name="TestRailCarBody" type="AnimatableBody3D" parent="." unique_id=1496173653]
+script = ExtResource("2_banjh")
+metadata/_custom_type_script = "uid://clqr77tgjrxw5"
+
+[node name="RailCarVisual" type="MeshInstance3D" parent="TestRailCarBody" unique_id=89919993]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8091516, 0)
+mesh = SubResource("BoxMesh_dehhp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TestRailCarBody" unique_id=969306038]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8091516, 0)
+shape = SubResource("BoxShape3D_banjh")

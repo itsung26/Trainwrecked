@@ -14,4 +14,18 @@ public partial class TrainwreckedPath : Path3D
         Sampler.QueueFree();
         return ret;
     }
+
+    /// Returns the point on the currently baked curve closest to <paramref name="worldPos"/>.
+    /// Searches world space rather than <c>progressRatio</c>, which shifts when chunks load or unload.
+    public Vector3 GetClosestPathPoint(Vector3 worldPos)
+    {
+        Curve3D curve = Curve;
+        if (curve == null || curve.PointCount == 0 || curve.GetBakedLength() <= 0f)
+        {
+            return worldPos;
+        }
+
+        Vector3 closestLocal = curve.GetClosestPoint(ToLocal(worldPos));
+        return ToGlobal(closestLocal);
+    }
 }
