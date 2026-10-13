@@ -2,12 +2,14 @@ using System;
 using Godot;
 
 /// <summary>
-/// Reflective pane. <see cref="MirrorCamera"/> is the <see cref="ObserverCamera"/>
-/// reflected across this node's local XY plane, and its view is drawn on <c>MirrorMesh</c>.
+/// Reflective pane. The <see cref="Camera3D"/> currently rendering this pane's <see cref="Viewport"/>
+/// is reflected across this node's local XY plane onto the child <c>MirrorCamera</c>,
+/// and that camera's view is drawn on <c>MirrorMesh</c>.
 /// </summary>
 /// <remarks>
 /// Requires unique child nodes <c>MirrorMesh</c>, <c>MirrorViewport</c>, and <c>MirrorCamera</c>.
 /// Runs in the editor via <see cref="ToolAttribute"/>.
+/// The reflection is not updated while that viewport has no current camera.
 /// </remarks>
 [Tool]
 public partial class MirrorPane : Node3D
@@ -21,14 +23,11 @@ public partial class MirrorPane : Node3D
 		Custom
 	}
 
-	/// <summary>Camera reflected into <c>MirrorCamera</c>. No reflection is updated when this is <see langword="null"/>.</summary>
-	[Export] public Camera3D ObserverCamera { get; set; }
 	private MeshModes _meshMode = MeshModes.Quad;
 	/// <summary>
 	/// Selects the mesh on <c>MirrorMesh</c> and applies it immediately.
 	/// </summary>
-	[Export]
-	public MeshModes MeshMode
+	[Export] public MeshModes MeshMode
 	{
 		get => _meshMode;
 		set
@@ -42,8 +41,7 @@ public partial class MirrorPane : Node3D
 	/// Width and height of the generated quad, in this node's local X and Y.
 	/// The value is always stored. The quad is rebuilt only while <see cref="MeshMode"/> is <see cref="MeshModes.Quad"/>.
 	/// </summary>
-	[Export]
-	public Vector2 Size
+	[Export] public Vector2 Size
 	{
 		get => _size;
 		set => SetSize(value);
@@ -53,8 +51,7 @@ public partial class MirrorPane : Node3D
 	/// Mesh shown while <see cref="MeshMode"/> is <see cref="MeshModes.Custom"/>.
 	/// Assigning it reapplies the mesh only in that mode.
 	/// </summary>
-	[Export]
-	public ArrayMesh CustomMesh
+	[Export] public ArrayMesh CustomMesh
 	{
 		get => _customMesh;
 		set
@@ -66,6 +63,7 @@ public partial class MirrorPane : Node3D
 			}
 		}
 	}
+	private Camera3D _observerCamera;
 	private QuadMesh _quadMesh;
 	private MeshInstance3D _mirrorMesh;
 	private SubViewport _mirrorViewport;
@@ -82,16 +80,33 @@ public partial class MirrorPane : Node3D
 	}
 
 	/// <summary>
-	/// Places <c>MirrorCamera</c> at the reflected observer pose and clips its near plane toward the glass.
+	/// Refreshes the observer from <see cref="GetObserverCamera"/>, places <c>MirrorCamera</c> at the reflected pose,
+	/// and clips its near plane toward the glass.
 	/// </summary>
+	/// <remarks>
+	/// Does nothing when <see cref="GetObserverCamera"/> returns <see langword="null"/>.
+	/// </remarks>
 	public override void _Process(double delta)
 	{
-		if (ObserverCamera is not null)
+		_observerCamera = GetObserverCamera();
+
+		if (_observerCamera is not null)
 		{
-			_mirrorCamera.GlobalPosition = CalculateMirrorCameraPosition(ObserverCamera.GlobalPosition);
-			_mirrorCamera.GlobalBasis = CalculateMirrorCameraRotation();
+			_mirrorCamera.GlobalPosition = CalculateMirrorCameraPosition(_observerCamera.GlobalPosition);
+			_mirrorCamera.GlobalBasis = CalculateMirrorCameraRotation(_observerCamera);
 			ClipNearPlaneToMirror();
 		}
+	}
+
+	/// <summary>
+	/// Returns the <see cref="Camera3D"/> currently rendering this pane's <see cref="Viewport"/>.
+	/// </summary>
+	/// <returns>
+	/// That viewport's current camera, or <see langword="null"/> when it has none.
+	/// </returns>
+	private Camera3D GetObserverCamera()
+	{
+		return GetViewport().GetCamera3D();
 	}
 
 	private void SetSize(Vector2 value)
@@ -140,7 +155,7 @@ public partial class MirrorPane : Node3D
 	/// </summary>
 	/// <remarks>
 	/// The near plane stays perpendicular to the view. It meets the glass along the center ray only,
-	/// so a glancing <see cref="ObserverCamera"/> still leaves a wedge of the space behind the glass visible.
+	/// so a glancing observer still leaves a wedge of the space behind the glass visible.
 	/// Does nothing when the camera is looking along the glass or away from it.
 	/// </remarks>
 	private void ClipNearPlaneToMirror()
@@ -163,12 +178,17 @@ public partial class MirrorPane : Node3D
 	}
 
 	/// <summary>
-	/// Returns <see cref="ObserverCamera"/>'s basis reflected across this pane's local XY plane.
+	/// Returns <paramref name="observerCamera"/>'s basis reflected across this pane's local XY plane.
 	/// Each local axis keeps its X and Y and negates Z.
 	/// </summary>
-	private Basis CalculateMirrorCameraRotation()
+	/// <param name="observerCamera">Camera whose orientation is reflected. Must not be <see langword="null"/>.</param>
+	/// <returns>The reflected basis in global space.</returns>
+	/// <exception cref="ArgumentNullException"><paramref name="observerCamera"/> is <see langword="null"/>.</exception>
+	private Basis CalculateMirrorCameraRotation(Camera3D observerCamera)
 	{
-		Basis local = GlobalTransform.Basis.Inverse() * ObserverCamera.GlobalTransform.Basis;
+		ArgumentNullException.ThrowIfNull(observerCamera);
+
+		Basis local = GlobalTransform.Basis.Inverse() * observerCamera.GlobalTransform.Basis;
 		local.X = new Vector3(local.X.X, local.X.Y, -local.X.Z);
 		local.Y = new Vector3(local.Y.X, local.Y.Y, -local.Y.Z);
 		local.Z = new Vector3(local.Z.X, local.Z.Y, -local.Z.Z);
