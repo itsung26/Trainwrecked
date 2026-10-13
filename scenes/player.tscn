@@ -105,9 +105,12 @@ layers = 2
 target_node = NodePath("../../../../PlayerCameraPivot/IkLookMarker")
 bone_name = "spine.002"
 bone = 2
+primary_rotation_axis = 0
+use_secondary_rotation = false
+origin_offset = Vector3(0, 0.516, 0)
 
 [node name="PlayerCameraPivot" type="Node3D" parent="." unique_id=39234166]
-transform = Transform3D(0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0, 0.9999999, 0, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="PlayerCamera" type="Camera3D" parent="PlayerCameraPivot" unique_id=1218769642]
 attributes = SubResource("CameraAttributesPractical_fjrip")
@@ -126,7 +129,7 @@ spot_angle = 10.9823265
 
 [node name="IkLookMarker" type="Marker3D" parent="PlayerCameraPivot" unique_id=922706084]
 editor_description = "Targeted by the spine for the bend body on look. Do not move or rotate."
-transform = Transform3D(0.9982377, 0.039895676, 0.043927025, -0.054946583, 0.90098375, 0.43035942, -0.02240805, -0.4320147, 0.90158814, -0.04392703, -0.43035924, -0.9015881)
+transform = Transform3D(0.9999999, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 
 [node name="PlayerHud" parent="." unique_id=1268189311 instance=ExtResource("3_qhqgy")]
 

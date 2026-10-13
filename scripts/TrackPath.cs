@@ -3,7 +3,7 @@ using System;
 
 [Tool]
 [GlobalClass]
-public partial class TrackPath : Path3D
+public partial class TrackPath : TrainwreckedPath
 {
 	private const String GeneratedTrackMeta = "generated_track";
 
@@ -36,10 +36,8 @@ public partial class TrackPath : Path3D
 			}
 		}
 	}
-	// [Export] public float MaxCurvature { get; set; }
-	// [Export] public float MaxGrade { get; set; }
 
-	[ExportToolButton("Enforce Curve Restrictions", Icon = "Curve3D")]
+	[ExportToolButton("Smoothen Track Curve", Icon = "Curve3D")]
 	public Callable EnforceCurveRestrictionsButton => Callable.From(EnforceCurveRestrictions);
 
 	public override void _Ready()
@@ -92,17 +90,6 @@ public partial class TrackPath : Path3D
 				Child.Free();
 			}
 		}
-	}
-
-	public Vector3 GetWorldPositionAtProgress(float progressRatio)
-	{
-		Vector3 ret = Vector3.Zero;
-		PathFollow3D Sampler = new PathFollow3D();
-		AddChild(Sampler);
-		Sampler.ProgressRatio = progressRatio;
-		ret = Sampler.GlobalPosition;
-		Sampler.QueueFree();
-		return ret;
 	}
 
 	/// <summary>
