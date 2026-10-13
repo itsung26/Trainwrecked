@@ -129,6 +129,40 @@ public partial class TrainwreckedLevel : Node3D
 		return GetNodeOrNull<Player>(peerId.ToString());
 	}
 
+	/// Returns the distance from the host player.
+	/// Returns 0 if you are the host.
+	/// Returns -1 if the host player or your client's player is not in the scene tree.
+	public float GetDistanceFromServer()
+	{
+		if (NetworkManager.IsServer())
+		{
+			Player hostPlayer = GetPlayerByPeerId(1);
+			
+			if (hostPlayer is null)
+			{
+				return -1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else if (NetworkManager.IsClient() && NetworkManager.IsConnected())
+		{
+			Player hostPlayer = GetPlayerByPeerId(1);
+			Player you = GetPlayerByPeerId(NetworkManager.GetUniqueId());
+			
+			if (hostPlayer is null || you is null)
+			{
+				return -1;
+			}
+
+			return you.GlobalPosition.DistanceTo(hostPlayer.GlobalPosition);
+		}
+
+		return -1;
+	}
+
 	public void CreatePlayer(int peerId, int playerIndex)
 	{
 		if (!SpawningPlayersEnabled || PlayerSpawner is null || PlayerSpawnPoints.Count != 4)
