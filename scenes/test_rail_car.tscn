@@ -24,3 +24,7 @@ mesh = SubResource("BoxMesh_dehhp")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TestRailCarBody" unique_id=969306038]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8091516, 0)
 shape = SubResource("BoxShape3D_banjh")
+
+[node name="Forwards" type="RayCast3D" parent="TestRailCarBody" unique_id=1885718255]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.81496, -6.112)
+target_position = Vector3(0, 0, -5)
