@@ -36,5 +36,7 @@ render_target_update_mode = 3
 
 [node name="MirrorCamera" type="Camera3D" parent="MirrorViewport" unique_id=1369198989]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 attributes = SubResource("CameraAttributesPractical_mlgg5")
 current = true
+near = 1.6584877
