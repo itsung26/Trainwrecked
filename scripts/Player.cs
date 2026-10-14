@@ -244,8 +244,14 @@ public partial class Player : CharacterBody3D
 	{
 		Interactable hitInteractable = InteractRaycast.GetCollider() as Interactable;
 
-		// prevent reselecting the same thing
+		// Prevent reselecting the same thing
 		if (CurrentSelection is not null && CurrentSelection.Equals(hitInteractable))
+		{
+			return;
+		}
+
+		// Prevent selecting disabled Selectables.
+		if (hitInteractable is not null && hitInteractable.PreventSelection)
 		{
 			return;
 		}

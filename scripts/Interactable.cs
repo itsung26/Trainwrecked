@@ -62,6 +62,8 @@ public abstract partial class Interactable : RigidBody3D
 		set { SetSelected(value); }
 	}
 
+	[Export] public bool PreventSelection { get; set; }
+
 	/// <summary>
 	/// Caches inverted-hull meshes, warns if none were found, then hides the outline.
 	/// </summary>
