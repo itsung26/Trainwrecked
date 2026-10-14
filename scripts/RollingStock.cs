@@ -1,16 +1,24 @@
 using System;
 using Godot;
 
-/// Represents a physical body that rides upon a railroad.
+/// <summary>Represents a physical body that rides upon a railroad.</summary>
 [GlobalClass]
 public abstract partial class RollingStock : AnimatableBody3D
 {
-    [Export] public bool CanCoupleFront { get; set; } = true;
-    [Export] public bool CanCoupleRear { get; set; } = true;
+    /// <summary>Whether this stock can couple at its front. Subclasses assign the default.</summary>
+    [Export] public bool CanCoupleFront { get; protected set; } = true;
+    /// <summary>
+    /// Whether this stock can couple at its rear. Subclasses assign the default.
+    /// A caboose is a railcar with this set to false.
+    /// </summary>
+    [Export] public bool CanCoupleRear { get; protected set; } = true;
     [Export] public Marker3D FrontCoupler { get; set; }
     [Export] public Marker3D RearCoupler { get; set; }
-    [Export] public float RollingMass { get; set; } = 1.0f;
-    [Export] public float VerticalOffset { get; set; }
-    public RollingStock CoupledAhead { get; private set; }
-    public RollingStock CoupledBehind { get; private set; }
+    /// <summary>Mass used when a consist sums the chain. Subclasses assign the default.</summary>
+    [Export] public float RollingMass { get; protected set; } = 1.0f;
+    /// <summary>Whether this stock can propel itself. Locomotives set this to true.</summary>
+    public bool HasPropulsion { get; protected set; }
+    public RollingStock CoupledAhead { get; set; }
+    public RollingStock CoupledBehind { get; set; }
+
 }

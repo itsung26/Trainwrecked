@@ -138,7 +138,6 @@ public partial class TrainConsist : Node
     private static void PlaceOnTrack(RollingStock car, Transform3D pathTransform)
     {
         Vector3 position = pathTransform.Origin;
-        position.Y += car.VerticalOffset;
         car.GlobalTransform = new Transform3D(pathTransform.Basis, position);
     }
 
