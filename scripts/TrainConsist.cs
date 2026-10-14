@@ -1,6 +1,6 @@
-using Godot;
 using System;
 using System.Net.Http.Headers;
+using Godot;
 
 /// Owns RailStock objects as children and represents a connected train of either a lone RollingStock
 /// or potentially several connected RollingStocks.
@@ -19,9 +19,6 @@ public partial class TrainConsist : Node
         Tail = GetChild<RollingStock>(GetChildCount() - 1);
     }
 
-    public override void _Process(double delta)
-    {
-    }
 
     public override void _PhysicsProcess(double delta)
     {
@@ -29,16 +26,6 @@ public partial class TrainConsist : Node
         ClampChildStockToTrack(0);
         // Ensure the connected RollingStocks stay connected in order behind the head.
     }
-
-    // /// Clamps all children to the track in their respective order.
-    // private void ClampAllChildrenStockToTrack()
-    // {
-    //     int childCount = GetChildCount();
-    //     for (int i = 0; i < childCount; i++)
-    //     {
-    //         ClampChildStockToTrack(i);
-    //     }
-    // }
 
     /// Clamps the child at childIndex to the track, including global pos and global rotation.
     /// The car's z- axis always faces the forwards direction on the track.
@@ -73,6 +60,7 @@ public partial class TrainConsist : Node
 
     public void Insert()
     {
-        
+
+
     }
 }

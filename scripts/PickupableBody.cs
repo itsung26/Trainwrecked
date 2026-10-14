@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Godot.Collections;
+using System.Linq;
 
 /// <summary>
 /// Rigid interactable that one peer at a time can hold.
@@ -47,6 +48,7 @@ public partial class PickupableBody : Interactable
 	{
 		base._Ready();
 		Selectable = true;
+		WarnIfNoSynchronizer();
 	}
 
 	public override void _Process(double delta)
@@ -290,6 +292,28 @@ public partial class PickupableBody : Interactable
 			player.GlobalSpeedModifier = 1.0f;
 		}
 		GravityScale = 1.0f;
+	}
+
+	/// <summary>
+	/// Logs a warning if there is no MultiplayerSynchronizer child of this node.
+	/// </summary>
+	private void WarnIfNoSynchronizer()
+	{
+		bool found = false;
+		Array<Node> children = GetChildren();
+		foreach (Node child in children)
+		{
+			if (child is MultiplayerSynchronizer)
+			{
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			Debug.LogWarn("No MultiplayerSynchronizer detected.");
+		}
 	}
 
 	public override string ToString()
