@@ -1,6 +1,7 @@
 using System;
 using Godot;
 
+/// Represents a physical body that rides upon a railroad.
 [GlobalClass]
 public abstract partial class RollingStock : AnimatableBody3D
 {
