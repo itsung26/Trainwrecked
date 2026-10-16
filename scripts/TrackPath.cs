@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 using System;
 
 [Tool]
@@ -6,6 +7,8 @@ using System;
 public partial class TrackPath : TrainwreckedPath
 {
 	private const String GeneratedTrackMeta = "generated_track";
+	// // The track keeping references of things on it?
+	// public Array<RollingStock> Rollers { get; private set; }
 
 	[Export] public PackedScene TrackScene = null;
 	private float _trackSpacing = 1.0f;

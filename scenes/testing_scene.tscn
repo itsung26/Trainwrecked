@@ -90,10 +90,10 @@ buffer = PackedFloat32Array(0.33172637, 0, 0.94443566, -53.669746, 0, 1.001, 0, 
 
 [sub_resource type="Curve3D" id="Curve3D_dy6ti"]
 _data = {
-"points": PackedVector3Array(-3.5785797, 0, -0.039872486, 3.5785797, 0, 0.039872486, -48.32848, 0, -0.15669215, -9.59023, 0, -0.049323335, 9.59023, 0, 0.049323335, -26.857002, 0, 0.08254278, -8.384475, 0, 0.00015033782, 8.384475, 0, -0.00015033782, 9.212903, 0, 0.13924786, -7.8095226, 0, -0.12549973, 7.8095226, 0, 0.12549973, 23.449844, 0, 0.08164075, -5.436699, 0, -0.13510092, 5.436699, 0, 0.13510092, 56.070038, 0, 0.89224625),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
+"points": PackedVector3Array(-3.5785797, 0, -0.039872486, 3.5785797, 0, 0.039872486, -48.32848, 0, -0.15669215, -9.59023, 0, -0.049323335, 9.59023, 0, 0.049323335, -26.857002, 0, 0.08254278, -8.384475, 0, 0.00015033782, 8.384475, 0, -0.00015033782, 9.212903, 0, 0.13924786, -4.0438514, 0, 0.5606188, 4.0438514, 0, -0.5606188, 23.449844, 0, 0.08164075, -3.2440987, 0, 0.7399716, 3.2440987, 0, -0.7399716, 33.47601, 0, -3.224465, -2.9772213, 0, -0.03443436, 2.9772213, 0, 0.03443436, 42.914436, 0, -4.3581886, -3.3508098, 0, 0.5744238, 3.3508098, 0, -0.5744238, 51.339336, 0, -3.0178587, -3.526326, 0, 1.2924562, 3.526326, 0, -1.2924562, 63.019295, 0, -7.8047314, -3.334853, 0, 0.047869366, 3.334853, 0, -0.047869366, 72.49729, 0, -10.772595, -6.1202407, 0, -0.41009888, 6.1202407, 0, 0.41009888, 83.02841, 0, -8.091948, -6.6762924, 0, 2.046582, 6.6762924, 0, -2.046582, 109.218735, 0, -8.312002, -2.2528179, 0, 3.9962313, 2.2528179, 0, -3.9962313, 123.08617, 0, -20.371439, 1.3144811, 0, 3.5344923, -1.3144811, 0, -3.5344923, 122.73564, 0, -32.28939, 4.8781867, 0, 2.0447483, -4.8781867, 0, -2.0447483, 115.19928, 0, -41.578392, 8.032939, 0, -0.2044754, -8.032939, 0, 0.2044754, 93.46652, 0, -44.55788, 4.4108124, 0, -0.7010568, -4.4108124, 0, 0.7010568, 67.00165, 0, -40.35154),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 }
-point_count = 5
+point_count = 16
 
 [node name="TestingScene" type="Node3D" unique_id=1386985927 node_paths=PackedStringArray("PlayerSpawner", "PlayerSpawnPoints")]
 script = ExtResource("1_ltgxd")
@@ -203,8 +203,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8778796, -1.3500495, 0.868
 transform = Transform3D(4.371139e-08, 1, -3.821371e-15, 1, -4.371139e-08, -8.742278e-08, -8.742278e-08, 0, -1, -5.501678, -0.38856015, 0.86643916)
 
 [node name="MirrorModernTallPickupable" parent="." unique_id=1531969028 instance=ExtResource("14_0vd70")]
-transform = Transform3D(0.9989245, 0, -0.046366602, 0, 1, 0, 0.046366602, 0, 0.9989245, -2.337669, -0.39428663, -0.9902098)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.168244, -0.36040246, -2.4096525)
 freeze = true
+MaxHoldDistance = 1.25
 PreventSelection = true
 
 [node name="TestTracks" type="Path3D" parent="." unique_id=1231287367]
@@ -213,26 +214,18 @@ curve = SubResource("Curve3D_dy6ti")
 script = ExtResource("15_0vd70")
 TrackScene = ExtResource("16_4kp1c")
 TrackSpacing = 0.925
+TrackMeshScale = 0.93
 metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 
 [node name="TestTrain" parent="." unique_id=1571218383 node_paths=PackedStringArray("Track") instance=ExtResource("17_dy6ti")]
 Track = NodePath("../TestTracks")
+Velocity = -25.0
 
 [node name="TestRailCarBody" parent="TestTrain" index="0" unique_id=1496173653]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 7.3755293, 0, 19.361658)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 7.37553, 0, 10.132774)
 
 [node name="TestRailCarBody2" parent="TestTrain" index="1" unique_id=2139975253]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -6.3120756, 0, 19.357634)
-
-[node name="TestTrain2" parent="." unique_id=1878627747 node_paths=PackedStringArray("Track") instance=ExtResource("17_dy6ti")]
-Track = NodePath("../TestTracks")
-
-[node name="TestRailCarBody" parent="TestTrain2" index="0" unique_id=1496173653]
-transform = Transform3D(1.3113416e-07, 0, -1, 0, 1, 0, 1, 0, 1.3113416e-07, -28.23325, 0, 19.05014)
-
-[node name="TestRailCarBody2" parent="TestTrain2" index="1" unique_id=2139975253]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -24.349657, 0, 26.883492)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -6.312075, 0, 10.12875)
 
 [editable path="CactusMultiMesh/cactus"]
 [editable path="TestTrain"]
-[editable path="TestTrain2"]
