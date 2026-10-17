@@ -221,10 +221,10 @@ metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 Track = NodePath("../TestTracks")
 
 [node name="TestRailCarBody" parent="TestTrain" index="0" unique_id=1496173653]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 7.37553, 0, 10.132774)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 3.6807177, -1.1714807, 19.60209)
 
 [node name="TestRailCarBody2" parent="TestTrain" index="1" unique_id=2139975253]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -6.312075, 0, 10.12875)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -10.006887, -1.1714807, 19.598066)
 
 [editable path="CactusMultiMesh/cactus"]
 [editable path="TestTrain"]
