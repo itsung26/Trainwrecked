@@ -10,13 +10,13 @@ size = Vector3(3.293, 3.293, 12.224)
 size = Vector3(3.293, 3.293, 12.224)
 
 [sub_resource type="BoxMesh" id="BoxMesh_c7d61"]
-size = Vector3(3.293, 3.293, 12.224)
+size = Vector3(3.293, 0.15454882, 12.224)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c7d61"]
 albedo_color = Color(1, 0, 0, 1)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_rkt2r"]
-size = Vector3(3.293, 3.293, 12.224)
+[sub_resource type="BoxShape3D" id="BoxShape3D_c7d61"]
+size = Vector3(3.293, 0.15454882, 12.224)
 
 [node name="TestTrain" type="Node" unique_id=1571218383]
 script = ExtResource("1_c7d61")
@@ -56,13 +56,13 @@ RearCoupler = NodePath("BackCoupler2")
 metadata/_custom_type_script = "uid://clqr77tgjrxw5"
 
 [node name="RailCarVisual" type="MeshInstance3D" parent="TestRailCarBody2" unique_id=2033455341]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9410644, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.37183872, 0)
 mesh = SubResource("BoxMesh_c7d61")
 surface_material_override/0 = SubResource("StandardMaterial3D_c7d61")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TestRailCarBody2" unique_id=1953326560]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9410644, 0)
-shape = SubResource("BoxShape3D_rkt2r")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TestRailCarBody2" unique_id=429189948]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.37183872, 0)
+shape = SubResource("BoxShape3D_c7d61")
 
 [node name="Forwards" type="RayCast3D" parent="TestRailCarBody2" unique_id=1660719963]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9468727, -6.112)

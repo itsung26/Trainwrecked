@@ -3,7 +3,7 @@ using Godot.Collections;
 using System;
 
 [Tool]
-[GlobalClass]
+[GlobalClass, Icon("res://assets/2d assets/traintracks_classicon.png")]
 public partial class TrackPath : TrainwreckedPath
 {
 	private const String GeneratedTrackMeta = "generated_track";

@@ -16,6 +16,7 @@
 [ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="15_0vd70"]
 [ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="16_4kp1c"]
 [ext_resource type="PackedScene" uid="uid://hd22umosg8ht" path="res://scenes/test_train.tscn" id="17_dy6ti"]
+[ext_resource type="PackedScene" uid="uid://dbsj40etangg6" path="res://scenes/test_train_2.tscn" id="17_synk6"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lg35i"]
 shader = ExtResource("1_srtiu")
@@ -221,10 +222,31 @@ metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 Track = NodePath("../TestTracks")
 
 [node name="TestRailCarBody" parent="TestTrain" index="0" unique_id=1496173653]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 3.6807177, -1.1714807, 19.60209)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.928265, 0, 11.837336)
 
 [node name="TestRailCarBody2" parent="TestTrain" index="1" unique_id=2139975253]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -10.006887, -1.1714807, 19.598066)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.928265, 0, 26.729885)
+
+[node name="TestTrain2" parent="." unique_id=474133204 node_paths=PackedStringArray("Track") instance=ExtResource("17_synk6")]
+Track = NodePath("../TestTracks")
+Velocity = -10.0
+Damping = 0.0
+
+[node name="RailCar" parent="TestTrain2" index="0" unique_id=1297551776]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.014893, -1.1444092e-05, 1.4597511)
+
+[node name="RailCar2" parent="TestTrain2" index="1" unique_id=587238559]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.014893, -1.1444092e-05, 14.208416)
+
+[node name="RailCar3" parent="TestTrain2" index="2" unique_id=2130662317]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.014893, -1.1444092e-05, 27.186657)
+
+[node name="FrontCoupler" parent="TestTrain2/RailCar3" index="2" unique_id=1876639226]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7.2234306)
+
+[node name="BackCoupler" parent="TestTrain2/RailCar3" index="3" unique_id=882972467]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6.9232483)
 
 [editable path="CactusMultiMesh/cactus"]
 [editable path="TestTrain"]
+[editable path="TestTrain2"]
