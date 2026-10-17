@@ -5,13 +5,6 @@ using Godot;
 [GlobalClass]
 public abstract partial class RollingStock : AnimatableBody3D
 {
-    /// <summary>Whether this stock can couple at its front. Subclasses assign the default.</summary>
-    [Export] public bool CanCoupleFront { get; protected set; } = true;
-    /// <summary>
-    /// Whether this stock can couple at its rear. Subclasses assign the default.
-    /// A caboose is a railcar with this set to false.
-    /// </summary>
-    [Export] public bool CanCoupleRear { get; protected set; } = true;
     [Export] public Marker3D FrontCoupler { get; set; }
     [Export] public Marker3D RearCoupler { get; set; }
     /// <summary>Mass used when a consist sums the chain. Subclasses assign the default.</summary>
