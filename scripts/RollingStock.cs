@@ -2,7 +2,7 @@ using System;
 using Godot;
 
 /// <summary>Represents a physical body that rides upon a railroad.</summary>
-[GlobalClass]
+[GlobalClass, Icon("res://assets/2d assets/rolling_stock_icon.svg")]
 public abstract partial class RollingStock : AnimatableBody3D
 {
     [Export] public Marker3D FrontCoupler { get; set; }

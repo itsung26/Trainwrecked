@@ -15,7 +15,7 @@ using Godot.Collections;
 /// Each physics frame damps <see cref="Velocity"/>, adds that same arc step to every car's <see cref="RollingStock.TrackOffset"/>, and places each car from its own offset.
 /// The step is shortened so the outermost coupler stays on the baked curve. <see cref="Velocity"/> is cleared when the chain is already against the end it is moving toward.
 /// </remarks>
-[GlobalClass]
+[GlobalClass, Icon("res://assets/2d assets/train_consist_icon.svg")]
 public partial class TrainConsist : Node
 {
     /// <summary>Curve this consist rides. Offsets are arc lengths on its current bake.</summary>
