@@ -9,6 +9,14 @@ size = Vector3(3.293, 3.293, 12.224)
 [sub_resource type="BoxShape3D" id="BoxShape3D_banjh"]
 size = Vector3(3.293, 3.293, 12.224)
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_c7d61"]
+properties/0/path = NodePath(".:rotation")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
 [sub_resource type="BoxMesh" id="BoxMesh_c7d61"]
 size = Vector3(3.293, 0.15454882, 12.224)
 
@@ -48,6 +56,9 @@ gizmo_extents = 1.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.58796906, 6.8152847)
 gizmo_extents = 1.0
 
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="TestRailCarBody" unique_id=641736002]
+replication_config = SubResource("SceneReplicationConfig_c7d61")
+
 [node name="TestRailCarBody2" type="AnimatableBody3D" parent="." unique_id=2139975253 node_paths=PackedStringArray("FrontCoupler", "RearCoupler")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 14.8925495)
 script = ExtResource("2_rkt2r")
@@ -75,3 +86,6 @@ gizmo_extents = 1.0
 [node name="BackCoupler2" type="Marker3D" parent="TestRailCarBody2" unique_id=957354810]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.58796906, 6.9741297)
 gizmo_extents = 1.0
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="TestRailCarBody2" unique_id=1362021316]
+replication_config = SubResource("SceneReplicationConfig_c7d61")

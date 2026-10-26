@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Godot.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// Autoload for playtest logging and debug input.
@@ -79,6 +80,19 @@ public partial class Debug : Node
 	}
 
 	/// <summary>
+	/// Prints a C# list to the Godot console as a Godot array.
+	/// </summary>
+	/// <typeparam name="T">Element type. Must be a Variant-compatible type.</typeparam>
+	/// <param name="systemListMessage">
+	/// List copied into a <see cref="Godot.Collections.Array{T}"/> before printing. Must not be <see langword="null"/>.
+	/// </param>
+	public static void Log<[MustBeVariant] T>(List<T> systemListMessage)
+	{
+		Array<T> godotArray = new Array<T>(systemListMessage);
+		Log(godotArray);
+	}
+
+	/// <summary>
 	/// Prints <paramref name="message"/> to the Godot console in <paramref name="color"/>.
 	/// </summary>
 	/// <typeparam name="T">Type of the value to print.</typeparam>
@@ -112,6 +126,24 @@ public partial class Debug : Node
 	public static void LogColored<[MustBeVariant] T>(T[] systemArrayMessage, Color color)
 	{
 		Array<T> godotArray = new Array<T>(systemArrayMessage);
+		LogColored(godotArray, color);
+	}
+
+	/// <summary>
+	/// Prints a C# list to the Godot console in <paramref name="color"/>.
+	/// </summary>
+	/// <typeparam name="T">Element type. Must be a Variant-compatible type.</typeparam>
+	/// <param name="systemListMessage">
+	/// List copied into a <see cref="Godot.Collections.Array{T}"/> before printing. Must not be <see langword="null"/>.
+	/// </param>
+	/// <param name="color">RGB color applied with BBCode. Alpha is ignored.</param>
+	/// <remarks>
+	/// The printed text is the Godot array's string form, so its brackets are parsed as BBCode
+	/// the same way as <see cref="LogColored{T}(T, Color)"/>.
+	/// </remarks>
+	public static void LogColored<[MustBeVariant] T>(List<T> systemListMessage, Color color)
+	{
+		Array<T> godotArray = new Array<T>(systemListMessage);
 		LogColored(godotArray, color);
 	}
 

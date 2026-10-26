@@ -229,7 +229,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.928265, 0, 26.729885)
 
 [node name="TestTrain2" parent="." unique_id=474133204 node_paths=PackedStringArray("Track") instance=ExtResource("17_synk6")]
 Track = NodePath("../TestTracks")
-Velocity = -10.0
 Damping = 0.0
 
 [node name="RailCar" parent="TestTrain2" index="0" unique_id=1297551776]
