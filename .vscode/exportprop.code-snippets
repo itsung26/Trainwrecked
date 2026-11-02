@@ -35,5 +35,14 @@
 			"$0"
 		],
 		"description": "Skip logic while running in the Godot editor"
+	},
+
+	"Debug Log": {
+		"scope": "csharp",
+		"prefix": ["log", "debuglog"],
+		"body": [
+			"Debug.Log(${1:what});"
+		],
+		"description": "Log a value with Debug.Log"
 	}
 }
