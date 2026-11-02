@@ -13,16 +13,16 @@ using System.Text.RegularExpressions;
 /// <see cref="NetworkManager._Ready"/> via <see cref="NetworkManager.StartServer"/> /
 /// <see cref="NetworkManager.StartClient"/>.
 /// <para>
-/// Supported flags (mode must be <c>args[0]</c>):
+/// Supported flags:
 /// <list type="bullet">
 /// <item><c>--host</c> — set <see cref="HasHostFlag"/>.</item>
-/// <item><c>--join ADDRESS</c> — set <see cref="HasJoinFlag"/> and <see cref="JoinFlagAddress"/> when ADDRESS is a dotted IPv4.</item>
-/// <item><c>--join --self</c> — join using <see cref="NetworkManager.GetPublicSubnetIpv4"/>.</item>
+/// <item><c>--join=ADDRESS</c> — set <see cref="HasJoinFlag"/> and <see cref="JoinFlagAddress"/> when ADDRESS is a dotted IPv4.</item>
+/// <item><c>--join=self</c> — join using <see cref="NetworkManager.GetPublicSubnetIpv4"/>.</item>
 /// </list>
 /// </para>
 /// <para>
-/// Invalid <c>--join</c> usage (missing operand, or non-matching IP text) clears all flags.
-/// <c>--host</c> and <c>--join</c> are mutually exclusive for a given parse.
+/// Invalid <c>--join</c> usage (missing value, empty value, or non-matching IP text) clears all flags.
+/// <c>--host</c> and <c>--join</c> are mutually exclusive for a given parse; <c>--host</c> wins when both are present.
 /// </para>
 /// </remarks>
 public partial class RunArguments : Node
@@ -37,81 +37,164 @@ public partial class RunArguments : Node
     /// </summary>
     public static bool HasJoinFlag { get; private set; } = false;
 
+    public static bool HasIgnoreAllFlag { get; private set; } = false;
+
     /// <summary>
     /// IPv4 address to join when <see cref="HasJoinFlag"/> is set; otherwise empty.
     /// </summary>
     public static string JoinFlagAddress { get; private set; } = "";
+
+
+    private string[] _rawArgs;
 
     /// <summary>
     /// Parses <see cref="OS.GetCmdlineUserArgs"/> into the static flag properties.
     /// </summary>
     public RunArguments()
     {
-        ParseRunArgs(OS.GetCmdlineUserArgs());
+        _rawArgs = OS.GetCmdlineUserArgs();
+        ParseRunArgs();
     }
 
     /// <summary>
-    /// Parses <paramref name="args"/> into <see cref="HasHostFlag"/>,
+    /// Parses <see cref="_rawArgs"/> into <see cref="HasHostFlag"/>,
     /// <see cref="HasJoinFlag"/>, and <see cref="JoinFlagAddress"/>.
     /// </summary>
-    /// <param name="args">User arguments from <see cref="OS.GetCmdlineUserArgs"/>.</param>
     /// <remarks>
-    /// Only inspects <c>args[0]</c> as the mode flag. A second token is required for <c>--join</c>.
+    /// Unnamed <c>--host</c> selects host mode. Named <c>--join=VALUE</c> selects join mode
+    /// when VALUE is <c>self</c> or a dotted IPv4.
     /// </remarks>
-    public void ParseRunArgs(string[] args)
+    public void ParseRunArgs()
     {
-        Array<string>arguments = new Array<string>(args);
+        Array<string> argumentsNamed = GetNamed();
+        Array<string> argumentsUnnamed = GetUnnamed();
 
-        // No arguments to parse.
-        if (arguments.Count <= 0 || arguments.Contains("--ignoreall"))
+        if (argumentsUnnamed.Contains("--ignoreall"))
+        {
+            HasIgnoreAllFlag = true;
+            return;
+        }
+
+        if (argumentsNamed.Count == 0 && argumentsUnnamed.Count == 0)
         {
             return;
         }
 
-        if (arguments[0] == "--host")
+        if (argumentsUnnamed.Contains("--host"))
         {
             HasHostFlag = true;
             HasJoinFlag = false;
             JoinFlagAddress = "";
+            return;
         }
-        else if (arguments[0] == "--join")
+
+        if (!TryGetNamedArgument("--join", out string joinValue))
         {
-            // No second argument: invalid.
-            if (arguments.Count < 2)
-            {
-                HasHostFlag = false;
-                HasJoinFlag = false;
-                JoinFlagAddress = "";
-            }
-            else
-            {
-                // Parse the self argument.
-                if (arguments[1] == "--self")
-                {
-                    HasHostFlag = false;
-                    HasJoinFlag = true;
-                    JoinFlagAddress = NetworkManager.GetPublicSubnetIpv4();
-                }
-                // Else if argument is not --self
-                else if (arguments[1] != "--self")
-                {
-                    // Is argument 2 a valid IP?
-                    if (ValidateIpText(arguments[1]))
-                    {
-                        HasHostFlag = false;
-                        HasJoinFlag = true;
-                        JoinFlagAddress = arguments[1];
-                    }
-                    // If not, invalidate.
-                    else
-                    {
-                        HasHostFlag = false;
-                        HasJoinFlag = false;
-                        JoinFlagAddress = "";
-                    }
-                }
+            return;
+        }
+
+        if (joinValue == "self")
+        {
+            HasHostFlag = false;
+            HasJoinFlag = true;
+            JoinFlagAddress = NetworkManager.GetPublicSubnetIpv4();
+            return;
+        }
+
+        if (ValidateIpText(joinValue))
+        {
+            HasHostFlag = false;
+            HasJoinFlag = true;
+            JoinFlagAddress = joinValue;
+            return;
+        }
+
+        HasHostFlag = false;
+        HasJoinFlag = false;
+        JoinFlagAddress = "";
+    }
+
+    /// <summary>
+    /// Returns a copy of the user command-line tokens stored by <see cref="ParseRunArgs"/>.
+    /// </summary>
+    /// <returns>
+    /// A new array of every token in <see cref="_rawArgs"/>, in the same order they were passed.
+    /// </returns>
+    /// <remarks>
+    /// Does not re-read <see cref="OS.GetCmdlineUserArgs"/>. Mutating the returned array
+    /// does not change <see cref="_rawArgs"/>.
+    /// </remarks>
+    public Array<string> GetRaw() {
+        Array<string> ret = new Array<string>(_rawArgs);
+
+        return ret;
+    }
+
+    /// <summary>
+    /// Returns the raw tokens that use <c>name=value</c> form.
+    /// </summary>
+    /// <returns>
+    /// A new array of arguments from <see cref="_rawArgs"/> that contain <c>=</c>,
+    /// such as <c>--join=192.168.0.1</c>. Tokens without <c>=</c> are omitted.
+    /// </returns>
+    public Array<string> GetNamed() {
+        Array<string> ret = new Array<string>();
+
+        foreach (string argument in _rawArgs)
+        {
+            string[] parts = argument.Split('=');
+            if (parts.Length == 2) {
+                ret.Add(argument);
             }
         }
+
+        return ret;
+    }
+
+    /// <summary>
+    /// Returns the raw tokens that are not in <c>name=value</c> form.
+    /// </summary>
+    /// <returns>
+    /// A new array of arguments from <see cref="_rawArgs"/> that do not contain <c>=</c>,
+    /// such as <c>--host</c> or <c>--ignoreall</c>.
+    /// </returns>
+    public Array<string> GetUnnamed() {
+        Array<string> ret = new Array<string>();
+
+        foreach (string argument in _rawArgs) {
+            if (!argument.Contains('=')) {
+                ret.Add(argument);
+            }
+        }
+
+        return ret;
+    }
+
+    /// <summary>
+    /// Finds the first <c>name=value</c> token whose name equals <paramref name="name"/>.
+    /// </summary>
+    /// <param name="name">The key to match, including leading dashes (for example <c>--join</c>).</param>
+    /// <param name="value">
+    /// The text after the first <c>=</c> when found; otherwise an empty string.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> when a matching named argument exists;
+    /// otherwise <see langword="false"/>.
+    /// </returns>
+    private bool TryGetNamedArgument(string name, out string value)
+    {
+        foreach (string argument in GetNamed())
+        {
+            string[] parts = argument.Split('=', 2);
+            if (parts.Length == 2 && parts[0] == name)
+            {
+                value = parts[1];
+                return true;
+            }
+        }
+
+        value = "";
+        return false;
     }
 
     /// <summary>

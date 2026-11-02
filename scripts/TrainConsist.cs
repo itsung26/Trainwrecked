@@ -72,7 +72,8 @@ public partial class TrainConsist : Node
         ValidateTrain();
         Head = GetChild<RollingStock>(0);
         Tail = GetChild<RollingStock>(GetChildCount() - 1);
-        
+
+
         SnapConsistToTrack();
     }
 
@@ -374,7 +375,8 @@ public partial class TrainConsist : Node
         {
             poses.Add(car.GlobalTransform);
         }
-        
+
+
         return poses;
     }
 
@@ -400,7 +402,8 @@ public partial class TrainConsist : Node
     /// </summary>
     /// <param name="delta">Physics frame time, in seconds.</param>
     private void DampenVelocity(double delta)
-    {     
+    {
+
         float combinedMass = GetCombinedRollingMass();
 
         if (combinedMass > 0f && Damping > 0f)

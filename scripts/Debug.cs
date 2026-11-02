@@ -175,7 +175,7 @@ public partial class Debug : Node
 	/// An empty string when <paramref name="WhichNode"/> is <see langword="null"/>;
 	/// otherwise <c>&lt;</c>, the node name, <c>#</c>, <see cref="GodotObject.GetInstanceId"/>, and <c>&gt;</c>.
 	/// </returns>
-	public static String GenerateInstanceToString(Node WhichNode)
+	public static string GenerateInstanceToString(Node WhichNode)
 	{
 		if (WhichNode is null)
 		{

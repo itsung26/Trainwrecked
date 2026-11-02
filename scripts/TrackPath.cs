@@ -6,7 +6,7 @@ using System;
 [GlobalClass, Icon("res://assets/2d assets/traintracks_classicon.png")]
 public partial class TrackPath : TrainwreckedPath
 {
-	private const String GeneratedTrackMeta = "generated_track";
+	private const string GeneratedTrackMeta = "generated_track";
 	// // The track keeping references of things on it?
 	// public Array<RollingStock> Rollers { get; private set; }
 

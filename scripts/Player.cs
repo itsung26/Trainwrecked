@@ -156,7 +156,7 @@ public partial class Player : CharacterBody3D
 			return;
 		}
 
-		String CurrentLocomotionStateName = CurrentState.Name;
+		string CurrentLocomotionStateName = CurrentState.Name;
 
 		if (!IsOnFloor())
 		{

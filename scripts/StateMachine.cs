@@ -112,7 +112,7 @@ public partial class StateMachine : Node
 		// enter the new state
 		StateToEnter.OnEnter();
 
-		String PreviousName = PreviousState != null ? PreviousState.Name : "None";
+		string PreviousName = PreviousState != null ? PreviousState.Name : "None";
 		if (LoggingDebug)
 		{
 			Debug.Log("Entered state: " + StateToEnter.Name + " from previous state: " + PreviousName);
@@ -129,7 +129,7 @@ public partial class StateMachine : Node
 	/// Resolves the state with <see cref="GetStateByName"/>, then calls
 	/// <see cref="EnterState(State)"/>. Missing names result in a no-op.
 	/// </remarks>
-	public void EnterState(String StateName)
+	public void EnterState(string StateName)
 	{
 		if (StateName == null) return;
 		State StateToEnter = GetStateByName(StateName);
@@ -156,7 +156,7 @@ public partial class StateMachine : Node
 	/// </summary>
 	/// <param name="StateName">Name to match against <see cref="States"/>.</param>
 	/// <returns>The matching <see cref="State"/>, or <see langword="null"/> if none is found.</returns>
-	public State GetStateByName(String StateName)
+	public State GetStateByName(string StateName)
 	{
 		for (int i = 0; i < States.Count; i++)
 		{

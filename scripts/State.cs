@@ -27,7 +27,7 @@ public partial class State : Node
 		IsActive = false;
 	}
 
-	public override String ToString()
+	public override string ToString()
 	{
 		return Debug.GenerateInstanceToString(this);
 	}
