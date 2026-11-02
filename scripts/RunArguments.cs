@@ -15,17 +15,20 @@ using System.Text.RegularExpressions;
 /// <para>
 /// Supported flags:
 /// <list type="bullet">
+/// <item><c>--ignoreall</c> — set <see cref="HasIgnoreAllFlag"/> and skip all other parsing.</item>
 /// <item><c>--host</c> — set <see cref="HasHostFlag"/>.</item>
 /// <item><c>--join=ADDRESS</c> — set <see cref="HasJoinFlag"/> and <see cref="JoinFlagAddress"/> when ADDRESS is a dotted IPv4.</item>
 /// <item><c>--join=self</c> — join using <see cref="NetworkManager.GetPublicSubnetIpv4"/>.</item>
+/// <item><c>--window-name=TITLE</c> — set <see cref="HasNameWindowFlag"/> and <see cref="WindowName"/> to TITLE.</item>
 /// </list>
 /// </para>
 /// <para>
-/// Invalid <c>--join</c> usage (missing value, empty value, or non-matching IP text) clears all flags.
-/// <c>--host</c> and <c>--join</c> are mutually exclusive for a given parse; <c>--host</c> wins when both are present.
+/// Invalid <c>--join</c> usage (missing value, empty value, or non-matching IP text) clears host and join flags.
+/// <c>--ignoreall</c> takes precedence over every other flag. <c>--host</c> and <c>--join</c> are mutually exclusive;
+/// <c>--host</c> wins when both are present. <c>--window-name</c> may be combined with host or join.
 /// </para>
 /// </remarks>
-public partial class RunArguments : Node
+public sealed partial class RunArguments : Node
 {
     /// <summary>
     /// <see langword="true"/> when launch args request hosting a session.
@@ -37,36 +40,52 @@ public partial class RunArguments : Node
     /// </summary>
     public static bool HasJoinFlag { get; private set; } = false;
 
+    /// <summary>
+    /// <see langword="true"/> when launch args request ignoring all other run flags.
+    /// </summary>
+    /// <remarks>
+    /// Set by the unnamed token <c>--ignoreall</c>. When set during parse, host and join flags are left unset
+    /// and no further argument handling runs.
+    /// </remarks>
     public static bool HasIgnoreAllFlag { get; private set; } = false;
+
+    /// <summary>
+    /// <see langword="true"/> when launch args include a non-empty <c>--window-name</c> value.
+    /// </summary>
+    public static bool HasNameWindowFlag { get; private set; } = false;
+
+    /// <summary>
+    /// Window title from <c>--window-name=TITLE</c> when <see cref="HasNameWindowFlag"/> is set; otherwise empty.
+    /// </summary>
+    public static string WindowName { get; private set; } = "";
 
     /// <summary>
     /// IPv4 address to join when <see cref="HasJoinFlag"/> is set; otherwise empty.
     /// </summary>
     public static string JoinFlagAddress { get; private set; } = "";
 
-
-    private string[] _rawArgs;
-
     /// <summary>
     /// Parses <see cref="OS.GetCmdlineUserArgs"/> into the static flag properties.
     /// </summary>
     public RunArguments()
     {
-        _rawArgs = OS.GetCmdlineUserArgs();
         ParseRunArgs();
     }
 
     /// <summary>
-    /// Parses <see cref="_rawArgs"/> into <see cref="HasHostFlag"/>,
-    /// <see cref="HasJoinFlag"/>, and <see cref="JoinFlagAddress"/>.
+    /// Parses <see cref="OS.GetCmdlineUserArgs"/> into <see cref="HasIgnoreAllFlag"/>,
+    /// <see cref="HasHostFlag"/>, <see cref="HasJoinFlag"/>, <see cref="JoinFlagAddress"/>,
+    /// <see cref="HasNameWindowFlag"/>, and <see cref="WindowName"/>.
     /// </summary>
     /// <remarks>
+    /// Unnamed <c>--ignoreall</c> sets <see cref="HasIgnoreAllFlag"/> and returns immediately.
+    /// Named <c>--window-name=TITLE</c> sets the window title when TITLE is non-empty.
     /// Unnamed <c>--host</c> selects host mode. Named <c>--join=VALUE</c> selects join mode
     /// when VALUE is <c>self</c> or a dotted IPv4.
     /// </remarks>
-    public void ParseRunArgs()
+    private static void ParseRunArgs()
     {
-        Array<string> argumentsNamed = GetNamed();
+        Array<string> argumentsNamed = RunArguments.GetNamed();
         Array<string> argumentsUnnamed = GetUnnamed();
 
         if (argumentsUnnamed.Contains("--ignoreall"))
@@ -78,6 +97,16 @@ public partial class RunArguments : Node
         if (argumentsNamed.Count == 0 && argumentsUnnamed.Count == 0)
         {
             return;
+        }
+
+        if (TryGetNamedArgument("--window-name", out string windowName))
+        {
+            windowName = TrimSurroundingQuotes(windowName);
+            if (windowName != "")
+            {
+                HasNameWindowFlag = true;
+                WindowName = windowName;
+            }
         }
 
         if (argumentsUnnamed.Contains("--host"))
@@ -115,32 +144,45 @@ public partial class RunArguments : Node
     }
 
     /// <summary>
-    /// Returns a copy of the user command-line tokens stored by <see cref="ParseRunArgs"/>.
+    /// Removes one matching pair of surrounding double quotes from <paramref name="value"/> when present.
+    /// </summary>
+    private static string TrimSurroundingQuotes(string value)
+    {
+        if (value.Length >= 2 && value[0] == '"' && value[^1] == '"')
+        {
+            return value.Substring(1, value.Length - 2);
+        }
+
+        return value;
+    }
+
+    /// <summary>
+    /// Returns a copy of the current user command-line tokens.
     /// </summary>
     /// <returns>
-    /// A new array of every token in <see cref="_rawArgs"/>, in the same order they were passed.
+    /// A new array of every token from <see cref="OS.GetCmdlineUserArgs"/>, in the same order they were passed.
     /// </returns>
     /// <remarks>
-    /// Does not re-read <see cref="OS.GetCmdlineUserArgs"/>. Mutating the returned array
-    /// does not change <see cref="_rawArgs"/>.
+    /// Re-reads <see cref="OS.GetCmdlineUserArgs"/> on each call. Mutating the returned array
+    /// does not change the process argument list.
     /// </remarks>
-    public Array<string> GetRaw() {
-        Array<string> ret = new Array<string>(_rawArgs);
+    public static Array<string> GetRaw() {
+        Array<string> ret = new Array<string>(OS.GetCmdlineUserArgs());
 
         return ret;
     }
 
     /// <summary>
-    /// Returns the raw tokens that use <c>name=value</c> form.
+    /// Returns the raw tokens that use exactly one <c>name=value</c> pair.
     /// </summary>
     /// <returns>
-    /// A new array of arguments from <see cref="_rawArgs"/> that contain <c>=</c>,
-    /// such as <c>--join=192.168.0.1</c>. Tokens without <c>=</c> are omitted.
+    /// A new array of arguments from <see cref="OS.GetCmdlineUserArgs"/> that split into exactly two parts on <c>=</c>,
+    /// such as <c>--join=192.168.0.1</c>. Tokens without <c>=</c>, or with more than one <c>=</c>, are omitted.
     /// </returns>
-    public Array<string> GetNamed() {
+    public static Array<string> GetNamed() {
         Array<string> ret = new Array<string>();
 
-        foreach (string argument in _rawArgs)
+        foreach (string argument in OS.GetCmdlineUserArgs())
         {
             string[] parts = argument.Split('=');
             if (parts.Length == 2) {
@@ -155,13 +197,13 @@ public partial class RunArguments : Node
     /// Returns the raw tokens that are not in <c>name=value</c> form.
     /// </summary>
     /// <returns>
-    /// A new array of arguments from <see cref="_rawArgs"/> that do not contain <c>=</c>,
+    /// A new array of arguments from <see cref="OS.GetCmdlineUserArgs"/> that do not contain <c>=</c>,
     /// such as <c>--host</c> or <c>--ignoreall</c>.
     /// </returns>
-    public Array<string> GetUnnamed() {
+    public static Array<string> GetUnnamed() {
         Array<string> ret = new Array<string>();
 
-        foreach (string argument in _rawArgs) {
+        foreach (string argument in OS.GetCmdlineUserArgs()) {
             if (!argument.Contains('=')) {
                 ret.Add(argument);
             }
@@ -181,7 +223,7 @@ public partial class RunArguments : Node
     /// <see langword="true"/> when a matching named argument exists;
     /// otherwise <see langword="false"/>.
     /// </returns>
-    private bool TryGetNamedArgument(string name, out string value)
+    private static bool TryGetNamedArgument(string name, out string value)
     {
         foreach (string argument in GetNamed())
         {
@@ -208,7 +250,7 @@ public partial class RunArguments : Node
     /// <remarks>
     /// Truncates to 15 characters before matching. Does not enforce each octet in 0–255.
     /// </remarks>
-    private bool ValidateIpText(string newInput)
+    private static bool ValidateIpText(string newInput)
 	{
 		if (newInput is null)
 		{

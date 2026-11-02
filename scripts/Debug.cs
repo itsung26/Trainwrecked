@@ -14,34 +14,10 @@ using System.Collections.Generic;
 /// </remarks>
 public partial class Debug : Node
 {
-	/// <summary>
-	/// Whether <see cref="_Ready"/> sets the window title from host and join flags.
-	/// </summary>
-	/// <remarks>
-	/// Defaults to <see langword="true"/>. When <see langword="false"/>, the title is left unchanged.
-	/// </remarks>
-	public bool NetworkDebugWindowNamesEnabled { get; set; } = true;
-
-	/// <summary>
-	/// Labels the window <c>Trainwrecked (HOST)</c> or <c>Trainwrecked (CLIENT)</c>
-	/// when <see cref="NetworkDebugWindowNamesEnabled"/> is <see langword="true"/>.
-	/// </summary>
-	/// <remarks>
-	/// Uses <see cref="RunArguments.HasHostFlag"/> first, then <see cref="RunArguments.HasJoinFlag"/>.
-	/// A process with neither flag keeps the existing title.
-	/// </remarks>
 	public override void _Ready()
-	{
-		if (NetworkDebugWindowNamesEnabled)
+	{	if (RunArguments.HasNameWindowFlag)
 		{
-			if (RunArguments.HasHostFlag)
-			{
-				GetWindow().Title = "Trainwrecked (HOST)";
-			}
-			else if (RunArguments.HasJoinFlag)
-			{
-				GetWindow().Title = "Trainwrecked (CLIENT)";
-			}
+			GetWindow().Title = RunArguments.WindowName;
 		}
 	}
 
