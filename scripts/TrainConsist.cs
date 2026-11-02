@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -12,8 +13,9 @@ using Godot.Collections;
 /// Those references are captured in <see cref="_Ready"/> and are not refreshed if the child list changes.
 /// They name the ends of the chain. They are not the source of the other cars' positions.
 /// Cars in one consist are already coupled to their neighbors. Another consist joins this one only at an end whose coupler flag is set.
-/// Each physics frame damps <see cref="Velocity"/>, adds that same arc step to every car's <see cref="RollingStock.TrackOffset"/>, and places each car from its own offset.
+/// On the host, each physics frame damps <see cref="Velocity"/>, adds that same arc step to every car's <see cref="RollingStock.TrackOffset"/>, and places each car from its own offset.
 /// The step is shortened so the outermost coupler stays on the baked curve. <see cref="Velocity"/> is cleared when the chain is already against the end it is moving toward.
+/// Clients keep a buffer of those offsets and render a few ticks behind the newest sample, advancing a local playback head rather than snapping to packet arrival.
 /// </remarks>
 [GlobalClass, Icon("res://assets/2d assets/train_consist_icon.svg")]
 public partial class TrainConsist : Node
@@ -46,18 +48,26 @@ public partial class TrainConsist : Node
     public RollingStock Tail { get; private set; }
     /// <summary><see cref="RollingStock"/> children in child order. Returns <see cref="GetAllCars"/>.</summary>
     public Array<RollingStock> Cars => GetAllCars();
+    /// <summary>Host snapshots waiting on the client, sorted by <see cref="TrainPoseSnapshot.Tick"/>.</summary>
+    private readonly List<TrainPoseSnapshot> _networkTrainBuffer = new List<TrainPoseSnapshot>();
+    /// <summary>Playback head on the host tick timeline. Advanced locally, not from packet arrival.</summary>
+    private int _presentTick;
+    private bool _hasPresentTick;
+    /// <summary>How far behind the newest received host tick the client renders.</summary>
+    private const int InterpolationDelayTicks = 3;
+    private const int MaxBufferedSnapshots = 16;
 
     /// <summary>
     /// Validates the chain, captures <see cref="Head"/> and <see cref="Tail"/>, and snaps every car onto <see cref="Track"/>.
     /// </summary>
     public override void _Ready()
     {
+        ChildEnteredTree += _on_child_entered_tree;
+
         if (!NetworkManager.IsServer())
         {
             return;
         }
-
-        ChildEnteredTree += _on_child_entered_tree;
 
         ValidateTrain();
         Head = GetChild<RollingStock>(0);
@@ -68,19 +78,24 @@ public partial class TrainConsist : Node
 
     /// <summary>
     /// Damps <see cref="Velocity"/>, advances every <see cref="RollingStock.TrackOffset"/> by the same limited step, then places each car.
+    /// Clients play back buffered host offsets instead of stepping the chain.
     /// </summary>
     /// <param name="delta">Physics frame time, in seconds.</param>
     public override void _PhysicsProcess(double delta)
     {
-        if (!NetworkManager.IsServer())
+        if (NetworkManager.IsServer())
         {
+            DampenVelocity(delta);
+            AdvanceOffsets((float)delta);
+            PlaceAllCars();
+            Rpc(MethodName.PushTrainPoseSnapshot, GetAllCarOffsets(), (int)Engine.GetPhysicsFrames(), Velocity);
             return;
         }
 
-        DampenVelocity(delta);
-        AdvanceOffsets((float)delta);
-        PlaceAllCars();
-        Rpc(MethodName.SyncCarPoses, GetAllCarPoses());
+        if (NetworkManager.IsClient() && NetworkManager.IsConnected())
+        {
+            ApplyBufferedPlayback();
+        }
     }
 
     /// <summary>
@@ -363,6 +378,23 @@ public partial class TrainConsist : Node
         return poses;
     }
 
+    public Array<float> GetAllCarOffsets()
+    {
+        Array<float> offsets = new Array<float>();
+
+        if (Cars.Count == 0)
+        {
+            return offsets;
+        }
+
+        foreach (RollingStock car in Cars)
+        {
+            offsets.Add(car.TrackOffset);
+        }
+
+        return offsets;
+    }
+
     /// <summary>
     /// Multiplies <see cref="Velocity"/> by <c>exp(-Damping * delta / mass)</c> when both <see cref="Damping"/> and the combined mass are positive.
     /// </summary>
@@ -377,20 +409,190 @@ public partial class TrainConsist : Node
         }
     }
 
-    /// This RPC is emitted by the host and does not run locally.
-    /// It recieves <param name="poses">, passed by the host and applies
-    /// the list of transforms to all cars.
-    [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = false)]
-    private void SyncCarPoses(Array<Transform3D> poses)
+    /// <summary>
+    /// Host snapshot path. Unreliable and sequenced so late packets are dropped instead of clumped.
+    /// </summary>
+    [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.UnreliableOrdered)]
+    private void PushTrainPoseSnapshot(Array<float> offsets, int hostPhysicsTick, float velocity)
     {
-        if (NetworkManager.IsServer() || Cars.Count == 0)
+        if (Cars.Count == 0 || NetworkManager.IsServer() || offsets is null || offsets.Count == 0)
+        {
+            return;
+        }
+
+        if (_networkTrainBuffer.Count > 0 && hostPhysicsTick <= _networkTrainBuffer[_networkTrainBuffer.Count - 1].Tick)
+        {
+            return;
+        }
+
+        _networkTrainBuffer.Add(new TrainPoseSnapshot(hostPhysicsTick, offsets, velocity));
+        if (_networkTrainBuffer.Count > MaxBufferedSnapshots)
+        {
+            _networkTrainBuffer.RemoveRange(0, _networkTrainBuffer.Count - MaxBufferedSnapshots);
+        }
+    }
+
+    /// <summary>
+    /// Advances the playback head, writes interpolated offsets onto the cars, and places them.
+    /// </summary>
+    private void ApplyBufferedPlayback()
+    {
+        if (_networkTrainBuffer.Count == 0 || Cars.Count == 0)
+        {
+            return;
+        }
+
+        AdvancePlaybackHead();
+        TrimConsumedSnapshots();
+        ApplyCarOffsets(GetInterpolatedOffsets());
+        PlaceAllCars();
+    }
+
+    /// <summary>
+    /// Moves <see cref="_presentTick"/> one local physics tick, steered toward <c>newest - delay</c>.
+    /// </summary>
+    private void AdvancePlaybackHead()
+    {
+        int oldest = _networkTrainBuffer[0].Tick;
+        int newest = _networkTrainBuffer[_networkTrainBuffer.Count - 1].Tick;
+        int target = newest - InterpolationDelayTicks;
+
+        if (!_hasPresentTick)
+        {
+            _presentTick = Mathf.Clamp(target, oldest, newest);
+            _hasPresentTick = true;
+            return;
+        }
+
+        if (_presentTick < target)
+        {
+            _presentTick++;
+            if (_presentTick < target)
+            {
+                _presentTick++;
+            }
+        }
+        else if (_presentTick == target && _presentTick < newest)
+        {
+            _presentTick++;
+        }
+
+        _presentTick = Mathf.Clamp(_presentTick, oldest, newest);
+    }
+
+    /// <summary>
+    /// Drops snapshots older than the one that still brackets <see cref="_presentTick"/>.
+    /// </summary>
+    private void TrimConsumedSnapshots()
+    {
+        while (_networkTrainBuffer.Count > 2 && _networkTrainBuffer[1].Tick <= _presentTick)
+        {
+            _networkTrainBuffer.RemoveAt(0);
+        }
+    }
+
+    /// <summary>
+    /// Returns one interpolated arc offset per car from <see cref="_networkTrainBuffer"/>.
+    /// </summary>
+    /// <remarks>
+    /// Uses <see cref="_presentTick"/> on the host tick timeline.
+    /// Offsets lerp with the same <c>t</c> between the snapshots that bracket that head.
+    /// Past the newest sample, offsets step by that snapshot's velocity.
+    /// </remarks>
+    private Array<float> GetInterpolatedOffsets()
+    {
+        Array<float> interpolated = new Array<float>();
+        if (_networkTrainBuffer.Count == 0)
+        {
+            return interpolated;
+        }
+
+        TrainPoseSnapshot older = null;
+        TrainPoseSnapshot newer = null;
+        foreach (TrainPoseSnapshot snapshot in _networkTrainBuffer)
+        {
+            if (snapshot.Tick <= _presentTick && (older is null || snapshot.Tick > older.Tick))
+            {
+                older = snapshot;
+            }
+
+            if (snapshot.Tick >= _presentTick && (newer is null || snapshot.Tick < newer.Tick))
+            {
+                newer = snapshot;
+            }
+        }
+
+        IReadOnlyList<float> offsets;
+        if (older is null && newer is null)
+        {
+            return interpolated;
+        }
+
+        if (older is null)
+        {
+            offsets = newer.CarOffsets;
+        }
+        else if (newer is null)
+        {
+            offsets = ExtrapolateOffsets(older, _presentTick);
+        }
+        else if (older.Tick == newer.Tick)
+        {
+            offsets = older.CarOffsets;
+        }
+        else
+        {
+            float t = (_presentTick - older.Tick) / (float)(newer.Tick - older.Tick);
+            int count = Mathf.Min(older.CarOffsets.Count, newer.CarOffsets.Count);
+            float[] lerped = new float[count];
+            for (int i = 0; i < count; i++)
+            {
+                lerped[i] = Mathf.Lerp(older.CarOffsets[i], newer.CarOffsets[i], t);
+            }
+
+            offsets = lerped;
+        }
+
+        foreach (float offset in offsets)
+        {
+            interpolated.Add(offset);
+        }
+
+        return interpolated;
+    }
+
+    /// <summary>
+    /// Steps <paramref name="snapshot"/> offsets by its velocity for ticks after <see cref="TrainPoseSnapshot.Tick"/>.
+    /// </summary>
+    private static IReadOnlyList<float> ExtrapolateOffsets(TrainPoseSnapshot snapshot, int presentTick)
+    {
+        int extraTicks = presentTick - snapshot.Tick;
+        if (extraTicks <= 0)
+        {
+            return snapshot.CarOffsets;
+        }
+
+        float step = snapshot.Velocity * extraTicks / Engine.PhysicsTicksPerSecond;
+        float[] offsets = new float[snapshot.CarOffsets.Count];
+        for (int i = 0; i < offsets.Length; i++)
+        {
+            offsets[i] = snapshot.CarOffsets[i] + step;
+        }
+
+        return offsets;
+    }
+
+    /// <summary>Writes <paramref name="offsets"/> onto <see cref="Cars"/> in child order.</summary>
+    private void ApplyCarOffsets(Array<float> offsets)
+    {
+        if (offsets is null || offsets.Count != Cars.Count)
         {
             return;
         }
 
         for (int i = 0; i < Cars.Count; i++)
         {
-            Cars[i].GlobalTransform = poses[i];
+            Cars[i].TrackOffset = offsets[i];
         }
     }
 
@@ -402,6 +604,28 @@ public partial class TrainConsist : Node
         {
             Debug.LogWarn("Non RollingStock child added to TrainConsist.");
         }
+    }
+
+    /// <summary>One host physics sample of the chain, stored on clients for playback.</summary>
+    private class TrainPoseSnapshot
+    {
+        public int Tick { get; }
+        public float Velocity { get; }
+        public IReadOnlyList<float> CarOffsets { get; }
+
+        public TrainPoseSnapshot(int tick, List<float> carOffsets, float velocity)
+        {
+            Tick = tick;
+            CarOffsets = carOffsets;
+            Velocity = velocity;
+        }
+
+        public TrainPoseSnapshot(int tick, Array<float> carOffsets, float velocity)
+            : this(tick, carOffsets.ToList(), velocity)
+        {
+        }
+
+        public override string ToString() => $"{nameof(TrainPoseSnapshot)} {{ Tick = {Tick}, Velocity = {Velocity}, CarOffsets = {CarOffsets} }}";
     }
 
 }

@@ -99,7 +99,6 @@ public partial class TrainwreckedLevel : Node3D
 
 	public override void _Process(double delta)
 	{
-
 	}
 
 
