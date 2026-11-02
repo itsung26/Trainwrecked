@@ -96,11 +96,12 @@ _data = {
 }
 point_count = 12
 
-[node name="TestingScene" type="Node3D" unique_id=1386985927 node_paths=PackedStringArray("PlayerSpawner", "PlayerSpawnPoints")]
+[node name="TestingScene" type="Node3D" unique_id=1386985927 node_paths=PackedStringArray("PlayerSpawner", "PlayerSpawnPoints", "SessionChat")]
 script = ExtResource("1_ltgxd")
 PlayerScene = ExtResource("1_ifns1")
 PlayerSpawner = NodePath("PlayerSpawner")
 PlayerSpawnPoints = [NodePath("PlayerSpawner/SpawnPoint1"), NodePath("PlayerSpawner/SpawnPoint2"), NodePath("PlayerSpawner/SpawnPoint3"), NodePath("PlayerSpawner/SpawnPoint4")]
+SessionChat = NodePath("SessionChat")
 metadata/_custom_type_script = "uid://4x8elhhftwqh"
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=87188359]

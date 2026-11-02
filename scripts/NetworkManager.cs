@@ -15,7 +15,7 @@ public partial class NetworkManager : Node
 
 	public static NetworkManager Instance;
 	public const string Address = "localhost";
-	// The port that the host uses to recieve packets from the UDP packet peer.
+	// The port that the host uses to receive packets from the UDP packet peer.
 	public const int DiscoveryPort = 7778;
 	// The port that the session uses to host the game. It can be considered the "default" port.
 	// At this time, no other port is used for multiplayer hosting/joining.
@@ -133,7 +133,7 @@ public partial class NetworkManager : Node
 		ListenForHostsAsClient();
 	}
 
-	// Recieve incoming packets, and when the prefix signurature is detected,
+	// Receive incoming packets, and when the prefix signature is detected,
 	// respond with the host response prefix packet.
 	public void ListenForClientsAsHost()
 	{
@@ -160,7 +160,7 @@ public partial class NetworkManager : Node
 			int fromPort = Query.GetPacketPort();
 			Query.SetDestAddress(fromIp, fromPort);
 			Query.PutPacket($"{HostReplyPrefix}|{Port}".ToUtf8Buffer());
-			Debug.Log("Recieved a client prefix, replying to client.");
+			Debug.Log("Received a client prefix, replying to client.");
 		}
 	}
 

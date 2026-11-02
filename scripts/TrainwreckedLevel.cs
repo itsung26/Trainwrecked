@@ -44,8 +44,7 @@ public partial class TrainwreckedLevel : Node3D
 	/// </summary>
 	[Export] protected Array<Node3D> PlayerSpawnPoints { get; set; } = new Array<Node3D>();
 
-
-
+	[Export] public SessionChat SessionChat { get; set; }
 
 	/// <summary>
 	/// Emitted when <see cref="PlayerSpawner"/> spawns a player under this level.
@@ -80,7 +79,7 @@ public partial class TrainwreckedLevel : Node3D
 
 		if (NetworkManager.IsServer() && SpawningPlayersEnabled)
 		{
-			CreatePlayer(1, 1);
+			SpawnPlayer(1, 1);
 
 			// If actually in a session, spawn however many other players exist.
 
@@ -90,7 +89,7 @@ public partial class TrainwreckedLevel : Node3D
 				int index = 2;
 				foreach (int id in NetworkManager.GetPeerIds())
 				{
-					CreatePlayer(id, index);
+					SpawnPlayer(id, index);
 					index++;
 				}
 			}
@@ -162,7 +161,7 @@ public partial class TrainwreckedLevel : Node3D
 		return -1;
 	}
 
-	public void CreatePlayer(int peerId, int playerIndex)
+	public void SpawnPlayer(int peerId, int playerIndex)
 	{
 		if (!SpawningPlayersEnabled || PlayerSpawner is null || PlayerSpawnPoints.Count != 4)
 		{
@@ -182,7 +181,7 @@ public partial class TrainwreckedLevel : Node3D
 		{
 			Debug.Log("Registered late join. Spawning player.");
 			int firstFreePlayerIndex = NetworkManager.GetTotalConnectedPeerCount();
-			CreatePlayer((int)id, firstFreePlayerIndex);
+			SpawnPlayer((int)id, firstFreePlayerIndex);
 		}
 	}
 
@@ -201,6 +200,7 @@ public partial class TrainwreckedLevel : Node3D
 		}
 	}
 
+	// Emitted when the spawner spawns any node.
 	private void _on_player_spawner_spawned(Node node)
 	{
 		if (node is not Player)
@@ -210,6 +210,7 @@ public partial class TrainwreckedLevel : Node3D
 		EmitSignal(SignalName.PlayerSpawned, node as Player);
 	}
 
+	// Emitted when the spawner despawns any node.
 	private void _on_player_spawner_despawned(Node node)
 	{
 		if (node is not Player)

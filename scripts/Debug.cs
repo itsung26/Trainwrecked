@@ -6,12 +6,6 @@ using System.Collections.Generic;
 /// <summary>
 /// Autoload for playtest logging and debug input.
 /// </summary>
-/// <remarks>
-/// When <see cref="NetworkDebugWindowNamesEnabled"/> is <see langword="true"/>,
-/// <see cref="_Ready"/> labels the window title from <see cref="RunArguments"/>.
-/// <see cref="_Process"/> quits the game when the <c>Debug Quit</c> action is pressed.
-/// The static log methods write to the Godot console.
-/// </remarks>
 public partial class Debug : Node
 {
 	public override void _Ready()
