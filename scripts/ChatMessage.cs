@@ -1,18 +1,14 @@
-using Godot;
 using System;
+using Godot;
 
-// Represents a message sent to the chat. Senders are identified by their
-// unique multiplayer ID.
-public partial class ChatMessage : Label
+public abstract partial class ChatMessage : Label
 {
 	public string Message { get; }
-	public int Sender { get; }
 
-	public ChatMessage(string message, int sender, float chatBoxWidth)
+	public ChatMessage(string message, float chatBoxWidth)
 	{
-		Message = message;
-		Text = $"{sender}: {message}";
-		Sender = sender;
+		this.Message = message;
+		Text = $"{message}";
 		CustomMinimumSize = new Vector2(chatBoxWidth, CustomMaximumSize.X);
 		AutowrapMode = TextServer.AutowrapMode.WordSmart;
 	}
@@ -20,7 +16,6 @@ public partial class ChatMessage : Label
     public override string ToString()
     {
 		string generatedInstanceString = Debug.GenerateInstanceToString(this);
-        return $"{generatedInstanceString}|{Sender}: {Message}";
+        return $"{generatedInstanceString}|{Message}";
     }
-
 }

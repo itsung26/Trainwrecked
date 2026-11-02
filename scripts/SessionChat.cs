@@ -223,7 +223,7 @@ public partial class SessionChat : Control
 			return;
 		}
 
-		Rpc(MethodName.ReceiveChatMessage, text, senderPeerId);
+		Rpc(MethodName.ReceiveChatMessage, text, senderPeerId, false);
 	}
 
 	/// <summary>
@@ -234,10 +234,18 @@ public partial class SessionChat : Control
 	/// <param name="text">Message body.</param>
 	/// <param name="senderPeerId">Multiplayer peer id of the author.</param>
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
-	private void ReceiveChatMessage(string text, int senderPeerId)
+	private void ReceiveChatMessage(string text, int senderPeerId, bool isServerMessage)
 	{
-		ChatMessage newChat = new ChatMessage(text, senderPeerId, MessageList.Size.X);
-		AddChatMessage(newChat);
+		ChatMessage message = null;
+		if (isServerMessage)
+		{
+			message = new ServerChatMessage(text, MessageList.Size.X);
+		}
+		else
+		{
+			message = new PlayerChatMessage(text, senderPeerId, MessageList.Size.X);
+		}
+		AddChatMessage(message);
 	}
 
 	/// <summary>
@@ -247,14 +255,11 @@ public partial class SessionChat : Control
 	/// <remarks>
 	/// Logs <see cref="Error.AlreadyExists"/> and returns when the node is already inside the tree.
 	/// </remarks>
-	public void AddChatMessage(ChatMessage whichMessage)
+	private void AddChatMessage(ChatMessage whichMessage)
 	{
-		if (whichMessage.IsInsideTree())
-		{
-			Debug.LogError(Error.AlreadyExists);
-			return;
-		}
 		MessageList.AddChild(whichMessage);
+		Debug.Log(whichMessage.GetClass());
+		Debug.Log(whichMessage.ToString());
 	}
 
 	/// <summary>
@@ -265,10 +270,20 @@ public partial class SessionChat : Control
 	/// </remarks>
 	public void Clear()
 	{
-		foreach (ChatMessage chatToDelete in MessageList.GetChildren())
+		foreach (var chatToDelete in MessageList.GetChildren())
 		{
 			chatToDelete.QueueFree();
 		}
+	}
+
+	public void Announce(String text)
+	{
+		if (!NetworkManager.IsServer())
+		{
+			return;
+		}
+
+		Rpc(MethodName.ReceiveChatMessage, text, 0, true);
 	}
 
 	/// <summary>
@@ -293,7 +308,7 @@ public partial class SessionChat : Control
 
 		if (NetworkManager.IsServer())
 		{
-			Rpc(MethodName.ReceiveChatMessage, newText, NetworkManager.GetUniqueId());
+			Rpc(MethodName.ReceiveChatMessage, newText, NetworkManager.GetUniqueId(), false);
 		}
 		else if (NetworkManager.IsClient())
 		{

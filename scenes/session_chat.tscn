@@ -65,6 +65,9 @@ drag_and_drop_selection_enabled = false
 [node name="DelayBeforeFadeoutTimer" type="Timer" parent="." unique_id=632365567]
 one_shot = true
 
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2062461361]
+spawn_path = NodePath("../ChatPanel/ChatLayout/MessageScroll/MessageList")
+
 [connection signal="visibility_changed" from="." to="." method="_on_visibility_changed"]
 [connection signal="editing_toggled" from="ChatPanel/ChatLayout/InputRow/MessageInput" to="." method="_on_message_input_editing_toggled"]
 [connection signal="text_submitted" from="ChatPanel/ChatLayout/InputRow/MessageInput" to="." method="_on_message_input_text_submitted"]
