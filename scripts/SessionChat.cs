@@ -8,10 +8,12 @@ using System.Diagnostics;
 /// <remarks>
 /// Connected clients submit text to peer <c>1</c> via <see cref="SubmitChatMessage"/>;
 /// the host broadcasts the final line with <see cref="ReceiveChatMessage"/>
-/// (<c>CallLocal = true</c> so the host also displays it). When disconnected or still
-/// connecting, submitted text is appended locally only through <see cref="AddChatMessage"/>.
+/// (<c>CallLocal = true</c> so the host also displays it). Offline / host sessions
+/// treat the local peer as the server and broadcast the same way. Submissions while
+/// neither server nor client (for example mid-connect) are ignored.
 /// <para>
-/// Lives on the level (see <see cref="TrainwreckedLevel.SessionChat"/>). Local
+/// Host-only <see cref="Announce"/> fans out system lines as <see cref="ServerChatMessage"/>
+/// instances. Lives on the level (see <see cref="TrainwreckedLevel.SessionChat"/>). Local
 /// <see cref="Player"/> instances subscribe to <see cref="TypingChanged"/> to disable
 /// movement and look while the input is being edited.
 /// </para>
@@ -232,7 +234,15 @@ public partial class SessionChat : Control
 	/// Builds a <see cref="ChatMessage"/> and passes it to <see cref="AddChatMessage"/>.
 	/// </summary>
 	/// <param name="text">Message body.</param>
-	/// <param name="senderPeerId">Multiplayer peer id of the author.</param>
+	/// <param name="senderPeerId">
+	/// Multiplayer peer id of the author. Unused when <paramref name="isServerMessage"/>
+	/// is <see langword="true"/> (callers typically pass <c>0</c>).
+	/// </param>
+	/// <param name="isServerMessage">
+	/// <see langword="true"/> to instantiate a <see cref="ServerChatMessage"/>;
+	/// <see langword="false"/> for a <see cref="PlayerChatMessage"/> attributed to
+	/// <paramref name="senderPeerId"/>.
+	/// </param>
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
 	private void ReceiveChatMessage(string text, int senderPeerId, bool isServerMessage)
 	{
@@ -252,9 +262,6 @@ public partial class SessionChat : Control
 	/// Parents <paramref name="whichMessage"/> under <see cref="MessageList"/> with no networking.
 	/// </summary>
 	/// <param name="whichMessage">Message node to append. Must not already be in the scene tree.</param>
-	/// <remarks>
-	/// Logs <see cref="Error.AlreadyExists"/> and returns when the node is already inside the tree.
-	/// </remarks>
 	private void AddChatMessage(ChatMessage whichMessage)
 	{
 		MessageList.AddChild(whichMessage);
@@ -276,6 +283,15 @@ public partial class SessionChat : Control
 		}
 	}
 
+	/// <summary>
+	/// Host-only broadcast of a system / server chat line to every peer.
+	/// </summary>
+	/// <param name="text">Announcement body shown without a player sender prefix.</param>
+	/// <remarks>
+	/// No-ops on non-server peers. Delivers via <see cref="ReceiveChatMessage"/> with
+	/// <c>isServerMessage</c> <see langword="true"/> and sender peer id <c>0</c>, so each
+	/// peer appends a <see cref="ServerChatMessage"/>.
+	/// </remarks>
 	public void Announce(String text)
 	{
 		if (!NetworkManager.IsServer())
@@ -291,8 +307,9 @@ public partial class SessionChat : Control
 	/// </summary>
 	/// <param name="newText">Submitted message body.</param>
 	/// <remarks>
-	/// Disconnected or connecting peers append locally. The host broadcasts with
-	/// <see cref="ReceiveChatMessage"/>. Clients RPC <see cref="SubmitChatMessage"/> to peer <c>1</c>.
+	/// Empty strings are discarded after the input is cleared. The host broadcasts with
+	/// <see cref="ReceiveChatMessage"/>. Clients RPC <see cref="SubmitChatMessage"/> to peer
+	/// <c>1</c>. If this peer is neither server nor client, the text is not delivered.
 	/// </remarks>
 	private void _on_message_input_text_submitted(string newText)
 	{
