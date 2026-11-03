@@ -34,23 +34,15 @@ public partial class PauseMenu : Control
 			return;
 		}
 
-		if (@event is not InputEventKey)
-		{
-			return;
-		}
+		bool isTyping = Player.SessionChat.GetIsTyping();
 
-		if (!Input.IsActionJustPressed(new StringName("Pause")))
+		if (@event is InputEventKey)
 		{
-			return;
+			if (Input.IsActionJustPressed(new StringName("Pause")) && !isTyping)
+			{
+				_canvasLayerParent.Visible = !_canvasLayerParent.Visible;
+			}
 		}
-
-		if (_canvasLayerParent is null)
-		{
-			Debug.LogError("Expected a CanvasLayer parent.");
-			return;
-		}
-
-		_canvasLayerParent.Visible = !_canvasLayerParent.Visible;
 	}
 
 	private void _on_canvas_layer_visibility_changed()

@@ -265,8 +265,6 @@ public partial class SessionChat : Control
 	private void AddChatMessage(ChatMessage whichMessage)
 	{
 		MessageList.AddChild(whichMessage);
-		Debug.Log(whichMessage.GetClass());
-		Debug.Log(whichMessage.ToString());
 	}
 
 	/// <summary>
@@ -300,6 +298,24 @@ public partial class SessionChat : Control
 		}
 
 		Rpc(MethodName.ReceiveChatMessage, text, 0, true);
+	}
+
+	/// <summary>
+	/// Blocks Escape from cancelling <see cref="MessageInput"/> editing (Godot LineEdit default).
+	/// </summary>
+	private void _on_message_input_gui_input(InputEvent @event)
+	{
+		if (@event is not InputEventKey key || !key.Pressed || key.Echo)
+		{
+			return;
+		}
+
+		if (key.Keycode != Key.Escape)
+		{
+			return;
+		}
+
+		MessageInput.AcceptEvent();
 	}
 
 	/// <summary>
