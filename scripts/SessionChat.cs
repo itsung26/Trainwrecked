@@ -297,7 +297,7 @@ public partial class SessionChat : Control
 			return;
 		}
 
-		Rpc(MethodName.ReceiveChatMessage, text, 0, true);
+		Rpc(MethodName.ReceiveChatMessage, "SERVER: " + text, 0, true);
 	}
 
 	/// <summary>
@@ -318,6 +318,7 @@ public partial class SessionChat : Control
 		MessageInput.AcceptEvent();
 	}
 
+	#region LineEdit submission
 	/// <summary>
 	/// Handles line-edit submit: clears and unfocuses the input, then delivers the text.
 	/// </summary>
@@ -339,6 +340,21 @@ public partial class SessionChat : Control
 			return;
 		}
 
+		// Intercept detected console command.
+		if (newText.StartsWith('/'))
+		{
+			string full = newText.Trim().ToLower().TrimPrefix("/");
+			string[] parts = full.Split(' ');
+			if (parts.Length >= 2)
+			{
+				if (parts[0].Equals("announce"))
+				{
+					Announce(parts[1]);
+				}
+			}
+			return;
+		}
+
 		if (NetworkManager.IsServer())
 		{
 			Rpc(MethodName.ReceiveChatMessage, newText, NetworkManager.GetUniqueId(), false);
@@ -348,6 +364,7 @@ public partial class SessionChat : Control
 			RpcId(1, MethodName.SubmitChatMessage, newText, NetworkManager.GetUniqueId());
 		}
 	}
+	#endregion
 
 	/// <summary>
 	/// Clears chat history when this peer finishes connecting to a server.
