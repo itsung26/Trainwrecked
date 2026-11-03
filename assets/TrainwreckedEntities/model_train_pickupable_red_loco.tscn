@@ -112,6 +112,7 @@ properties/5/replication_mode = 1
 script = ExtResource("1_j64iu")
 PreferredHoldFace = 1
 WalkSpeedMultiplier = 0.8
+DisplayName = "Red Locomotive Plush"
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
 
 [node name="train-locomotive-b" parent="." unique_id=2036816041 instance=ExtResource("2_tutl6")]

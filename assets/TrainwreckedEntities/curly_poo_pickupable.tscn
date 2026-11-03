@@ -44,6 +44,7 @@ properties/5/replication_mode = 1
 mass = 0.31
 script = ExtResource("1_8vp4l")
 PreferredHoldFace = 0
+DisplayName = "Large \"Chocolate\""
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
 
 [node name="curlypoo" type="MeshInstance3D" parent="." unique_id=1624900008]

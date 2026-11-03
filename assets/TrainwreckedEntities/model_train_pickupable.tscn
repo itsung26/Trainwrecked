@@ -78,6 +78,7 @@ mass = 0.7
 script = ExtResource("1_4jfv1")
 PreferredHoldFace = 0
 ReturnSpeed = 12.0
+DisplayName = "Yellow Locomotive Plush"
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
 
 [node name="train-diesel-a" parent="." unique_id=1025163884 instance=ExtResource("2_x2pf3")]

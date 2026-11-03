@@ -101,6 +101,7 @@ sleeping = true
 freeze = true
 script = ExtResource("1_j0e45")
 PressAnimationName = "button_down"
+DisplayName = "Red Button"
 metadata/_custom_type_script = "uid://c24bt24io4mwt"
 
 [node name="button" parent="." unique_id=1405335387 instance=ExtResource("1_eupa5")]

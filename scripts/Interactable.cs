@@ -22,6 +22,7 @@ public abstract partial class Interactable : RigidBody3D
 	private bool _outlineVisible = false;
 	private bool _selectable = true;
 	private bool _selected = false;
+	[Export] public string DisplayName { get; set; } = "???";
 
 	/// <summary>
 	/// Whether the inverted-hull outline meshes are shown.

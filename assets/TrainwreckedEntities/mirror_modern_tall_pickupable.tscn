@@ -46,6 +46,7 @@ properties/5/replication_mode = 1
 mass = 3.2
 script = ExtResource("1_bmvq3")
 PreferredHoldFace = 2
+DisplayName = "Tall Modern Mirror"
 metadata/_custom_type_script = "uid://kq8cnnut7xs5"
 
 [node name="mirror_modern_tall" parent="." unique_id=991848805 instance=ExtResource("2_dk5uw")]
