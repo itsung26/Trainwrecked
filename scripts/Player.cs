@@ -33,7 +33,8 @@ public partial class Player : CharacterBody3D
 	#endregion
 
 	#region Signals
-	
+	[Signal]
+	public delegate void SelectionChangedEventHandler(Interactable previous, Interactable current);
 
 	#endregion
 
@@ -260,6 +261,7 @@ public partial class Player : CharacterBody3D
 	public void UpdateInteractableSelection()
 	{
 		Interactable hitInteractable = InteractRaycast.GetCollider() as Interactable;
+		Interactable previous = CurrentSelection;
 
 		// Prevent reselecting the same thing
 		if (CurrentSelection is not null && CurrentSelection.Equals(hitInteractable))
@@ -267,10 +269,10 @@ public partial class Player : CharacterBody3D
 			return;
 		}
 
-		// Prevent selecting disabled Selectables.
+		// Treat non-selectable hits as empty space so the old selection clears.
 		if (hitInteractable is not null && hitInteractable.PreventSelection)
 		{
-			return;
+			hitInteractable = null;
 		}
 
 		// looking off of a selected object into nothing
@@ -295,6 +297,11 @@ public partial class Player : CharacterBody3D
 			hitInteractable.Selected = true;
 
 			CurrentSelection = hitInteractable;
+		}
+
+		if (!ReferenceEquals(previous, CurrentSelection))
+		{
+			EmitSignal(SignalName.SelectionChanged, previous, CurrentSelection);
 		}
 	}
 
