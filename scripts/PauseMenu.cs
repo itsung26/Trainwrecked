@@ -4,27 +4,26 @@ using System;
 public partial class PauseMenu : Control
 {
 	[Export] public Player Player { get; set; }
-	[Export] public CanvasLayer CanvasLayerParent { get; set; }
+	private CanvasLayer _canvasLayerParent { get; set; }
 
 	public override void _Ready()
 	{
-		CanvasLayerParent ??= GetParentOrNull<CanvasLayer>();
-		if (CanvasLayerParent is null)
+		_canvasLayerParent = GetParent<CanvasLayer>();
+		if (_canvasLayerParent is null)
 		{
-			Debug.LogError("Expected a CanvasLayer parent.");
-			return;
+			throw new InvalidOperationException("Expected CanvasLayer parent.");
 		}
 
-		CanvasLayerParent.VisibilityChanged += _on_canvas_layer_visibility_changed;
-		CanvasLayerParent.Visible = false;
+		_canvasLayerParent.VisibilityChanged += _on_canvas_layer_visibility_changed;
+		_canvasLayerParent.Visible = false;
 	}
 
 	public override void _ExitTree()
 	{
 
-		if (CanvasLayerParent is not null)
+		if (_canvasLayerParent is not null)
 		{
-			CanvasLayerParent.VisibilityChanged -= _on_canvas_layer_visibility_changed;
+			_canvasLayerParent.VisibilityChanged -= _on_canvas_layer_visibility_changed;
 		}
 	}
 
@@ -45,28 +44,28 @@ public partial class PauseMenu : Control
 			return;
 		}
 
-		if (CanvasLayerParent is null)
+		if (_canvasLayerParent is null)
 		{
 			Debug.LogError("Expected a CanvasLayer parent.");
 			return;
 		}
 
-		CanvasLayerParent.Visible = !CanvasLayerParent.Visible;
+		_canvasLayerParent.Visible = !_canvasLayerParent.Visible;
 	}
 
 	private void _on_canvas_layer_visibility_changed()
 	{
 
-		if (CanvasLayerParent is null)
+		if (_canvasLayerParent is null)
 		{
 			return;
 		}
 
-		Input.MouseMode = CanvasLayerParent.Visible
+		Input.MouseMode = _canvasLayerParent.Visible
 			? Input.MouseModeEnum.Visible
 			: Input.MouseModeEnum.Captured;
 
-		Player.InputDisabled = CanvasLayerParent.Visible;
-		Player.LookDisabled = CanvasLayerParent.Visible;
+		Player.InputDisabled = _canvasLayerParent.Visible;
+		Player.LookDisabled = _canvasLayerParent.Visible;
 	}
 }
