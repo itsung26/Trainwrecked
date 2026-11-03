@@ -38,6 +38,8 @@ public partial class PickupableBody : Interactable
 
 	[Export] public float WalkSpeedMultiplier { get; set; } = 1.0f;
 
+	[Export] public bool UseContinuousCollision { get; set; } = true;
+
 	/// <summary>Peer id of the current holder, or <c>0</c> when free.</summary>
 	public int HolderPeerId { get; private set; } = 0;
 
@@ -49,6 +51,7 @@ public partial class PickupableBody : Interactable
 		base._Ready();
 		Selectable = true;
 		WarnIfNoSynchronizer();
+		ContinuousCd = UseContinuousCollision;
 	}
 
 	public override void _Process(double delta)
@@ -262,8 +265,8 @@ public partial class PickupableBody : Interactable
 				holder.CurrentHeldBody = null;
 			}
 
+			EndingHold();
 			HolderPeerId = 0;
-			EndHold();
 			Selectable = true;
 		}
 	}
@@ -282,14 +285,15 @@ public partial class PickupableBody : Interactable
 	}
 
 	/// <summary>
-	/// Local exit-hold hook. Restores gravity after release.
+	/// Local exit-hold hook. Restores gravity after release. Called right before the holding
+	/// peer ID is cleared.
 	/// </summary>
-	protected virtual void EndHold()
+	protected virtual void EndingHold()
 	{
-		Player player = (GetTree().CurrentScene as TrainwreckedLevel)?.GetPlayerByPeerId(HolderPeerId);
-		if (player is not null)
+		Player holdingPlayer =  (GetTree().CurrentScene as TrainwreckedLevel)?.GetPlayerByPeerId(HolderPeerId);
+		if (holdingPlayer is not null)
 		{
-			player.GlobalSpeedModifier = 1.0f;
+			holdingPlayer.GlobalSpeedModifier = 1.0f;
 		}
 		GravityScale = 1.0f;
 	}

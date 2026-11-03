@@ -21,6 +21,8 @@ public partial class Player : CharacterBody3D
 	[Export] public Node3D PlayerModelTreeRoot { get; set; }
 	[Export] public bool LoggingDebug = false;
 	[Export] public float Speed = 5.0f;
+	[Export] public float MaxAirSpeed { get; set; } = 7.0f;
+	[Export] public float AirAcceleration { get; set; } = 10.0f;
 	[Export] public float GlobalSpeedModifier { get; set; } = 1.0f;
 	[Export] public float JumpVelocity = 4.5f;
 	[Export] public float MouseSensitivity = 1.0f;
@@ -131,7 +133,6 @@ public partial class Player : CharacterBody3D
 			return;
 		}
 
-
 		UpdateInteractableSelection();
 	}
 
@@ -176,6 +177,22 @@ public partial class Player : CharacterBody3D
 		#region Locomotion State Logic
 		if (CurrentLocomotionStateName == "FallingState")
 		{
+			Vector2 inputDir = Input.GetVector("Left", "Right", "Forwards", "Backwards");
+			if (InputDisabled)
+			{
+				inputDir = Vector2.Zero;
+			}
+
+			// Soft air steering: ease XZ toward wish velocity; preserve momentum with no input.
+			if (inputDir != Vector2.Zero)
+			{
+				Vector3 wishDir = (Transform.Basis * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
+				Vector3 wishVelocity = wishDir * (MaxAirSpeed * GlobalSpeedModifier);
+				float steer = AirAcceleration * (float)delta;
+				velocity.X = Mathf.MoveToward(velocity.X, wishVelocity.X, steer);
+				velocity.Z = Mathf.MoveToward(velocity.Z, wishVelocity.Z, steer);
+			}
+
 			velocity += GetGravity() * (float)delta;
 		}
 
@@ -221,7 +238,7 @@ public partial class Player : CharacterBody3D
 				velocity.Z = direction.Z * SprintSpeed;
 			}
 			else
-			{
+			{	
 				velocity.X = Mathf.MoveToward(Velocity.X, 0, SprintSpeed);
 				velocity.Z = Mathf.MoveToward(Velocity.Z, 0, SprintSpeed);
 			}
