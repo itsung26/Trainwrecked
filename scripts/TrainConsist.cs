@@ -339,7 +339,7 @@ public partial class TrainConsist : Node
     /// <summary>
     /// Returns the <see cref="RollingStock"/> children in child order.
     /// </summary>
-    public Array<RollingStock> GetAllCars()
+    private Array<RollingStock> GetAllCars()
     {
         Array<Node> children = GetChildren();
         List<RollingStock> cars = new List<RollingStock>();
@@ -597,6 +597,27 @@ public partial class TrainConsist : Node
         {
             Cars[i].TrackOffset = offsets[i];
         }
+    }
+
+    /// Splits this consist into two consists at index <param name="at">.
+    public void Split(int at)
+    {
+        if (at < 0 || at > Cars.Count)
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        if (at == 0 || at == Cars.Count)
+        {
+            return;
+        }
+
+
+    }
+
+    public void Join(TrainConsist with, bool atFront)
+    {
+
     }
 
     private void _on_child_entered_tree(Node node)
