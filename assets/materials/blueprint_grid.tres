@@ -1,0 +1,32 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://nay4oceq21q2"]
+
+[ext_resource type="Shader" uid="uid://dkmfii8u3w8lo" path="res://assets/shaders/blueprint.gdshader" id="1_1rytf"]
+
+[sub_resource type="Gradient" id="Gradient_x43m2"]
+colors = PackedColorArray(0, 0, 0, 1, 1, 0.64705884, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_rddtp"]
+gradient = SubResource("Gradient_x43m2")
+
+[sub_resource type="Gradient" id="Gradient_1rytf"]
+offsets = PackedFloat32Array(0, 0.4761092)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_dehhp"]
+gradient = SubResource("Gradient_1rytf")
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_1rytf")
+shader_parameter/border_size = 0.047
+shader_parameter/cross_thickness = 0.043
+shader_parameter/cross_length = 0.257
+shader_parameter/world_scale = 3.0
+shader_parameter/wave_alpha_ramp = SubResource("GradientTexture1D_dehhp")
+shader_parameter/wave_frequency = 1.325
+shader_parameter/wave_speed = 6.435
+shader_parameter/wave_trough = 0.2730000129675
+shader_parameter/wave_peak = 0.3970000188575
+shader_parameter/cross_pattern_color_ramp = SubResource("GradientTexture1D_rddtp")
+shader_parameter/cross_pattern_brightness = 1.65
+shader_parameter/wave_brightness = 3.42
+shader_parameter/wave_color = Color(0.21737108, 0.63478637, 0.92415905, 1)

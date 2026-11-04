@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://80qntqdmj5h5"]
 
 [ext_resource type="Shader" uid="uid://pkmy1vnj62ht" path="res://assets/shaders/desert_biome_test.gdshader" id="1_3bpyq"]
+[ext_resource type="Shader" uid="uid://cnsvqo1etuejx" path="res://assets/shaders/procedural_sky.gdshader" id="1_x43m2"]
 [ext_resource type="Texture2D" uid="uid://ktf5rub5ekhg" path="res://assets/2d assets/textures/enviroment_textures/sandy_dunes/Ground054_2K-PNG_Color.png" id="2_4avwj"]
 [ext_resource type="Texture2D" uid="uid://b5enmq6ojk4yi" path="res://assets/2d assets/textures/enviroment_textures/rocks_017/Rocks017_2K-PNG_Color.png" id="3_5gpo6"]
 [ext_resource type="Shader" uid="uid://b5t5jfl5qyfvn" path="res://assets/shaders/triplanar_mapping_snippet.gdshader" id="4_5kfpf"]
@@ -8,6 +9,46 @@
 [ext_resource type="Shader" uid="uid://c6uugj3onhill" path="res://assets/shaders/heightmap_visualizer.gdshader" id="6_0wayb"]
 [ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="6_rvqgu"]
 [ext_resource type="Texture2D" uid="uid://60xua2es7vvs" path="res://assets/2d assets/textures/prototype_textures/Light/texture_06.png" id="7_slbsu"]
+[ext_resource type="Material" uid="uid://nay4oceq21q2" path="res://assets/materials/blueprint_grid.tres" id="10_5nw5h"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lg35i"]
+shader = ExtResource("1_x43m2")
+shader_parameter/day_top_color = Color(0.38431373, 0.45490196, 0.54901963, 1)
+shader_parameter/day_bottom_color = Color(0.6627451, 0.67058825, 0.6862745, 1)
+shader_parameter/sunset_top_color = Color(0.7, 0.75, 1, 1)
+shader_parameter/sunset_bottom_color = Color(1, 0.5, 0.7, 1)
+shader_parameter/night_top_color = Color(0.02, 0, 0.04, 1)
+shader_parameter/night_bottom_color = Color(0.1, 0, 0.2, 1)
+shader_parameter/horizon_color = Color(0.6627451, 0.67058825, 0.6862745, 1)
+shader_parameter/horizon_blur = 0.05
+shader_parameter/sun_color = Color(10, 8, 1, 1)
+shader_parameter/sun_sunset_color = Color(10, 0, 0, 1)
+shader_parameter/sun_size = 0.39900001825398
+shader_parameter/sun_blur = 6.44900030562898
+shader_parameter/moon_color = Color(1, 0.95, 0.7, 1)
+shader_parameter/moon_size = 0.06
+shader_parameter/moon_blur = 0.1
+shader_parameter/clouds_edge_color = Color(0.8, 0.8, 0.98, 1)
+shader_parameter/clouds_top_color = Color(1, 1, 1, 1)
+shader_parameter/clouds_middle_color = Color(0.92, 0.92, 0.98, 1)
+shader_parameter/clouds_bottom_color = Color(0.83, 0.83, 0.94, 1)
+shader_parameter/clouds_speed = 2.0
+shader_parameter/clouds_direction = 0.2
+shader_parameter/clouds_scale = 1.0
+shader_parameter/clouds_cutoff = 0.43999999016512
+shader_parameter/clouds_fuzziness = 1.01999997720096
+shader_parameter/clouds_weight = 0.0
+shader_parameter/clouds_blur = 0.25
+shader_parameter/stars_speed = 1.0
+shader_parameter/overwritten_time = 0.0
+
+[sub_resource type="Sky" id="Sky_2j2p2"]
+sky_material = SubResource("ShaderMaterial_lg35i")
+
+[sub_resource type="Environment" id="Environment_8msnd"]
+background_mode = 2
+sky = SubResource("Sky_2j2p2")
+glow_enabled = true
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_3bpyq"]
 render_priority = 0
@@ -60,31 +101,60 @@ shader_parameter/uv_offset = Vector2(0, 0)
 
 [sub_resource type="SphereMesh" id="SphereMesh_dehhp"]
 
+[sub_resource type="QuadMesh" id="QuadMesh_nrtwv"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_rddtp"]
+
 [node name="ShaderTestingScene" type="Node3D" unique_id=2064292606]
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=956139993]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+light_color = Color(0.8468644, 0.69709957, 0.2643382, 1)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1317403256]
+environment = SubResource("Environment_8msnd")
 
 [node name="DesertBiomeTerrain" type="MeshInstance3D" parent="." unique_id=1902669167]
 transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 0, 0, 0)
+visible = false
 mesh = SubResource("PlaneMesh_3bpyq")
 
 [node name="TriplanarTestCube" type="MeshInstance3D" parent="." unique_id=2078206173]
-transform = Transform3D(0.9525855, -0.30427098, 0, 0.30427098, 0.9525855, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(0.9525855, -0.30427098, 0, 0.30427098, 0.9525855, 0, 0, 0, 1, 0, 0, 3.642692)
+visible = false
 material_override = SubResource("ShaderMaterial_58cwd")
 mesh = SubResource("BoxMesh_dehhp")
 
 [node name="TriplanarTestCube2" type="MeshInstance3D" parent="." unique_id=353129436]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.1041503)
+visible = false
 material_override = SubResource("ShaderMaterial_58cwd")
 mesh = SubResource("SphereMesh_5kfpf")
 
 [node name="FaceQuadTest" type="MeshInstance3D" parent="." unique_id=1675318996]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0917494, -2.199601)
+visible = false
 material_override = SubResource("ShaderMaterial_m7ys3")
 extra_cull_margin = 16384.0
 mesh = SubResource("QuadMesh_dehhp")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1265496351]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.948526, 0)
+visible = false
 material_override = SubResource("ShaderMaterial_rvqgu")
 mesh = SubResource("SphereMesh_dehhp")
 
 [node name="FreeCamera" parent="." unique_id=90580429 instance=ExtResource("6_rvqgu")]
+
+[node name="BluePrintShader" type="Node3D" parent="." unique_id=172013524]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BluePrintShader" unique_id=1453368015]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+material_override = ExtResource("10_5nw5h")
+mesh = SubResource("QuadMesh_nrtwv")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="BluePrintShader" unique_id=1487026761]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.66771674, 0.5324061, -1.3955982)
+material_override = ExtResource("10_5nw5h")
+mesh = SubResource("BoxMesh_rddtp")

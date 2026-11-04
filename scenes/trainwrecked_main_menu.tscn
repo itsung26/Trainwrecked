@@ -12,13 +12,11 @@
 [ext_resource type="PackedScene" uid="uid://do6nlpwwu66rs" path="res://assets/3d assets/cactus/cactus.blend" id="7_8qy8p"]
 [ext_resource type="Shader" uid="uid://wq7oa27iovho" path="res://assets/shaders/heat_haze.gdshader" id="7_fk41g"]
 [ext_resource type="ArrayMesh" uid="uid://bvxmdsra07jsg" path="res://assets/3d assets/cactus/mesh resources/cactus_cactu01_Material_002_0.res" id="7_odklb"]
-[ext_resource type="ArrayMesh" uid="uid://hv4ac6t752ie" path="res://assets/3d assets/cactus/mesh resources/cactus_Cactu_02_Material_002_0.res" id="7_px1wt"]
+[ext_resource type="ArrayMesh" uid="uid://cw4jstmp1cbcj" path="res://assets/3d assets/cactus/mesh resources/cactus_Cactu_02_Material_002_0.res" id="7_px1wt"]
 [ext_resource type="PackedScene" uid="uid://n41mt84h84uf" path="res://assets/TrainwreckedEntities/rigged_vulture_visual.tscn" id="8_6ycsm"]
 [ext_resource type="ArrayMesh" uid="uid://bsjnpri5euuew" path="res://assets/3d assets/cactus/mesh resources/cactus_cactu_03_Material_002_0.res" id="10_gs35m"]
 [ext_resource type="PackedScene" uid="uid://wc37b7h2vw56" path="res://assets/particles/circling_vultures.tscn" id="10_j53pp"]
 [ext_resource type="PackedScene" uid="uid://c1ooomqyw3i2g" path="res://scenes/lens_flare_shader.tscn" id="10_xfftf"]
-[ext_resource type="Script" uid="uid://bhsg271e1lvlh" path="res://scripts/StateMachine.cs" id="11_xkjpu"]
-[ext_resource type="Script" uid="uid://d13b5kdgkflx4" path="res://scripts/State.cs" id="12_27gen"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j45et"]
 shader = ExtResource("3_ljjiq")
@@ -94,7 +92,80 @@ shader_parameter/noise_texture = SubResource("NoiseTexture2D_j53pp")
 shader_parameter/strength = 0.0030000001425
 shader_parameter/speed = Vector2(0.025, 0.013)
 
-[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton", "MainMenuCamera", "MainMenuStateMachine", "MainMenuScreenAssembly", "CirclingVultures", "DelayBeforeSplashScreenTransitionTimer", "DelayBeforeContinueTextTimer", "BlackoutRect", "BigTitleLabel", "ContinueLabel")]
+[sub_resource type="Animation" id="Animation_odklb"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainMenuCanvasLayer/BigTitleLabel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_2qfd8"]
+resource_name = "intro"
+length = 7.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainMenuCamera:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.0835936, 7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(-0.28401983, 3.4121864, 0.022948503), Vector3(-0.28401983, 3.4121864, 0.022948503), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MainMenuCamera:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2.0835936, 7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(1.2348207, 0.89011765, 0), Vector3(1.2348207, 0.89011765, 0), Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MainMenuCanvasLayer/BlackoutRect:color")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 2.1, 3.7333333),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 1), Color(0, 0, 0, 1), Color(0, 0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("MainMenuCanvasLayer/BigTitleLabel:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_6ycsm"]
+_data = {
+&"RESET": SubResource("Animation_odklb"),
+&"intro": SubResource("Animation_2qfd8")
+}
+
+[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MenuIntroAnimator", "MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -103,6 +174,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_hk22p")
 script = ExtResource("2_q71hi")
+MenuIntroAnimator = NodePath("MenuIntroAnimator")
 MultiplayerLobbyMenu = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/MultiplayerLobbyMenu")
 ContinueButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/ContinueButton")
 MultiplayerButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/MultiplayerButton")
@@ -110,21 +182,6 @@ NewGameButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxC
 LoadButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/LoadButton")
 OptionsButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/OptionsButton")
 QuitButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton")
-MainMenuCamera = NodePath("MainMenuCamera")
-MainMenuStateMachine = NodePath("MainMenuStateMachine")
-MainMenuScreenAssembly = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly")
-CirclingVultures = NodePath("CirclingVultures")
-DelayBeforeSplashScreenTransitionTimer = NodePath("DelayBeforeSplashScreenTransitionTimer")
-DelayBeforeContinueTextTimer = NodePath("DelayBeforeContinueTextTimer")
-BlackoutRect = NodePath("MainMenuCanvasLayer/BlackoutRect")
-BigTitleLabel = NodePath("MainMenuCanvasLayer/BigTitleLabel")
-ContinueLabel = NodePath("MainMenuCanvasLayer/ContinueLabel")
-CameraInitialPosition = Vector3(-0.23645872, 4.5841656, -0.60454434)
-CameraInitialRotation = Vector3(1.1003536, 0.62831813, 0)
-CameraRotationTweenSpeed = 0.5
-DelayBeforeSplashScreenTransition = 1.5
-DelayBeforeContinueText = 1.0
-BlackoutRectFadeSpeed = 0.25
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=537319183]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
@@ -135,6 +192,7 @@ shadow_enabled = true
 environment = SubResource("Environment_fx8ei")
 
 [node name="MainMenuCamera" type="Camera3D" parent="." unique_id=1014290871]
+transform = Transform3D(0.6293206, 0.7336949, 0.2562175, 0, 0.3296904, -0.9440891, -0.7771458, 0.59413475, 0.20748097, -0.28401983, 3.4121864, 0.022948503)
 
 [node name="CirclingVultures" parent="." unique_id=952487390 instance=ExtResource("10_j53pp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.57464814, 6.975, -1.9296322)
@@ -343,40 +401,8 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 0
 
-[node name="MainMenuStateMachine" type="Node" parent="." unique_id=1756330227 node_paths=PackedStringArray("InitialState")]
-script = ExtResource("11_xkjpu")
-InitialState = NodePath("SplashScreenState")
-metadata/_custom_type_script = "uid://bhsg271e1lvlh"
-
-[node name="SplashScreenState" type="Node" parent="MainMenuStateMachine" unique_id=2006227505]
-script = ExtResource("12_27gen")
-metadata/_custom_type_script = "uid://d13b5kdgkflx4"
-
-[node name="SplashScreenTransitioningState" type="Node" parent="MainMenuStateMachine" unique_id=1603205033]
-script = ExtResource("12_27gen")
-metadata/_custom_type_script = "uid://d13b5kdgkflx4"
-
-[node name="SplashScreenAwaitingState" type="Node" parent="MainMenuStateMachine" unique_id=1464656251]
-script = ExtResource("12_27gen")
-metadata/_custom_type_script = "uid://d13b5kdgkflx4"
-
-[node name="TitleScreenState" type="Node" parent="MainMenuStateMachine" unique_id=1919216800]
-script = ExtResource("12_27gen")
-metadata/_custom_type_script = "uid://d13b5kdgkflx4"
-
-[node name="TitleScreenTransitioningState" type="Node" parent="MainMenuStateMachine" unique_id=288938646]
-script = ExtResource("12_27gen")
-metadata/_custom_type_script = "uid://d13b5kdgkflx4"
-
-[node name="MainMenuScreenState" type="Node" parent="MainMenuStateMachine" unique_id=358123790]
-script = ExtResource("12_27gen")
-metadata/_custom_type_script = "uid://d13b5kdgkflx4"
-
-[node name="DelayBeforeSplashScreenTransitionTimer" type="Timer" parent="." unique_id=1774050621]
-one_shot = true
-
-[node name="DelayBeforeContinueTextTimer" type="Timer" parent="." unique_id=1528853685]
-one_shot = true
+[node name="MenuIntroAnimator" type="AnimationPlayer" parent="." unique_id=1249592002]
+libraries/ = SubResource("AnimationLibrary_6ycsm")
 
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/MultiplayerButton" to="." method="_on_multiplayer_button_pressed"]
@@ -385,8 +411,5 @@ one_shot = true
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
 [connection signal="ExitedMenu" from="MainMenuCanvasLayer/MainMenuScreenAssembly/MultiplayerLobbyMenu" to="." method="_on_multiplayer_lobby_menu_exited_menu"]
-[connection signal="StateChanged" from="MainMenuStateMachine" to="." method="_on_main_menu_state_machine_state_changed"]
-[connection signal="timeout" from="DelayBeforeSplashScreenTransitionTimer" to="." method="_on_delay_before_splash_screen_transition_timer_timeout"]
-[connection signal="timeout" from="DelayBeforeContinueTextTimer" to="." method="_on_delay_before_continue_text_timer_timeout"]
 
 [editable path="CactusMultiMesh/cactus"]
