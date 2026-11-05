@@ -71,7 +71,7 @@ public partial class MultiplayerLobbyMenu : Control
 	[Export] public Label ClientLabel4 { get; set; }
 	/// <summary>Displays <see cref="NetworkManager.GetUniqueId"/> each process frame.</summary>
 	[Export] public Label UniqueIdLabel { get; set; }
-	/// <summary>Hides this menu and emits <see cref="ExitedMenu"/>.</summary>
+	/// <summary>Hides this menu. Hiding emits <see cref="ExitedMenu"/>.</summary>
 	[Export] public Button BackButton { get; set; }
 	/// <summary>
 	/// Whether <see cref="_Process"/> should poll <see cref="NetworkManager.GetKnownSessions"/>
@@ -85,8 +85,13 @@ public partial class MultiplayerLobbyMenu : Control
 	private Array<LanDiscoverySession> _lastFrameKnownSessions = new Array<LanDiscoverySession>();
 
 	/// <summary>
-	/// Emitted when the back button hides this menu.
+	/// Emitted when this menu becomes hidden.
 	/// </summary>
+	/// <remarks>
+	/// Raised from <see cref="CanvasItem.VisibilityChanged"/> whenever
+	/// <see cref="CanvasItem.Visible"/> is <see langword="false"/>.
+	/// <see cref="BackButton"/> hides the menu; any other hide does the same.
+	/// </remarks>
 	[Signal] public delegate void ExitedMenuEventHandler();
 
 	/// <summary>
@@ -105,6 +110,7 @@ public partial class MultiplayerLobbyMenu : Control
 		NetworkManager.Instance.ConnectionFailed += _on_connection_failed;
 		NetworkManager.Instance.ServerDisconnected += _on_server_disconnected;
 		NetworkManager.Instance.PeerDisconnected += _on_peer_disconnected;
+		VisibilityChanged += _on_visibility_changed;
 		PublicIpLabel.Text = "Your hosting IP is: " + NetworkManager.GetPublicSubnetIpv4();
 		ApplySessionUi();
 	}
@@ -429,7 +435,6 @@ public partial class MultiplayerLobbyMenu : Control
 	private void _on_back_button_pressed()
 	{
 		Visible = false;
-		EmitSignal(SignalName.ExitedMenu);
 	}
 
 	private void _on_refresh_button_pressed()
@@ -554,6 +559,14 @@ public partial class MultiplayerLobbyMenu : Control
 		if (NetworkManager.IsConnected() && NetworkManager.IsServer())
 		{
 			RebuildHostRoster();
+		}
+	}
+
+	private void _on_visibility_changed()
+	{
+		if (!Visible)
+		{
+			EmitSignal(SignalName.ExitedMenu);
 		}
 	}
 }

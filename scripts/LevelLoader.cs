@@ -16,18 +16,8 @@ using System.Threading.Tasks;
 public partial class LevelLoader : Node
 {
     public const string MainMenu = "res://scenes/trainwrecked_main_menu.tscn";
-
-    /// <summary>
-    /// Scene path changed to when <see cref="LoadMainLevel"/> succeeds on the host.
-    /// </summary>
     public const string TargetLevel = "res://scenes/testing_scene.tscn";
-
-    /// <summary>
-    /// Scene path for the static loading screen UI.
-    /// </summary>
-    /// <remarks>
-    /// Not yet applied during <see cref="LoadMainLevel"/>.
-    /// </remarks>
+    /// TODO: Implement.
     public const string StaticLoadingScreen = "res://scenes/static_loading_screen.tscn";
 
     /// <summary>

@@ -414,6 +414,7 @@ grow_vertical = 2
 theme = ExtResource("1_hk22p")
 script = ExtResource("2_q71hi")
 ContinueLabelPulseFrequency = 2.5
+SkipIntroAllowed = true
 MultiplayerLobbyMenu = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/MultiplayerLobbyMenu")
 ContinueButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/ContinueButton")
 MultiplayerButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/MultiplayerButton")
