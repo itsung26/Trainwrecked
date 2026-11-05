@@ -11,7 +11,7 @@ uniform float wave_frequency = 1.0;
 uniform float wave_speed = 1.0;
 uniform float wave_trough : hint_range(0.0, 1.0) = 0.0;
 uniform float wave_peak : hint_range(0.0, 1.0) = 1.0;
-uniform sampler2D cross_pattern_color_ramp;
+uniform vec3 cross_pattern_color : source_color;
 uniform float cross_pattern_brightness = 1.0;
 uniform float wave_brightness = 1.0;
 uniform vec3 wave_color : source_color = vec3(1.0);
@@ -53,11 +53,6 @@ float sample_wave_alpha_ramp(float fac) {
 	return texture(wave_alpha_ramp, vec2(fac, 0.5)).r;
 }
 
-// Returns: rgb in [0.0, 1.0]
-vec3 sample_cross_pattern_color_ramp(float fac) {
-	return texture(cross_pattern_color_ramp, vec2(fac, 0.5)).rgb;
-}
-
 // Returns: [wave_trough, wave_peak] within [0.0, 1.0] when trough/peak are in range
 float sample_wave_function(vec3 world_pos) {
 	float phase = (world_pos.z * wave_frequency) + (TIME * wave_speed);
@@ -65,20 +60,23 @@ float sample_wave_function(vec3 world_pos) {
 	return mix(wave_trough, wave_peak, t);
 }
 
-
+float sample_boolean_static(vec2 uv_screen) {
+	return 1.0;
+}
 
 void fragment() {
 	vec3 WORLD_POS = view_to_world(VERTEX, INV_VIEW_MATRIX, false) * world_scale;
 	vec3 WORLD_POS_CELL = fract(WORLD_POS);
 	vec3 WORLD_DIR = view_to_world(NORMAL, INV_VIEW_MATRIX, true);
 	
-	// Compute color.
+	// Compute color - interpolate wave color and cross pattern color by the cross mask.
 	float cross_mask = sample_triplanar_mapping(WORLD_POS_CELL, WORLD_DIR);
-	vec3 wave_col = sample_wave_function(WORLD_POS) * wave_color * wave_brightness;
-	vec3 cross_col = sample_cross_pattern_color_ramp(cross_mask) * cross_pattern_brightness;
+	// Add some noise to the wave color by multiplying it with a screen-space static function.
+	vec3 wave_col = (sample_wave_function(WORLD_POS) * wave_color * wave_brightness) * sample_boolean_static(SCREEN_UV);
+	vec3 cross_col = cross_mask * cross_pattern_color * cross_pattern_brightness;
 	vec3 final_col = mix(wave_col, cross_col, cross_mask);
 	
-	// Compute alpha.
+	// Compute alpha - whitest pixel wins.
 	float wave_fac = sample_wave_alpha_ramp(sample_wave_function(WORLD_POS));
 	float cross_fac = sample_triplanar_mapping(WORLD_POS_CELL, WORLD_DIR);
 	float final_alpha = max(wave_fac, cross_fac);

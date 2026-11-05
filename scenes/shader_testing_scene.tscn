@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://blmsbqcfgvwyd" path="res://scenes/free_camera.tscn" id="6_rvqgu"]
 [ext_resource type="Texture2D" uid="uid://60xua2es7vvs" path="res://assets/2d assets/textures/prototype_textures/Light/texture_06.png" id="7_slbsu"]
 [ext_resource type="Material" uid="uid://nay4oceq21q2" path="res://assets/materials/blueprint_grid.tres" id="10_5nw5h"]
+[ext_resource type="PackedScene" uid="uid://cwoeroni2y0ee" path="res://assets/3d assets/playermodel_assets/male_base_mesh/male_base.blend" id="11_5nw5h"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lg35i"]
 shader = ExtResource("1_x43m2")
@@ -101,8 +102,6 @@ shader_parameter/uv_offset = Vector2(0, 0)
 
 [sub_resource type="SphereMesh" id="SphereMesh_dehhp"]
 
-[sub_resource type="QuadMesh" id="QuadMesh_nrtwv"]
-
 [sub_resource type="BoxMesh" id="BoxMesh_rddtp"]
 
 [node name="ShaderTestingScene" type="Node3D" unique_id=2064292606]
@@ -149,12 +148,15 @@ mesh = SubResource("SphereMesh_dehhp")
 
 [node name="BluePrintShader" type="Node3D" parent="." unique_id=172013524]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="BluePrintShader" unique_id=1453368015]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-material_override = ExtResource("10_5nw5h")
-mesh = SubResource("QuadMesh_nrtwv")
-
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="BluePrintShader" unique_id=1487026761]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.66771674, 0.5324061, -1.3955982)
 material_override = ExtResource("10_5nw5h")
 mesh = SubResource("BoxMesh_rddtp")
+
+[node name="male_base2" parent="BluePrintShader" unique_id=1230194301 instance=ExtResource("11_5nw5h")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.56842446, 0, -0.2652343)
+
+[node name="male_base" parent="BluePrintShader/male_base2/male_base_rig/Skeleton3D" parent_id_path=PackedInt32Array(1230194301, 585819236) index="0" unique_id=1761765966]
+material_override = ExtResource("10_5nw5h")
+
+[editable path="BluePrintShader/male_base2"]
