@@ -174,7 +174,7 @@ mesh = SubResource("BoxMesh_dehhp")
 shape = SubResource("ConcavePolygonShape3D_tvk4s")
 
 [node name="Pedestal4" type="MeshInstance3D" parent="." unique_id=6453019]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.043043, -0.7217226, 0.85367274)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.1152143, -0.72172236, 15.162303)
 mesh = SubResource("BoxMesh_65vkx")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Pedestal4" unique_id=1386975085]
@@ -196,16 +196,16 @@ transform = Transform3D(0.7784428, 0, -0.6277155, 0, 1, 0, 0.6277155, 0, 0.77844
 transform = Transform3D(-0.6446342, 0.18064909, -0.7428412, 7.450581e-09, 0.9716802, 0.23629959, 0.7644912, 0.15232679, -0.62637824, -4.3439198, -1.3752052, 2.1884718)
 
 [node name="ModelTrainPickupable" parent="." unique_id=1554800455 instance=ExtResource("10_glees")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.301918, -0.008614361, 0.8475373)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.85633945, -0.008614123, 15.168439)
 
 [node name="ModelTrainPickupableRedLoco" parent="." unique_id=1511877849 instance=ExtResource("11_bwcr2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.814415, -0.008636117, 0.8975303)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.3438425, -0.008635879, 15.118445)
 
 [node name="CurlyPooPickupable" parent="." unique_id=1762888275 instance=ExtResource("12_glees")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8778796, -1.3500495, 0.86823606)
 
 [node name="ButtonInteractable" parent="." unique_id=1492329018 instance=ExtResource("13_bwcr2")]
-transform = Transform3D(4.371139e-08, 1, -3.821371e-15, 1, -4.371139e-08, -8.742278e-08, -8.742278e-08, 0, -1, -5.501678, -0.38856015, 0.86643916)
+transform = Transform3D(-8.7422784e-08, -4.371139e-08, -1, 1, -4.371139e-08, -8.742278e-08, -4.3711385e-08, -1, 4.3711395e-08, -0.91426957, -0.47736236, 14.624642)
 
 [node name="MirrorModernTallPickupable" parent="." unique_id=1531969028 instance=ExtResource("14_0vd70")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.168244, -0.36040246, -2.4096525)

@@ -15,36 +15,25 @@ using System.Threading.Tasks;
 /// </remarks>
 public partial class LevelLoader : Node
 {
-    public readonly PackedScene MainMenu;
-    /// <summary>
-    /// Packed scene changed to when <see cref="LoadMainLevel"/> succeeds on the host.
-    /// Loaded from <c>res://scenes/testing_scene.tscn</c>.
-    /// </summary>
-    public readonly PackedScene TargetLevel;
+    public const string MainMenu = "res://scenes/trainwrecked_main_menu.tscn";
 
     /// <summary>
-    /// Packed scene for the static loading screen UI
-    /// (<c>res://scenes/static_loading_screen.tscn</c>).
+    /// Scene path changed to when <see cref="LoadMainLevel"/> succeeds on the host.
+    /// </summary>
+    public const string TargetLevel = "res://scenes/testing_scene.tscn";
+
+    /// <summary>
+    /// Scene path for the static loading screen UI.
     /// </summary>
     /// <remarks>
-    /// Loaded at construction but not yet applied during <see cref="LoadMainLevel"/>.
+    /// Not yet applied during <see cref="LoadMainLevel"/>.
     /// </remarks>
-    public readonly PackedScene StaticLoadingScreen;
+    public const string StaticLoadingScreen = "res://scenes/static_loading_screen.tscn";
 
     /// <summary>
     /// Singleton set in <see cref="_Ready"/>. Used so the host can invoke RPCs on this node.
     /// </summary>
     public static LevelLoader Instance { get; set; }
-    
-    /// <summary>
-    /// Loads <see cref="TargetLevel"/> and <see cref="StaticLoadingScreen"/> from disk.
-    /// </summary>
-    public LevelLoader()
-    {
-        TargetLevel = GD.Load<PackedScene>("res://scenes/testing_scene.tscn");
-        StaticLoadingScreen = GD.Load<PackedScene>("res://scenes/static_loading_screen.tscn");
-        MainMenu = GD.Load<PackedScene>("res://scenes/trainwrecked_main_menu.tscn");
-    }
 
     /// <summary>
     /// Registers this node as <see cref="Instance"/>.
@@ -96,11 +85,11 @@ public partial class LevelLoader : Node
     /// Callable only by the multiplayer authority, with <c>CallLocal</c> so the host
     /// also changes scenes. Invoked from <see cref="LoadMainLevel"/> on the server.
     /// </remarks>
-    /// <returns>The result of <see cref="SceneTree.ChangeSceneToPacked"/>.</returns>
+    /// <returns>The result of <see cref="SceneTree.ChangeSceneToFile"/>.</returns>
     [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
     private Error ChangeSceneToPackedTargetLevel()
     {
-        return GetTree().ChangeSceneToPacked(TargetLevel);
+        return GetTree().ChangeSceneToFile(TargetLevel);
     }
 
 }

@@ -3,9 +3,8 @@ using Godot;
 
 public partial class TrainwreckedMainMenu : Control
 {
-	private const string InitialAnimationName = "InitialTweenAnim";
-	private const string FinalAnimationName = "FinalTweenAnim";
-
+	[Export] public float ContinueLabelPulseFrequency { get; set; } = 1.0f;
+	[Export] public bool SkipIntroAllowed { get; set; }
 	[ExportGroup("Nodes")]
 	[Export] public MultiplayerLobbyMenu MultiplayerLobbyMenu { get; set; }
 	[Export] public Button ContinueButton { get; set; }
@@ -28,10 +27,18 @@ public partial class TrainwreckedMainMenu : Control
 
 	public override void _Input(InputEvent @event)
 	{
-		if (@event is InputEventKey)
+		if (StateMachine.CurrentState.Name == "AwaitingInput"
+			&& (@event is InputEventMouseButton
+				|| (@event is InputEventKey keyEvent
+					&& keyEvent.PhysicalKeycode is not (Key.Meta or Key.Alt or Key.Tab))))
 		{
-			if (StateMachine.CurrentState.Name == "AwaitingInput")
+			StateMachine.EnterState("FinalTween");
+		}
+		else if (StateMachine.CurrentState.Name != "MainMenuDone" && SkipIntroAllowed)
+		{
+			if (@event is InputEventMouseButton || (@event is InputEventKey eventkey && eventkey.PhysicalKeycode is not (Key.Meta or Key.Alt or Key.Tab)))
 			{
+				MenuIntroAnimator.SpeedScale = 5.0f;
 				StateMachine.EnterState("FinalTween");
 			}
 		}
@@ -41,7 +48,11 @@ public partial class TrainwreckedMainMenu : Control
     {
         if (StateMachine.CurrentState.Name == "AwaitingInput")
 		{
-			ContinueLabel.Modulate = LerpColor(Colors.White, Colors.Transparent, 0.5f * Mathf.Sin((float)delta) + 0.5f);
+			ContinueLabel.Modulate = LerpColor(
+				Colors.White, 
+				Colors.Transparent, 
+				0.5f * Mathf.Sin(Time.GetTicksMsec() / 1000f * ContinueLabelPulseFrequency) + 0.5f
+				);
 		}
     }
 
@@ -91,10 +102,7 @@ public partial class TrainwreckedMainMenu : Control
 
 	private void _on_quit_button_pressed()
 	{
-		GetTree().Quit(); // placeholder
-
-
-
+		GetTree().Quit();
 	}
 
 	private void _on_multiplayer_lobby_menu_exited_menu()
@@ -121,17 +129,20 @@ public partial class TrainwreckedMainMenu : Control
 	{
 		switch (newState.Name)
 		{
-
 			case "InitialTween":
-				MenuIntroAnimator.Play(InitialAnimationName);
+				MenuIntroAnimator.Play("InitialTweenAnim");
 				break;
 
 			case "AwaitingInput":
 				break;
 
 			case "FinalTween":
+				MenuIntroAnimator.Play("FinalTweenAnim");
 				break;
-
+			case "MainMenuDone":
+				// Revert the speed scale of the animator if it was running in skip/speedup mode.
+				MenuIntroAnimator.SpeedScale = 1.0f;
+				break;
 		}
 	}
 	#endregion
