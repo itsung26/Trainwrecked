@@ -17,6 +17,8 @@
 [ext_resource type="ArrayMesh" uid="uid://bsjnpri5euuew" path="res://assets/3d assets/cactus/mesh resources/cactus_cactu_03_Material_002_0.res" id="10_gs35m"]
 [ext_resource type="PackedScene" uid="uid://wc37b7h2vw56" path="res://assets/particles/circling_vultures.tscn" id="10_j53pp"]
 [ext_resource type="PackedScene" uid="uid://c1ooomqyw3i2g" path="res://scenes/lens_flare_shader.tscn" id="10_xfftf"]
+[ext_resource type="Script" uid="uid://bhsg271e1lvlh" path="res://scripts/StateMachine.cs" id="18_6ycsm"]
+[ext_resource type="Script" uid="uid://d13b5kdgkflx4" path="res://scripts/State.cs" id="19_gs35m"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j45et"]
 shader = ExtResource("3_ljjiq")
@@ -94,22 +96,10 @@ shader_parameter/speed = Vector2(0.025, 0.013)
 
 [sub_resource type="Animation" id="Animation_odklb"]
 length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("MainMenuCanvasLayer/BigTitleLabel:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(1, 1, 1, 1)]
-}
 
 [sub_resource type="Animation" id="Animation_2qfd8"]
 resource_name = "intro"
-length = 7.0
+length = 10.0
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -117,7 +107,7 @@ tracks/0/path = NodePath("MainMenuCamera:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 2.0835936, 7),
+"times": PackedFloat32Array(0, 5.4666667, 10),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
 "values": [Vector3(-0.28401983, 3.4121864, 0.022948503), Vector3(-0.28401983, 3.4121864, 0.022948503), Vector3(0, 0, 0)]
@@ -129,7 +119,7 @@ tracks/1/path = NodePath("MainMenuCamera:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 2.0835936, 7),
+"times": PackedFloat32Array(0, 5.4666667, 10),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
 "values": [Vector3(1.2348207, 0.89011765, 0), Vector3(1.2348207, 0.89011765, 0), Vector3(0, 0, 0)]
@@ -141,7 +131,7 @@ tracks/2/path = NodePath("MainMenuCanvasLayer/BlackoutRect:color")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 2.1, 3.7333333),
+"times": PackedFloat32Array(0, 2.4, 4.033334),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
 "values": [Color(0, 0, 0, 1), Color(0, 0, 0, 1), Color(0, 0, 0, 0)]
@@ -158,6 +148,55 @@ tracks/3/keys = {
 "update": 0,
 "values": [Color(1, 1, 1, 1)]
 }
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly:modulate")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/6/type = "method"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath(".")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"values": []
+}
+tracks/7/type = "method"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("StateMachine")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(4.0333333),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": ["AwaitingInput"],
+"method": &"EnterState"
+}]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_6ycsm"]
 _data = {
@@ -165,7 +204,7 @@ _data = {
 &"intro": SubResource("Animation_2qfd8")
 }
 
-[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MenuIntroAnimator", "MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton")]
+[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton", "MenuIntroAnimator", "StateMachine")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -174,7 +213,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_hk22p")
 script = ExtResource("2_q71hi")
-MenuIntroAnimator = NodePath("MenuIntroAnimator")
 MultiplayerLobbyMenu = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/MultiplayerLobbyMenu")
 ContinueButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/ContinueButton")
 MultiplayerButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/MultiplayerButton")
@@ -182,6 +220,8 @@ NewGameButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxC
 LoadButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/LoadButton")
 OptionsButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/OptionsButton")
 QuitButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton")
+MenuIntroAnimator = NodePath("MenuIntroAnimator")
+StateMachine = NodePath("StateMachine")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=537319183]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
@@ -289,7 +329,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 1)
+color = Color(0, 0, 0, 0)
 
 [node name="BigTitleLabel" type="Label" parent="MainMenuCanvasLayer" unique_id=422931929]
 anchors_preset = -1
@@ -313,6 +353,8 @@ theme_override_font_sizes/font_size = 45
 text = "Press any button to continue..."
 
 [node name="MainMenuScreenAssembly" type="Control" parent="MainMenuCanvasLayer" unique_id=984964178]
+visible = false
+modulate = Color(1, 1, 1, 0)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -404,6 +446,23 @@ grow_vertical = 0
 [node name="MenuIntroAnimator" type="AnimationPlayer" parent="." unique_id=1249592002]
 libraries/ = SubResource("AnimationLibrary_6ycsm")
 
+[node name="StateMachine" type="Node" parent="." unique_id=842700196 node_paths=PackedStringArray("InitialState")]
+script = ExtResource("18_6ycsm")
+InitialState = NodePath("InitialTween")
+metadata/_custom_type_script = "uid://bhsg271e1lvlh"
+
+[node name="InitialTween" type="Node" parent="StateMachine" unique_id=2025198254]
+script = ExtResource("19_gs35m")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="AwaitingInput" type="Node" parent="StateMachine" unique_id=495402394]
+script = ExtResource("19_gs35m")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
+[node name="FinalTween" type="Node" parent="StateMachine" unique_id=1420286664]
+script = ExtResource("19_gs35m")
+metadata/_custom_type_script = "uid://d13b5kdgkflx4"
+
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/MultiplayerButton" to="." method="_on_multiplayer_button_pressed"]
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/NewGameButton" to="." method="_on_new_game_button_pressed"]
@@ -411,5 +470,6 @@ libraries/ = SubResource("AnimationLibrary_6ycsm")
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
 [connection signal="ExitedMenu" from="MainMenuCanvasLayer/MainMenuScreenAssembly/MultiplayerLobbyMenu" to="." method="_on_multiplayer_lobby_menu_exited_menu"]
+[connection signal="StateChanged" from="StateMachine" to="." method="_on_state_machine_state_changed"]
 
 [editable path="CactusMultiMesh/cactus"]
