@@ -94,11 +94,11 @@ shader_parameter/noise_texture = SubResource("NoiseTexture2D_j53pp")
 shader_parameter/strength = 0.0030000001425
 shader_parameter/speed = Vector2(0.025, 0.013)
 
-[sub_resource type="Animation" id="Animation_odklb"]
-length = 0.001
+[sub_resource type="Animation" id="Animation_6ycsm"]
+resource_name = "FinalTweenAnim"
 
 [sub_resource type="Animation" id="Animation_2qfd8"]
-resource_name = "intro"
+resource_name = "InitialTweenAnim"
 length = 10.0
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -107,10 +107,10 @@ tracks/0/path = NodePath("MainMenuCamera:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 5.4666667, 10),
-"transitions": PackedFloat32Array(1, 1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector3(-0.28401983, 3.4121864, 0.022948503), Vector3(-0.28401983, 3.4121864, 0.022948503), Vector3(0, 0, 0)]
+"values": [Vector3(-0.28401983, 3.4121864, 0.022948503)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -119,10 +119,10 @@ tracks/1/path = NodePath("MainMenuCamera:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 5.4666667, 10),
-"transitions": PackedFloat32Array(1, 1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector3(1.2348207, 0.89011765, 0), Vector3(1.2348207, 0.89011765, 0), Vector3(0, 0, 0)]
+"values": [Vector3(1.2348207, 0.89011765, 0)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -175,36 +175,53 @@ tracks/5/keys = {
 tracks/6/type = "method"
 tracks/6/imported = false
 tracks/6/enabled = true
-tracks/6/path = NodePath(".")
+tracks/6/path = NodePath("StateMachine")
 tracks/6/interp = 1
 tracks/6/loop_wrap = true
 tracks/6/keys = {
-"times": PackedFloat32Array(),
-"transitions": PackedFloat32Array(),
-"values": []
-}
-tracks/7/type = "method"
-tracks/7/imported = false
-tracks/7/enabled = true
-tracks/7/path = NodePath("StateMachine")
-tracks/7/interp = 1
-tracks/7/loop_wrap = true
-tracks/7/keys = {
-"times": PackedFloat32Array(4.0333333),
+"times": PackedFloat32Array(5.2),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": ["AwaitingInput"],
 "method": &"EnterState"
 }]
 }
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("MainMenuCanvasLayer/ContinueLabel:modulate")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 4.0333333, 5.206999),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_odklb"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MainMenuCanvasLayer/ContinueLabel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_6ycsm"]
 _data = {
-&"RESET": SubResource("Animation_odklb"),
-&"intro": SubResource("Animation_2qfd8")
+&"FinalTweenAnim": SubResource("Animation_6ycsm"),
+&"InitialTweenAnim": SubResource("Animation_2qfd8"),
+&"RESET": SubResource("Animation_odklb")
 }
 
-[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton", "MenuIntroAnimator", "StateMachine")]
+[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton", "MenuIntroAnimator", "StateMachine", "ContinueLabel")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -222,6 +239,7 @@ OptionsButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxC
 QuitButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton")
 MenuIntroAnimator = NodePath("MenuIntroAnimator")
 StateMachine = NodePath("StateMachine")
+ContinueLabel = NodePath("MainMenuCanvasLayer/ContinueLabel")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=537319183]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
@@ -448,6 +466,7 @@ libraries/ = SubResource("AnimationLibrary_6ycsm")
 
 [node name="StateMachine" type="Node" parent="." unique_id=842700196 node_paths=PackedStringArray("InitialState")]
 script = ExtResource("18_6ycsm")
+LoggingDebug = true
 InitialState = NodePath("InitialTween")
 metadata/_custom_type_script = "uid://bhsg271e1lvlh"
 

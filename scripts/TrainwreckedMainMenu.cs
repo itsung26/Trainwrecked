@@ -1,7 +1,11 @@
+using System;
 using Godot;
 
 public partial class TrainwreckedMainMenu : Control
 {
+	private const string InitialAnimationName = "InitialTweenAnim";
+	private const string FinalAnimationName = "FinalTweenAnim";
+
 	[ExportGroup("Nodes")]
 	[Export] public MultiplayerLobbyMenu MultiplayerLobbyMenu { get; set; }
 	[Export] public Button ContinueButton { get; set; }
@@ -12,6 +16,7 @@ public partial class TrainwreckedMainMenu : Control
 	[Export] public Button QuitButton { get; set; }
 	[Export] public AnimationPlayer MenuIntroAnimator { get; set; }
 	[Export] public StateMachine StateMachine { get; set; }
+	[Export] public Label ContinueLabel { get; set; }
 
 	public override void _Ready()
 	{
@@ -32,6 +37,14 @@ public partial class TrainwreckedMainMenu : Control
 		}
 	}
 
+    public override void _Process(double delta)
+    {
+        if (StateMachine.CurrentState.Name == "AwaitingInput")
+		{
+			ContinueLabel.Modulate = LerpColor(Colors.White, Colors.Transparent, 0.5f * Mathf.Sin((float)delta) + 0.5f);
+		}
+    }
+
 	public void UpdateButtonRestrictions()
 	{
 		bool isClient = NetworkManager.IsClient();
@@ -40,6 +53,18 @@ public partial class TrainwreckedMainMenu : Control
 		LoadButton.Disabled = isClient;
 	}
 
+	/// Returns a new color interpolated between a and b by weight.
+	private static Color LerpColor(Color a, Color b, float weight)
+	{
+		float red = Mathf.Lerp(a.R, b.R, weight);
+		float green = Mathf.Lerp(a.G, b.G, weight);
+		float blue = Mathf.Lerp(a.B, b.B, weight);
+		float alpha = Mathf.Lerp(a.A, b.A, weight);
+
+		return new Color(red, green, blue, alpha);
+	}
+
+	#region Event Handlers
 	private void _on_continue_button_pressed()
 	{
 
@@ -98,7 +123,7 @@ public partial class TrainwreckedMainMenu : Control
 		{
 
 			case "InitialTween":
-				MenuIntroAnimator.Play("intro");
+				MenuIntroAnimator.Play(InitialAnimationName);
 				break;
 
 			case "AwaitingInput":
@@ -109,4 +134,5 @@ public partial class TrainwreckedMainMenu : Control
 
 		}
 	}
+	#endregion
 }

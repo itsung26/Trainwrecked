@@ -37,6 +37,10 @@ public partial class State : Node, IEquatable<State>
         this.Name = name;
     }
 
+    public State()
+    {
+    }
+
     /// <summary>
     /// Marks this state active. Overrides should call this base implementation to set <see cref="IsActive"/>.
     /// </summary>

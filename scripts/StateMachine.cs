@@ -103,13 +103,30 @@ public partial class StateMachine : Node
 		}
 		if (LoggingDebug)
 		{
-			Debug.Log("Initialized " + States.Count + " states.");
+			Debug.LogColored("Initialized " + States.Count + " states.", Colors.LightYellow);
 			for (int i = 0; i < States.Count; i++)
 			{
 				State State = States[i];
-				Debug.Log("State: " + State.Name);
+				Debug.LogColored("State: " + "{" + State.Name + "}", Colors.LightYellow);
 			}
 		}
+	}
+
+	/// <summary>
+	/// Enters the collected state whose <see cref="Node.Name"/> equals <paramref name="StateName"/>.
+	/// </summary>
+	/// <param name="StateName">Node name resolved with <see cref="GetState(string)"/>. Comparison is ordinal.</param>
+	/// <exception cref="ArgumentNullException"><paramref name="StateName"/> is <see langword="null"/>.</exception>
+	/// <exception cref="ArgumentException">No collected state has that name.</exception>
+	/// <remarks>Delegates to <see cref="EnterState(State)"/>, including its re-entry rules.</remarks>
+	public void EnterState(string StateName)
+	{
+		State StateToEnter = GetState(StateName);
+		if (StateToEnter == null)
+		{
+			throw new ArgumentException($"No state named '{StateName}' exists on this state machine.", nameof(StateName));
+		}
+		EnterState(StateToEnter);
 	}
 
 	/// <summary>
@@ -158,29 +175,24 @@ public partial class StateMachine : Node
 		// enter the new state
 		StateToEnter.OnEnter();
 
-		string PreviousName = PreviousState != null ? PreviousState.Name : "None";
+		string previousStateName = "{null}";
+		string currentStateName = "{null}";
+
+		if (PreviousState is not null)
+		{
+			previousStateName = PreviousState.Name;
+		}
+
+		if (CurrentState is not null)
+		{
+			currentStateName = CurrentState.Name;
+		}
+
 		if (LoggingDebug)
 		{
-			Debug.Log("Entered state: " + StateToEnter.Name + " from previous state: " + PreviousName);
+			Debug.LogColored("Entered state: " + currentStateName + " from previous state: " + previousStateName, Colors.LightYellow);
 		}
 		EmitSignal(SignalName.StateChanged, StateToEnter, PreviousState);
-	}
-
-	/// <summary>
-	/// Enters the collected state whose <see cref="Node.Name"/> equals <paramref name="StateName"/>.
-	/// </summary>
-	/// <param name="StateName">Node name resolved with <see cref="GetState(string)"/>. Comparison is ordinal.</param>
-	/// <exception cref="ArgumentNullException"><paramref name="StateName"/> is <see langword="null"/>.</exception>
-	/// <exception cref="ArgumentException">No collected state has that name.</exception>
-	/// <remarks>Delegates to <see cref="EnterState(State)"/>, including its re-entry rules.</remarks>
-	public void EnterState(string StateName)
-	{
-		State StateToEnter = GetState(StateName);
-		if (StateToEnter == null)
-		{
-			throw new ArgumentException($"No state named '{StateName}' exists on this state machine.", nameof(StateName));
-		}
-		EnterState(StateToEnter);
 	}
 
 	/// <summary>
