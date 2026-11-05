@@ -24,3 +24,5 @@ shader_parameter/cross_pattern_color = Color(1, 0.64705884, 0, 1)
 shader_parameter/cross_pattern_brightness = 6.53
 shader_parameter/wave_brightness = 3.42
 shader_parameter/wave_color = Color(0.21737108, 0.63478637, 0.92415905, 1)
+shader_parameter/boolean_static_threshold = 0.034000001615
+shader_parameter/static_shuffle_speed = 24.0

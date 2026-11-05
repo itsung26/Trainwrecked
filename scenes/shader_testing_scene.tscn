@@ -127,7 +127,6 @@ mesh = SubResource("BoxMesh_dehhp")
 
 [node name="TriplanarTestCube2" type="MeshInstance3D" parent="." unique_id=353129436]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.1041503)
-visible = false
 material_override = SubResource("ShaderMaterial_58cwd")
 mesh = SubResource("SphereMesh_5kfpf")
 
@@ -149,7 +148,7 @@ mesh = SubResource("SphereMesh_dehhp")
 [node name="BluePrintShader" type="Node3D" parent="." unique_id=172013524]
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="BluePrintShader" unique_id=1487026761]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.66771674, 0.5324061, -1.3955982)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.66771674, 0.55656636, -1.827878)
 material_override = ExtResource("10_5nw5h")
 mesh = SubResource("BoxMesh_rddtp")
 

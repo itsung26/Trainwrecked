@@ -15,6 +15,8 @@ uniform vec3 cross_pattern_color : source_color;
 uniform float cross_pattern_brightness = 1.0;
 uniform float wave_brightness = 1.0;
 uniform vec3 wave_color : source_color = vec3(1.0);
+uniform float boolean_static_threshold : hint_range(0.0, 1.0) = 0.5;
+uniform float static_shuffle_speed = 24.0;
 
 // Draws a simple borders and cross texture (2D).
 // Returns: 0.0 or 1.0
@@ -60,8 +62,18 @@ float sample_wave_function(vec3 world_pos) {
 	return mix(wave_trough, wave_peak, t);
 }
 
-float sample_boolean_static(vec2 uv_screen) {
-	return 1.0;
+// Returns: 0.0 or 1.0.
+float sample_boolean_static(vec2 fragcoord) {
+	uvec2 cell = uvec2(floor(fragcoord));
+	uint frame = uint(floor(TIME * static_shuffle_speed));
+	uint h = cell.x * 1664525u + cell.y * 1013904223u + frame * 22695477u;
+	h ^= h >> 16u;
+	h *= 2246822519u;
+	h ^= h >> 13u;
+	h *= 3266489917u;
+	h ^= h >> 16u;
+	float n = float(h & 16777215u) / 16777215.0;
+	return step(boolean_static_threshold, n);
 }
 
 void fragment() {
@@ -72,7 +84,7 @@ void fragment() {
 	// Compute color - interpolate wave color and cross pattern color by the cross mask.
 	float cross_mask = sample_triplanar_mapping(WORLD_POS_CELL, WORLD_DIR);
 	// Add some noise to the wave color by multiplying it with a screen-space static function.
-	vec3 wave_col = (sample_wave_function(WORLD_POS) * wave_color * wave_brightness) * sample_boolean_static(SCREEN_UV);
+	vec3 wave_col = (sample_wave_function(WORLD_POS) * wave_color * wave_brightness) * sample_boolean_static(FRAGCOORD.xy);
 	vec3 cross_col = cross_mask * cross_pattern_color * cross_pattern_brightness;
 	vec3 final_col = mix(wave_col, cross_col, cross_mask);
 	
@@ -83,5 +95,5 @@ void fragment() {
 
 	ALPHA = final_alpha;
 	ALBEDO = vec3(0.0);
-	EMISSION = final_col;
+	EMISSION = vec3(final_col);
 }
