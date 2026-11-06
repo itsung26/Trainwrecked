@@ -404,7 +404,7 @@ _data = {
 &"RESET": SubResource("Animation_gs35m")
 }
 
-[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton", "MenuIntroAnimator", "StateMachine", "ContinueLabel")]
+[node name="TrainwreckedMainMenu" type="Control" unique_id=2041004413 node_paths=PackedStringArray("MultiplayerLobbyMenu", "ContinueButton", "MultiplayerButton", "NewGameButton", "LoadButton", "OptionsButton", "QuitButton", "MenuIntroAnimator", "StateMachine", "ContinueLabel", "MainMenuCamera")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -414,6 +414,7 @@ grow_vertical = 2
 theme = ExtResource("1_hk22p")
 script = ExtResource("2_q71hi")
 ContinueLabelPulseFrequency = 2.5
+CameraMaxShiftOffset = 0.1
 MultiplayerLobbyMenu = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/MultiplayerLobbyMenu")
 ContinueButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/ContinueButton")
 MultiplayerButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/MultiplayerButton")
@@ -424,6 +425,7 @@ QuitButton = NodePath("MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxCont
 MenuIntroAnimator = NodePath("MenuIntroAnimator")
 StateMachine = NodePath("StateMachine")
 ContinueLabel = NodePath("MainMenuCanvasLayer/ContinueLabel")
+MainMenuCamera = NodePath("MainMenuCamera")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=537319183]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
