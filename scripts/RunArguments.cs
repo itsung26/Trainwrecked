@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 /// Supported flags:
 /// <list type="bullet">
 /// <item><c>--ignoreall</c> — set <see cref="HasIgnoreAllFlag"/> and skip all other parsing.</item>
+/// <item><c>--skipintro</c> — set <see cref="HasSkipIntroFlag"/>.</item>
 /// <item><c>--host</c> — set <see cref="HasHostFlag"/>.</item>
 /// <item><c>--join=ADDRESS</c> — set <see cref="HasJoinFlag"/> and <see cref="JoinFlagAddress"/> when ADDRESS is a dotted IPv4.</item>
 /// <item><c>--join=self</c> — join using <see cref="NetworkManager.GetPublicSubnetIpv4"/>.</item>
@@ -25,7 +26,7 @@ using System.Text.RegularExpressions;
 /// <para>
 /// Invalid <c>--join</c> usage (missing value, empty value, or non-matching IP text) clears host and join flags.
 /// <c>--ignoreall</c> takes precedence over every other flag. <c>--host</c> and <c>--join</c> are mutually exclusive;
-/// <c>--host</c> wins when both are present. <c>--window-name</c> may be combined with host or join.
+/// <c>--host</c> wins when both are present. <c>--window-name</c> and <c>--skipintro</c> may be combined with host or join.
 /// </para>
 /// </remarks>
 public sealed partial class RunArguments : Node
@@ -48,6 +49,14 @@ public sealed partial class RunArguments : Node
     /// and no further argument handling runs.
     /// </remarks>
     public static bool HasIgnoreAllFlag { get; private set; } = false;
+
+    /// <summary>
+    /// <see langword="true"/> when launch args request skipping the intro.
+    /// </summary>
+    /// <remarks>
+    /// Set by the unnamed token <c>--skipintro</c>. May be combined with host, join, and window-name flags.
+    /// </remarks>
+    public static bool HasSkipIntroFlag { get; private set; } = false;
 
     /// <summary>
     /// <see langword="true"/> when launch args include a non-empty <c>--window-name</c> value.
@@ -74,11 +83,12 @@ public sealed partial class RunArguments : Node
 
     /// <summary>
     /// Parses <see cref="OS.GetCmdlineUserArgs"/> into <see cref="HasIgnoreAllFlag"/>,
-    /// <see cref="HasHostFlag"/>, <see cref="HasJoinFlag"/>, <see cref="JoinFlagAddress"/>,
-    /// <see cref="HasNameWindowFlag"/>, and <see cref="WindowName"/>.
+    /// <see cref="HasSkipIntroFlag"/>, <see cref="HasHostFlag"/>, <see cref="HasJoinFlag"/>,
+    /// <see cref="JoinFlagAddress"/>, <see cref="HasNameWindowFlag"/>, and <see cref="WindowName"/>.
     /// </summary>
     /// <remarks>
     /// Unnamed <c>--ignoreall</c> sets <see cref="HasIgnoreAllFlag"/> and returns immediately.
+    /// Unnamed <c>--skipintro</c> sets <see cref="HasSkipIntroFlag"/>.
     /// Named <c>--window-name=TITLE</c> sets the window title when TITLE is non-empty.
     /// Unnamed <c>--host</c> selects host mode. Named <c>--join=VALUE</c> selects join mode
     /// when VALUE is <c>self</c> or a dotted IPv4.
@@ -97,6 +107,11 @@ public sealed partial class RunArguments : Node
         if (argumentsNamed.Count == 0 && argumentsUnnamed.Count == 0)
         {
             return;
+        }
+
+        if (argumentsUnnamed.Contains("--skipintro"))
+        {
+            HasSkipIntroFlag = true;
         }
 
         if (TryGetNamedArgument("--window-name", out string windowName))
@@ -198,7 +213,7 @@ public sealed partial class RunArguments : Node
     /// </summary>
     /// <returns>
     /// A new array of arguments from <see cref="OS.GetCmdlineUserArgs"/> that do not contain <c>=</c>,
-    /// such as <c>--host</c> or <c>--ignoreall</c>.
+    /// such as <c>--host</c>, <c>--skipintro</c>, or <c>--ignoreall</c>.
     /// </returns>
     public static Array<string> GetUnnamed() {
         Array<string> ret = new Array<string>();

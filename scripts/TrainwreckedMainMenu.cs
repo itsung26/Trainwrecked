@@ -4,7 +4,6 @@ using Godot;
 public partial class TrainwreckedMainMenu : Control
 {
 	[Export] public float ContinueLabelPulseFrequency { get; set; } = 1.0f;
-	[Export] public bool SkipIntroAllowed { get; set; }
 	[ExportGroup("Nodes")]
 	[Export] public MultiplayerLobbyMenu MultiplayerLobbyMenu { get; set; }
 	[Export] public Button ContinueButton { get; set; }
@@ -23,6 +22,7 @@ public partial class TrainwreckedMainMenu : Control
 		NetworkManager.Instance.ConnectionFailed += _on_connection_failed;
 		NetworkManager.Instance.ServerDisconnected += _on_server_disconnected;
 		UpdateButtonRestrictions();
+		GetTree().CreateTimer(0.5f).Timeout += () => SkipIntro();
 	}
 
 	public override void _Input(InputEvent @event)
@@ -34,14 +34,14 @@ public partial class TrainwreckedMainMenu : Control
 		{
 			StateMachine.EnterState("FinalTween");
 		}
-		else if (StateMachine.CurrentState.Name != "MainMenuDone" && SkipIntroAllowed)
-		{
-			if (@event is InputEventMouseButton || (@event is InputEventKey eventkey && eventkey.PhysicalKeycode is not (Key.Meta or Key.Alt or Key.Tab)))
-			{
-				MenuIntroAnimator.SpeedScale = 5.0f;
-				StateMachine.EnterState("FinalTween");
-			}
-		}
+		// else if (StateMachine.CurrentState.Name != "MainMenuDone" && SkipIntroAllowed)
+		// {
+		// 	if (@event is InputEventMouseButton || (@event is InputEventKey eventkey && eventkey.PhysicalKeycode is not (Key.Meta or Key.Alt or Key.Tab)))
+		// 	{
+		// 		MenuIntroAnimator.SpeedScale = 5.0f;
+		// 		StateMachine.EnterState("FinalTween");
+		// 	}
+		// }
 	}
 
     public override void _Process(double delta)
@@ -73,6 +73,25 @@ public partial class TrainwreckedMainMenu : Control
 		float alpha = Mathf.Lerp(a.A, b.A, weight);
 
 		return new Color(red, green, blue, alpha);
+	}
+
+	private void SkipIntro()
+	{
+		if (StateMachine.CurrentState.Name == "AwaitingInput" ||
+		StateMachine.CurrentState.Name == "MainMenuDone")
+		{
+			return;
+		}
+
+		MenuIntroAnimator.SpeedScale = 5.0f;
+		MenuIntroAnimator.AnimationFinished += animName =>
+        {
+			if (animName == "FinalTweenAnim")
+			{
+				MenuIntroAnimator.SpeedScale = 5.0f;
+			}
+		};
+		StateMachine.EnterState("FinalTween");
 	}
 
 	#region Event Handlers
@@ -140,8 +159,6 @@ public partial class TrainwreckedMainMenu : Control
 				MenuIntroAnimator.Play("FinalTweenAnim");
 				break;
 			case "MainMenuDone":
-				// Revert the speed scale of the animator if it was running in skip/speedup mode.
-				MenuIntroAnimator.SpeedScale = 1.0f;
 				break;
 		}
 	}
