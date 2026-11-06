@@ -190,7 +190,7 @@ public partial class StateMachine : Node
 
 		if (LoggingDebug)
 		{
-			Debug.LogColored("Entered state: " + currentStateName + " from previous state: " + previousStateName, Colors.LightYellow);
+			Debug.LogColored("Entered state: " + "{" + currentStateName + "}" + " from previous state: " + "{" + previousStateName + "}", Colors.LightYellow);
 		}
 		EmitSignal(SignalName.StateChanged, StateToEnter, PreviousState);
 	}

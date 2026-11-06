@@ -14,6 +14,8 @@ config/name="Trainwrecked"
 config/tags=PackedStringArray("prealpha")
 run/main_scene="uid://cni7aua4ujny2"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
+boot_splash/stretch_mode=2
+boot_splash/image="uid://msxfw5eum4kn"
 config/icon="res://icon.svg"
 
 [audio]
