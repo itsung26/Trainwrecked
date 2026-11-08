@@ -497,10 +497,10 @@ transform = Transform3D(-0.9999925, 0, 0.0038734078, 0, 1, 0, -0.0038734078, 0, 
 
 [node name="CactusMultiMesh" type="MultiMeshInstance3D" parent="." unique_id=1084200366]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.4350556, 0)
-visible = false
 multimesh = SubResource("MultiMesh_px1wt")
 
 [node name="cactus" parent="CactusMultiMesh" unique_id=1617991212 instance=ExtResource("7_8qy8p")]
+visible = false
 
 [node name="TrackPath" type="Path3D" parent="." unique_id=834448277]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.904385, -1.4527671, -5.351773)
