@@ -37,6 +37,11 @@ public partial class CarCoupler : Interactable
             warnings.Add("Clamp point must be set.");
         }
 
+        if (_couplePoint.Position.X != 0.0f || _couplePoint.Position.Y != 0.0f)
+        {
+            warnings.Add("Misaligned coupler detected. Ensure all non-z axis are set to 0.");
+        }
+
         return warnings.ToArray();
     }
 

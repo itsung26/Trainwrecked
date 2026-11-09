@@ -37,7 +37,7 @@ mesh = SubResource("ArrayMesh_oxfdy")
 shape = SubResource("ConvexPolygonShape3D_bkjko")
 
 [node name="CouplePoint" type="Marker3D" parent="." unique_id=665626586]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.593)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.6111791)
 gizmo_extents = 0.45
 
 [editable path="coupler_02"]
