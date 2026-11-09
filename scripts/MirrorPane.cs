@@ -88,17 +88,13 @@ public partial class MirrorPane : Node3D
 	/// </remarks>
 	public override void _Process(double delta)
 	{
-		// Update the camera reference every 5 frames for performance.
-		if (Engine.GetProcessFrames() % 5 == 0)
-		{
-			_observerCamera = GetObserverCamera();
+		_observerCamera = GetObserverCamera();
 
-			if (_observerCamera is not null)
-			{
-				_mirrorCamera.GlobalPosition = CalculateMirrorCameraPosition(_observerCamera.GlobalPosition);
-				_mirrorCamera.GlobalBasis = CalculateMirrorCameraRotation(_observerCamera);
-				ClipNearPlaneToMirror();
-			}
+		if (_observerCamera is not null)
+		{
+			_mirrorCamera.GlobalPosition = CalculateMirrorCameraPosition(_observerCamera.GlobalPosition);
+			_mirrorCamera.GlobalBasis = CalculateMirrorCameraRotation(_observerCamera);
+			ClipNearPlaneToMirror();
 		}
 	}
 

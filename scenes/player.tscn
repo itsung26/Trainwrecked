@@ -136,9 +136,8 @@ transform = Transform3D(0.9999999, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 
 [node name="PauseMenuCanvasLayer" type="CanvasLayer" parent="." unique_id=25967783]
 
-[node name="PauseMenu" parent="PauseMenuCanvasLayer" unique_id=643506324 node_paths=PackedStringArray("Player", "CanvasLayerParent") instance=ExtResource("5_fjrip")]
+[node name="PauseMenu" parent="PauseMenuCanvasLayer" unique_id=643506324 node_paths=PackedStringArray("Player") instance=ExtResource("5_fjrip")]
 Player = NodePath("../..")
-CanvasLayerParent = NodePath("..")
 
 [node name="LocomotionStateMachine" type="Node" parent="." unique_id=19474488]
 script = ExtResource("4_qlg0r")

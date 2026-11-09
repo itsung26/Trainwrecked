@@ -22,7 +22,7 @@ public partial class Debug : Node
 	{
 		if (Input.IsActionJustPressed("Debug Quit"))
 		{
-			GetTree().Quit();
+			GetWindow().EmitSignal(Window.SignalName.CloseRequested);
 		}
 	}
 

@@ -72,11 +72,12 @@ public partial class NetworkManager : Node
 	public override void _Ready()
 	{
 		Instance = this;
-		Multiplayer.PeerConnected += OnMultiplayerPeerConnected;
-		Multiplayer.PeerDisconnected += OnMultiplayerPeerDisconnected;
-		Multiplayer.ConnectedToServer += OnMultiplayerConnectedToServer;
-		Multiplayer.ConnectionFailed += OnMultiplayerConnectionFailed;
-		Multiplayer.ServerDisconnected += OnMultiplayerServerDisconnected;
+		Multiplayer.PeerConnected += _on_multiplayer_peer_connected;
+		Multiplayer.PeerDisconnected += _on_multiplayer_peer_disconnected;
+		Multiplayer.ConnectedToServer += _on_multiplayer_connected_to_server;
+		Multiplayer.ConnectionFailed += _on_multiplayer_connection_failed;
+		Multiplayer.ServerDisconnected += _on_multiplayer_server_disconnected;
+		GetWindow().CloseRequested += _on_close_requested;
 
 		// Check for executable arguments: open a session if found.
 		if (RunArguments.HasHostFlag)
@@ -96,36 +97,6 @@ public partial class NetworkManager : Node
 			}
 		}
 	}
-
-	// All methods here are event handlers that do nothing but
-	// emit their wrapper signals.
-	#region wrapper signal emitters
-	private void OnMultiplayerPeerConnected(long id)
-	{
-		EmitSignal(SignalName.PeerConnected, id);
-	}
-
-	private void OnMultiplayerPeerDisconnected(long id)
-	{
-		EmitSignal(SignalName.PeerDisconnected, id);
-	}
-
-	private void OnMultiplayerConnectedToServer()
-	{
-		EmitSignal(SignalName.ConnectedToServer);
-	}
-
-	private void OnMultiplayerConnectionFailed()
-	{
-		EmitSignal(SignalName.ConnectionFailed);
-	}
-
-	private void OnMultiplayerServerDisconnected()
-	{
-		EmitSignal(SignalName.ServerDisconnected);
-	}
-
-	#endregion
 
 	public override void _Process(double delta)
 	{
@@ -472,6 +443,41 @@ public partial class NetworkManager : Node
 
 		// GetPeers() / GetPeerIds() omit this peer.
 		return GetPeerIds().Count + 1;
+	}
+
+	// Wrapper signal emitters for MultiplayerAPI connection lifecycle signals.
+	private void _on_multiplayer_peer_connected(long id)
+	{
+		EmitSignal(SignalName.PeerConnected, id);
+	}
+
+	private void _on_multiplayer_peer_disconnected(long id)
+	{
+		EmitSignal(SignalName.PeerDisconnected, id);
+	}
+
+	private void _on_multiplayer_connected_to_server()
+	{
+		EmitSignal(SignalName.ConnectedToServer);
+	}
+
+	private void _on_multiplayer_connection_failed()
+	{
+		EmitSignal(SignalName.ConnectionFailed);
+	}
+
+	private void _on_multiplayer_server_disconnected()
+	{
+		EmitSignal(SignalName.ServerDisconnected);
+	}
+
+	private void _on_close_requested()
+	{
+		Debug.Log("Window close requested.");
+
+		Disconnect();
+
+		GetTree().Quit();
 	}
 
 }

@@ -1,10 +1,7 @@
 using System;
-using System.Threading.Tasks;
 using Godot;
 using Godot.Collections;
-
-
-
+using Array = Godot.Collections.Array;
 
 /// <summary>
 /// Root node for the active Trainwrecked level. Host-authoritative player spawning
@@ -68,6 +65,15 @@ public partial class TrainwreckedLevel : Node3D
 	/// connected, also spawns each currently connected client for
 	/// <see cref="PlayerSpawner"/> replication. Offline singleplayer spawns only peer <c>1</c>.
 	/// </summary>
+	public override void _EnterTree()
+	{
+		// Assign before children/_Ready so pending custom spawns are not applied without it.
+		if (PlayerSpawner is not null)
+		{
+			PlayerSpawner.SpawnFunction = new Callable(this, MethodName.SpawnPlayerNode);
+		}
+	}
+
 	public override void _Ready()
 	{
 		if (PlayerSpawner is not null)
@@ -75,7 +81,9 @@ public partial class TrainwreckedLevel : Node3D
 			PlayerSpawner.Spawned += _on_player_spawner_spawned;
 			PlayerSpawner.Despawned += _on_player_spawner_despawned;
 		}
+
 		NetworkManager.Instance.PeerConnected += _on_peer_connected;
+		NetworkManager.Instance.PeerDisconnected += _on_peer_disconnected;
 
 		if (NetworkManager.IsServer() && SpawningPlayersEnabled)
 		{
@@ -168,35 +176,56 @@ public partial class TrainwreckedLevel : Node3D
 			return;
 		}
 
+		Array spawnData = new Array()
+		{
+			peerId,
+			PlayerSpawnPoints[playerIndex - 1].GlobalPosition,
+		};
+		PlayerSpawner.Spawn(spawnData);
+	}
+
+	/// <summary>
+	/// Runs on every peer via <see cref="MultiplayerSpawner.SpawnFunction"/>.
+	/// Must return a node that is not yet in the tree; the spawner parents it.
+	/// </summary>
+	private Node SpawnPlayerNode(Variant data)
+	{
+		Array spawnData = data.AsGodotArray();
+		int peerId = spawnData[0].AsInt32();
+		Vector3 position = spawnData[1].AsVector3();
 
 		Player newPlayer = PlayerScene.Instantiate<Player>();
 		newPlayer.Name = peerId.ToString();
-		AddChild(newPlayer, true);
-		newPlayer.GlobalPosition = PlayerSpawnPoints[playerIndex - 1].GlobalPosition;
+		newPlayer.Position = position;
+		return newPlayer;
 	}
 
 	private void _on_peer_connected(long id)
 	{
-		if (NetworkManager.IsServer() && NetworkManager.IsConnected())
+		if (!NetworkManager.IsServer() || !NetworkManager.IsConnected())
 		{
-			Debug.Log("Registered late join. Spawning player.");
-			int firstFreePlayerIndex = NetworkManager.GetTotalConnectedPeerCount();
-			SpawnPlayer((int)id, firstFreePlayerIndex);
+			return;
 		}
+
+		Debug.Log($"Registered peer {id} connected.");
+		
+		int firstFreePlayerIndex = NetworkManager.GetTotalConnectedPeerCount();
+		SpawnPlayer((int)id, firstFreePlayerIndex);
 	}
 
 	private void _on_peer_disconnected(long id)
 	{
-		if (NetworkManager.IsServer() && NetworkManager.IsConnected())
+		if (!NetworkManager.IsServer() || !NetworkManager.IsConnected())
 		{
-			if (NetworkManager.IsServer() && NetworkManager.IsConnected())
-			{
-				Player playerToDespawn = GetPlayerByPeerId((int)id);
-				if (playerToDespawn is not null)
-				{
-					playerToDespawn.QueueFree();
-				}
-			}
+			return;
+		}
+
+		Debug.Log($"Registered peer {id} Disconnected");
+
+		Player playerToDespawn = GetPlayerByPeerId((int)id);
+		if (playerToDespawn is not null)
+		{
+			playerToDespawn.QueueFree();
 		}
 	}
 

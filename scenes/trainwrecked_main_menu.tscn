@@ -652,7 +652,6 @@ libraries/ = SubResource("AnimationLibrary_6ycsm")
 
 [node name="StateMachine" type="Node" parent="." unique_id=842700196 node_paths=PackedStringArray("InitialState")]
 script = ExtResource("18_6ycsm")
-LoggingDebug = true
 InitialState = NodePath("InitialTween")
 metadata/_custom_type_script = "uid://bhsg271e1lvlh"
 

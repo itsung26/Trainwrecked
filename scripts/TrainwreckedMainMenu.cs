@@ -6,7 +6,6 @@ public partial class TrainwreckedMainMenu : Control
 	[Export] public float ContinueLabelPulseFrequency { get; set; } = 1.0f;
 	[Export] public float CameraMaxShiftOffset { get; set; } = 1.0f; // How much the camera is allowed to move around with the mouse.
 
-
 	[ExportGroup("Nodes")]
 	[Export] public MultiplayerLobbyMenu MultiplayerLobbyMenu { get; set; }
 	[Export] public Button ContinueButton { get; set; }
@@ -159,7 +158,6 @@ public partial class TrainwreckedMainMenu : Control
 
 	private void _on_load_button_pressed()
 	{
-
 	}
 
 	private void _on_options_button_pressed()
