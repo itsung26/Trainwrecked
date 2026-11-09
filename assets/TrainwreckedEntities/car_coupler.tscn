@@ -25,6 +25,7 @@ freeze = true
 script = ExtResource("1_kcyv8")
 _couplePoint = NodePath("CouplePoint")
 _hookMesh = NodePath("coupler_02/hook")
+DisplayName = "Coupler"
 metadata/_custom_type_script = "uid://dv08jufhy0h5u"
 
 [node name="coupler_02" parent="." unique_id=799904395 instance=ExtResource("2_oxfdy")]

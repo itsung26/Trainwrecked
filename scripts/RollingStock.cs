@@ -5,8 +5,8 @@ using Godot;
 [GlobalClass, Icon("res://assets/2d assets/rolling_stock_icon.svg")]
 public abstract partial class RollingStock : AnimatableBody3D
 {
-    [Export] public Marker3D FrontCoupler { get; set; }
-    [Export] public Marker3D RearCoupler { get; set; }
+    [Export] public CarCoupler FrontCoupler { get; set; }
+    [Export] public CarCoupler RearCoupler { get; set; }
     /// <summary>Mass used when a consist sums the chain. Subclasses assign the default.</summary>
     [Export] public float RollingMass { get; protected set; } = 1.0f;
     /// <summary>Whether this stock can propel itself. Locomotives set this to true.</summary>

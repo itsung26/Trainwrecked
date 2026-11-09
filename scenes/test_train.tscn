@@ -25,8 +25,8 @@ metadata/_custom_type_script = "uid://dmng1kajcssbw"
 
 [node name="TestRailCarBody" type="AnimatableBody3D" parent="." unique_id=820957873 node_paths=PackedStringArray("FrontCoupler", "RearCoupler")]
 script = ExtResource("2_rkt2r")
-FrontCoupler = NodePath("FrontCoupler")
-RearCoupler = NodePath("BackCoupler")
+FrontCoupler = NodePath("Back")
+RearCoupler = NodePath("Front")
 metadata/_custom_type_script = "uid://clqr77tgjrxw5"
 
 [node name="RailCarVisual" type="MeshInstance3D" parent="TestRailCarBody" unique_id=89919993]
@@ -41,25 +41,15 @@ shape = SubResource("BoxShape3D_banjh")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9468727, -6.112)
 target_position = Vector3(0, 0, -5)
 
-[node name="FrontCoupler" type="Marker3D" parent="TestRailCarBody" unique_id=1444522699]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.58796906, -6.8200397)
-gizmo_extents = 1.0
-
-[node name="BackCoupler" type="Marker3D" parent="TestRailCarBody" unique_id=1582646849]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.58796906, 6.8152847)
-gizmo_extents = 1.0
-
-[node name="FrontCoupler2" parent="TestRailCarBody" unique_id=353319427 instance=ExtResource("3_rkt2r")]
+[node name="Back" parent="TestRailCarBody" unique_id=353319427 instance=ExtResource("3_rkt2r")]
 transform = Transform3D(-1, 0, 8.940697e-08, 0, 1, 0, -8.940697e-08, 0, -1, -1.2614203e-08, 0.642, 6.0980873)
 
-[node name="BackCoupler2" parent="TestRailCarBody" unique_id=1843039484 instance=ExtResource("3_rkt2r")]
+[node name="Front" parent="TestRailCarBody" unique_id=1843039484 instance=ExtResource("3_rkt2r")]
 transform = Transform3D(1, 0, -1.7682974e-07, 0, 1, 0, 1.7682974e-07, 0, 1, 1.0859744e-06, 0.642, -6.067821)
 
-[node name="TestRailCarBody2" type="AnimatableBody3D" parent="." unique_id=2139975253 node_paths=PackedStringArray("FrontCoupler", "RearCoupler")]
+[node name="TestRailCarBody2" type="AnimatableBody3D" parent="." unique_id=2139975253]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 14.8925495)
 script = ExtResource("2_rkt2r")
-FrontCoupler = NodePath("FrontCoupler2")
-RearCoupler = NodePath("BackCoupler2")
 metadata/_custom_type_script = "uid://clqr77tgjrxw5"
 
 [node name="RailCarVisual" type="MeshInstance3D" parent="TestRailCarBody2" unique_id=2033455341]

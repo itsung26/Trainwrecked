@@ -257,13 +257,13 @@ public partial class TrainConsist : Node
     /// </summary>
     private float CouplerArcDelta(RollingStock car, bool front)
     {
-        Marker3D coupler = front ? car.FrontCoupler : car.RearCoupler;
-        if (coupler == null)
+        CarCoupler coupler = front ? car.FrontCoupler : car.RearCoupler;
+        if (coupler is null)
         {
             return 0f;
         }
 
-        return -car.ToLocal(coupler.GlobalPosition).Z;
+        return -car.ToLocal(coupler.GetCouplingPointPosition()).Z;
     }
 
     /// <summary>
