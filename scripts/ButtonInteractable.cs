@@ -31,7 +31,7 @@ public partial class ButtonInteractable : Interactable
     {
         if (_animationPlayer is not null)
         {
-            _animationPlayer.AnimationFinished += _on_animation_player_animation_finished;
+            _animationPlayer.AnimationFinished -= _on_animation_player_animation_finished;
         }
     }
 

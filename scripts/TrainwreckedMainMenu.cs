@@ -27,6 +27,7 @@ public partial class TrainwreckedMainMenu : Control
 
 	public override void _Ready()
 	{
+		Input.MouseMode = Input.MouseModeEnum.Visible;
 		NetworkManager.Instance.ConnectedToServer += _on_connected_to_server;
 		NetworkManager.Instance.ConnectionFailed += _on_connection_failed;
 		NetworkManager.Instance.ServerDisconnected += _on_server_disconnected;

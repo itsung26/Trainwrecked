@@ -85,6 +85,7 @@ public partial class NetworkManager : Node
 			Error returnedError = StartServer();
 			if (returnedError != Error.Ok)
 			{
+				Debug.LogError("Failed to start server.");
 				GetTree().Quit();
 			}
 		}
@@ -93,6 +94,7 @@ public partial class NetworkManager : Node
 			Error returnedError = StartClient(RunArguments.JoinFlagAddress);
 			if (returnedError != Error.Ok)
 			{
+				Debug.LogError("Failed to join server.");
 				GetTree().Quit();
 			}
 		}
@@ -337,26 +339,14 @@ public partial class NetworkManager : Node
 	[Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = false)]
 	public static void Disconnect()
 	{
-		if (IsServer() && IsConnected())
+		GetCurrentPeer().Close();
+		SetCurrentPeer(new OfflineMultiplayerPeer());
+		if (Instance.Query is not null)
 		{
-			GetCurrentPeer().Close();
-			SetCurrentPeer(new OfflineMultiplayerPeer());
-			if (Instance.Query is not null)
-			{
-				Instance.Query.Close();
-				Instance.Query = null;
-			}
+			Instance.Query.Close();
+			Instance.Query = null;
 		}
-		else if (IsClient() && IsConnected())
-		{
-			GetCurrentPeer().Close();
-			SetCurrentPeer(new OfflineMultiplayerPeer());
-			if (Instance.Query is not null)
-			{
-				Instance.Query.Close();
-				Instance.Query = null;
-			}
-		}
+		Debug.Log("foo");
 	}
 
 	public static Array<LanDiscoverySession> GetKnownSessions()
@@ -468,7 +458,6 @@ public partial class NetworkManager : Node
 
 	private void _on_multiplayer_server_disconnected()
 	{
-		Debug.Log("NetworkManager wrapper signal: SERVER HAS DISCONNECTED, EMITTING ServerDisconnected");
 		EmitSignal(SignalName.ServerDisconnected);
 	}
 

@@ -39,33 +39,59 @@ public partial class LevelLoader : Node
     /// </summary>
     /// <remarks>
     /// When this peer is the server, broadcasts <see cref="ChangeSceneToPackedTargetLevel"/>
-    /// (including locally via <c>CallLocal</c>). Offline singleplayer loading is not implemented
-    /// and returns <see cref="Error.Unconfigured"/>.
+    /// (including locally via <c>CallLocal</c>). Offline singleplayer loading is not implemented.
     /// </remarks>
-    /// <returns>
-    /// <see cref="Error.Ok"/> when the host issues the scene-change RPC;
-    /// <see cref="Error.Unconfigured"/> when offline with no session;
-    /// <see cref="Error.Unauthorized"/> when called as a connected client.
-    /// </returns>
-    public static Error LoadMainLevel()
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when offline with no session (singleplayer load unimplemented), or when called
+    /// as a connected client.
+    /// </exception>
+    public static void LoadMainLevel()
     {
         if (!NetworkManager.IsConnected() && !NetworkManager.IsConnecting())
         {
-            Debug.LogError("Unimplemented singleplayer level load");
-            return Error.Unconfigured;
+            throw new InvalidOperationException("Unimplemented singleplayer level load.");
         }
 
         if (NetworkManager.IsClient())
         {
-            Debug.LogError("Attempted to load level as a non-host.");
-            return Error.Unauthorized;
+            throw new InvalidOperationException("Attempted to load level as a non-host.");
         }
-        else if (NetworkManager.IsServer())
+
+        if (NetworkManager.IsServer())
         {
             Instance.Rpc(MethodName.ChangeSceneToPackedTargetLevel);
         }
+    }
 
-        return Error.Ok;
+    /// <summary>
+    /// Loads the main menu. When hosting a session, broadcasts to all peers; when offline
+    /// (including a client after host loss), changes the scene locally.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when called as a connected client (host must drive the session-wide return),
+    /// or when the local scene change fails.
+    /// </exception>
+    public static void LoadMainMenu()
+    {
+        if (NetworkManager.IsConnected() || NetworkManager.IsConnecting())
+        {
+            if (NetworkManager.IsClient())
+            {
+                throw new InvalidOperationException("Attempted to load main menu as a non-host while connected.");
+            }
+
+            if (NetworkManager.IsServer())
+            {
+                Instance.Rpc(MethodName.ChangeSceneToPackedMainMenu);
+                return;
+            }
+        }
+
+        Error error = Instance.GetTree().ChangeSceneToFile(MainMenu);
+        if (error != Error.Ok)
+        {
+            throw new InvalidOperationException($"Failed to load main menu: {error}.");
+        }
     }
 
     /// <summary>
@@ -80,6 +106,20 @@ public partial class LevelLoader : Node
     private Error ChangeSceneToPackedTargetLevel()
     {
         return GetTree().ChangeSceneToFile(TargetLevel);
+    }
+
+    /// <summary>
+    /// Authority RPC that switches every peer's scene tree to <see cref="MainMenu"/>.
+    /// </summary>
+    /// <remarks>
+    /// Callable only by the multiplayer authority, with <c>CallLocal</c> so the host
+    /// also changes scenes. Invoked from <see cref="LoadMainMenu"/> on the server.
+    /// </remarks>
+    /// <returns>The result of <see cref="SceneTree.ChangeSceneToFile"/>.</returns>
+    [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true)]
+    private Error ChangeSceneToPackedMainMenu()
+    {
+        return GetTree().ChangeSceneToFile(MainMenu);
     }
 
 }

@@ -250,6 +250,9 @@ public partial class TrainwreckedLevel : Node3D
 	private void _on_server_disconnected()
 	{
 		Debug.Log("LEVEL: SERVER HAS DISCONNECTED");
-		GetWindow().EmitSignal(Window.SignalName.CloseRequested);
+		Debug.Log("initial: " + NetworkManager.GetCurrentPeer());
+		NetworkManager.Disconnect();
+		Debug.Log("after: " + NetworkManager.GetCurrentPeer());
+		LevelLoader.LoadMainMenu();
 	}
 }
