@@ -6,7 +6,7 @@
 [ext_resource type="Material" uid="uid://ycx1b2myd8fy" path="res://assets/materials/sandy_dunes.tres" id="7_ltgxd"]
 [ext_resource type="ArrayMesh" uid="uid://bsjnpri5euuew" path="res://assets/3d assets/cactus/mesh resources/cactus_cactu_03_Material_002_0.res" id="8_nihl2"]
 [ext_resource type="PackedScene" uid="uid://chikatl4akkkb" path="res://assets/TrainwreckedEntities/long_poo_pickupable.tscn" id="9_65vkx"]
-[ext_resource type="PackedScene" uid="uid://do6nlpwwu66rs" path="res://assets/3d assets/cactus/cactus.blend" id="9_tvk4s"]
+[ext_resource type="PackedScene" uid="uid://bq3sd25f0ficj" path="res://assets/3d assets/cactus/cactus.blend" id="9_tvk4s"]
 [ext_resource type="PackedScene" uid="uid://bqgt5yt3ehd2q" path="res://assets/TrainwreckedEntities/model_train_pickupable.tscn" id="10_glees"]
 [ext_resource type="PackedScene" uid="uid://boi5es405i8mg" path="res://scenes/session_chat.tscn" id="10_nihl2"]
 [ext_resource type="PackedScene" uid="uid://bwr6dyi77qccr" path="res://assets/TrainwreckedEntities/model_train_pickupable_red_loco.tscn" id="11_bwcr2"]

@@ -3,7 +3,7 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://do6nlpwwu66rs"
+uid="uid://bq3sd25f0ficj"
 path="res://.godot/imported/cactus.blend-b469497aaab47b99f83faee7462c303e.scn"
 
 [deps]
@@ -19,7 +19,7 @@ nodes/root_script=null
 mesh_library/use_node_names_as_mesh_names=false
 array_mesh/deduplicate_surfaces=true
 nodes/apply_root_scale=true
-nodes/root_scale=0.43
+nodes/root_scale=1.0
 nodes/import_as_skeleton_bones=false
 nodes/use_name_suffixes=true
 nodes/use_node_type_suffixes=true
@@ -39,64 +39,7 @@ import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
-_subresources={
-"meshes": {
-"cactus_Cactu_02_Material_002_0": {
-"generate/lightmap_uv": 0,
-"generate/lods": 0,
-"generate/shadow_meshes": 0,
-"lods/normal_merge_angle": 20.0,
-"save_to_file/enabled": true,
-"save_to_file/fallback_path": "res://assets/3d assets/cactus/mesh resources/cactus_Cactu_02_Material_002_0.res",
-"save_to_file/path": "uid://cw4jstmp1cbcj"
-},
-"cactus_Cactu_04_Material_002_0": {
-"generate/lightmap_uv": 0,
-"generate/lods": 0,
-"generate/shadow_meshes": 0,
-"lods/normal_merge_angle": 20.0,
-"save_to_file/enabled": true,
-"save_to_file/fallback_path": "res://assets/3d assets/cactus/mesh resources/cactus_Cactu_04_Material_002_0.res",
-"save_to_file/path": "uid://duefu5v2k7e8g"
-},
-"cactus_Cactu_05_Material_002_0": {
-"generate/lightmap_uv": 0,
-"generate/lods": 0,
-"generate/shadow_meshes": 0,
-"lods/normal_merge_angle": 20.0,
-"save_to_file/enabled": true,
-"save_to_file/fallback_path": "res://assets/3d assets/cactus/mesh resources/cactus_Cactu_05_Material_002_0.res",
-"save_to_file/path": "uid://n2y2mj70wo0x"
-},
-"cactus_Cactu_06_Material_002_0": {
-"generate/lightmap_uv": 0,
-"generate/lods": 0,
-"generate/shadow_meshes": 0,
-"lods/normal_merge_angle": 20.0,
-"save_to_file/enabled": true,
-"save_to_file/fallback_path": "res://assets/3d assets/cactus/mesh resources/cactus_Cactu_06_Material_002_0.res",
-"save_to_file/path": "uid://ddv6uqjtcdjsl"
-},
-"cactus_cactu01_Material_002_0": {
-"generate/lightmap_uv": 0,
-"generate/lods": 0,
-"generate/shadow_meshes": 0,
-"lods/normal_merge_angle": 20.0,
-"save_to_file/enabled": true,
-"save_to_file/fallback_path": "res://assets/3d assets/cactus/mesh resources/cactus_cactu01_Material_002_0.res",
-"save_to_file/path": "uid://bvxmdsra07jsg"
-},
-"cactus_cactu_03_Material_002_0": {
-"generate/lightmap_uv": 0,
-"generate/lods": 0,
-"generate/shadow_meshes": 0,
-"lods/normal_merge_angle": 20.0,
-"save_to_file/enabled": true,
-"save_to_file/fallback_path": "res://assets/3d assets/cactus/mesh resources/cactus_cactu_03_Material_002_0.res",
-"save_to_file/path": "uid://bsjnpri5euuew"
-}
-}
-}
+_subresources={}
 blender/nodes/visible=0
 blender/nodes/active_collection_only=false
 blender/nodes/punctual_lights=true

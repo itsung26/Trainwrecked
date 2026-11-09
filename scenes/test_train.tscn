@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dmng1kajcssbw" path="res://scripts/TrainConsist.cs" id="1_c7d61"]
 [ext_resource type="Script" uid="uid://clqr77tgjrxw5" path="res://scripts/RailCar.cs" id="2_rkt2r"]
+[ext_resource type="PackedScene" uid="uid://jx2471tdo5yu" path="res://assets/TrainwreckedEntities/car_coupler.tscn" id="3_rkt2r"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_dehhp"]
 size = Vector3(3.293, 3.293, 12.224)
@@ -47,6 +48,12 @@ gizmo_extents = 1.0
 [node name="BackCoupler" type="Marker3D" parent="TestRailCarBody" unique_id=1582646849]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.58796906, 6.8152847)
 gizmo_extents = 1.0
+
+[node name="FrontCoupler2" parent="TestRailCarBody" unique_id=353319427 instance=ExtResource("3_rkt2r")]
+transform = Transform3D(-1, 0, 8.940697e-08, 0, 1, 0, -8.940697e-08, 0, -1, -1.2614203e-08, 0.642, 6.0980873)
+
+[node name="BackCoupler2" parent="TestRailCarBody" unique_id=1843039484 instance=ExtResource("3_rkt2r")]
+transform = Transform3D(1, 0, -1.7682974e-07, 0, 1, 0, 1.7682974e-07, 0, 1, 1.0859744e-06, 0.642, -6.067821)
 
 [node name="TestRailCarBody2" type="AnimatableBody3D" parent="." unique_id=2139975253 node_paths=PackedStringArray("FrontCoupler", "RearCoupler")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 14.8925495)

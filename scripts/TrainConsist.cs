@@ -605,6 +605,7 @@ public partial class TrainConsist : Node
     }
 
     /// Splits this consist into two consists at index <param name="at">.
+    /// Follows the same index splitting conventions as strings.
     public void Split(int at)
     {
         if (at < 0 || at > Cars.Count)
@@ -620,8 +621,13 @@ public partial class TrainConsist : Node
 
     }
 
+    /// Consist <param name="with"> will be joined with <this>, not the other way around.
+    /// If <paramref name="atFront"/> is true, the back of <paramref name="with"/> will be attatched to
+    /// the front of <this>.
     public void Join(TrainConsist with, bool atFront)
     {
+        ArgumentNullException.ThrowIfNull(with);
+
 
     }
 

@@ -15,6 +15,7 @@ using System.Linq;
 /// <see cref="Interact"/>. <see cref="Player"/> drives <see cref="Selected"/>
 /// from its interact raycast.
 /// </remarks>
+[Tool]
 [GlobalClass]
 public abstract partial class Interactable : RigidBody3D
 {
@@ -66,17 +67,33 @@ public abstract partial class Interactable : RigidBody3D
 	[Export] public bool PreventSelection { get; set; }
 
 	/// <summary>
-	/// Caches inverted-hull meshes, warns if none were found, then hides the outline.
+	/// Caches inverted-hull meshes, then hides the outline.
 	/// </summary>
 	public override void _Ready()
 	{
-		PopulateInvertedHullMeshes();
-		if (_invertedHullMeshes.Count == 0)
+		if (Engine.IsEditorHint())
 		{
-			Debug.LogWarn("No inverted hull meshes were detected. Add them by adding \"IH\" to their name.");
+			return;
 		}
-		
+
+		PopulateInvertedHullMeshes();
 		OutlineVisible = false;
+	}
+
+	/// <summary>
+	/// Warns in the editor when no descendant mesh is named for inverted-hull outlining.
+	/// </summary>
+	public override string[] _GetConfigurationWarnings()
+	{
+		string[] baseWarnings = base._GetConfigurationWarnings() ?? System.Array.Empty<string>();
+		System.Collections.Generic.List<string> warnings = new System.Collections.Generic.List<string>(baseWarnings);
+
+		if (!HasInvertedHullMesh())
+		{
+			warnings.Add("No inverted hull meshes were detected. Add them by adding \"IH\" to their name.");
+		}
+
+		return warnings.ToArray();
 	}
 
 	/// <summary>
@@ -93,6 +110,23 @@ public abstract partial class Interactable : RigidBody3D
 				_invertedHullMeshes.Add(mesh);
 			}
 		}
+	}
+
+	/// <summary>
+	/// Returns whether any descendant <see cref="MeshInstance3D"/> name contains <c>IH</c>.
+	/// Used by configuration warnings in the editor (where the runtime cache is not filled).
+	/// </summary>
+	private bool HasInvertedHullMesh()
+	{
+		foreach (MeshInstance3D mesh in CollectDescendants<MeshInstance3D>())
+		{
+			if (mesh.Name.ToString().Contains("IH"))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/// <summary>
