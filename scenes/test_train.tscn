@@ -23,7 +23,7 @@ size = Vector3(3.293, 0.15454882, 12.224)
 script = ExtResource("1_c7d61")
 metadata/_custom_type_script = "uid://dmng1kajcssbw"
 
-[node name="TestRailCarBody" type="AnimatableBody3D" parent="." unique_id=1496173653 node_paths=PackedStringArray("FrontCoupler", "RearCoupler")]
+[node name="TestRailCarBody" type="AnimatableBody3D" parent="." unique_id=820957873 node_paths=PackedStringArray("FrontCoupler", "RearCoupler")]
 script = ExtResource("2_rkt2r")
 FrontCoupler = NodePath("FrontCoupler")
 RearCoupler = NodePath("BackCoupler")

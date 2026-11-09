@@ -9,12 +9,12 @@ public partial class CarCoupler : Interactable
 {
     [Export] public Marker3D ClampPoint { get; set; }
     [Export] public MeshInstance3D HookMesh { get; set; }
+    [Export] public float HookRotateSpeed { get; set; }
+
     public bool Clamped { get; private set; }
 
     private Vector3 _openHookRotation = Vector3.Zero;
-    private Vector3 _closedHookRotation = new Vector3(0.0f, 104.3f, 0.0f);
-
-    [Export] public float _clampPoseProgress { get; set; }
+    private Vector3 _closedHookRotation = new Vector3(0.0f, Mathf.DegToRad(104.3f), 0.0f);
 
     public override void _Ready()
     {
@@ -24,6 +24,8 @@ public partial class CarCoupler : Interactable
     public override void _Process(double delta)
     {
         base._Process(delta);
+
+        RotateHookIfClamped(delta);
     }
 
     public override string[] _GetConfigurationWarnings()
@@ -38,14 +40,34 @@ public partial class CarCoupler : Interactable
         return warnings.ToArray();
     }
 
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal=true)]
     public override void Interact()
     {
-        throw new NotImplementedException();
+        Debug.Log($"Interacted with {this}");
     }
 
-    private static Vector3 LerpVectors(Vector3 a, Vector3 b, float weight)
+    private void RotateHookIfClamped(double delta)
     {
-        return a.Lerp(b, weight);
+        if (HookMesh is null)
+        {
+            return;
+        }
+
+        float step = (float)delta * HookRotateSpeed;
+        Vector3 target = Clamped ? _closedHookRotation : _openHookRotation;
+        HookMesh.Rotation = MoveTowardEuler(HookMesh.Rotation, target, step);
+    }
+
+    /// <summary>
+    /// Moves each Euler axis toward <paramref name="to"/> along the shortest arc.
+    /// </summary>
+    private static Vector3 MoveTowardEuler(Vector3 from, Vector3 to, float delta)
+    {
+        return new Vector3(
+            Mathf.RotateToward(from.X, to.X, delta),
+            Mathf.RotateToward(from.Y, to.Y, delta),
+            Mathf.RotateToward(from.Z, to.Z, delta)
+        );
     }
 
 }
