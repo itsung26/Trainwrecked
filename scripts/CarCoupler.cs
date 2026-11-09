@@ -7,12 +7,12 @@ using System.Linq;
 [GlobalClass]
 public partial class CarCoupler : Interactable
 {
-    [Export] public Marker3D ClampPoint { get; set; }
-    [Export] public MeshInstance3D HookMesh { get; set; }
-    [Export] public float HookRotateSpeed { get; set; }
+    [Export] public float HookRotateSpeed { get; set; } = 8.0f;
+    public bool Clamped { get; set; }
 
-    public bool Clamped { get; private set; }
-
+    [ExportGroup("Editor Configuration")]
+    [Export] private Marker3D _couplePoint;
+    [Export] private MeshInstance3D _hookMesh;
     private Vector3 _openHookRotation = Vector3.Zero;
     private Vector3 _closedHookRotation = new Vector3(0.0f, Mathf.DegToRad(104.3f), 0.0f);
 
@@ -32,7 +32,7 @@ public partial class CarCoupler : Interactable
     {   
         Array<string> warnings = new Array<string>(base._GetConfigurationWarnings());
 
-        if (ClampPoint is null)
+        if (_couplePoint is null)
         {
             warnings.Add("Clamp point must be set.");
         }
@@ -46,16 +46,21 @@ public partial class CarCoupler : Interactable
         Debug.Log($"Interacted with {this}");
     }
 
+    public Vector3 GetCouplingPointPosition()
+    {
+        return _couplePoint.GlobalPosition;
+    }
+
     private void RotateHookIfClamped(double delta)
     {
-        if (HookMesh is null)
+        if (_hookMesh is null)
         {
             return;
         }
 
         float step = (float)delta * HookRotateSpeed;
         Vector3 target = Clamped ? _closedHookRotation : _openHookRotation;
-        HookMesh.Rotation = MoveTowardEuler(HookMesh.Rotation, target, step);
+        _hookMesh.Rotation = MoveTowardEuler(_hookMesh.Rotation, target, step);
     }
 
     /// <summary>

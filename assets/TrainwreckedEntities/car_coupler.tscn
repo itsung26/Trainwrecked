@@ -20,12 +20,11 @@ _surfaces = [{
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_bkjko"]
 points = PackedVector3Array(-0.23021129, -0.0583, -0.5645769, 0.25764495, 0.035036266, -0.3532526, -0.100906916, -0.0583, -0.019691234, -0.24945477, 0.0667992, -0.5853516, 0.17615993, -0.0583, -0.6015547, -0.10937502, 0.0667992, 0.0049412847, 0.17083737, 0.0667992, -0.63550395, 0.12221824, -0.040304236, -0.016164593, 0.11079564, 0.0667992, 0.0049412847, -0.2549026, -0.031369787, -0.37197486, 0.2316319, -0.0583, -0.3798621, -0.2521311, 0.03450594, -0.37136015, 0.24044743, -0.03180222, -0.48782307, 0.24087724, 0.0667992, -0.4252403, 0.10232753, -0.0583, -0.019691234, 0.26060173, -0.031924117, -0.35368958, -0.2556386, -0.040961403, -0.5714936, 0.10232753, -0.0583, -0.61087143, -0.12923415, 0.034223735, -0.018228015, -0.22994983, -0.058232013, -0.37978896, 0.21053632, 0.035111886, -0.5917808, 0.11079564, 0.0667992, -0.63550395, -0.12502408, -0.03866111, -0.027852235, 0.20289357, -0.041571043, -0.60404533, 0.25842747, 0.035137646, -0.3915747, 0.2438572, -0.030971728, -0.3059655, 0.19078074, 0.0667992, -0.6254108, -0.24907795, 0.0433636, -0.38922745, 0.21900144, -0.05737869, -0.31528133, 0.15775067, -0.0583, -0.61087143, 0.24134213, 0.034128513, -0.30606186, 0.13171966, -0.030994646, -0.03455564)
 
-[node name="CarCoupler" type="RigidBody3D" unique_id=353319427 node_paths=PackedStringArray("ClampPoint", "HookMesh")]
+[node name="CarCoupler" type="RigidBody3D" unique_id=353319427 node_paths=PackedStringArray("_couplePoint", "_hookMesh")]
 freeze = true
 script = ExtResource("1_kcyv8")
-ClampPoint = NodePath("ClampPointMarker")
-HookMesh = NodePath("coupler_02/hook")
-HookRotateSpeed = 8.0
+_couplePoint = NodePath("CouplePoint")
+_hookMesh = NodePath("coupler_02/hook")
 metadata/_custom_type_script = "uid://dv08jufhy0h5u"
 
 [node name="coupler_02" parent="." unique_id=799904395 instance=ExtResource("2_oxfdy")]
@@ -37,7 +36,7 @@ mesh = SubResource("ArrayMesh_oxfdy")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=462782622]
 shape = SubResource("ConvexPolygonShape3D_bkjko")
 
-[node name="ClampPointMarker" type="Marker3D" parent="." unique_id=665626586]
+[node name="CouplePoint" type="Marker3D" parent="." unique_id=665626586]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.593)
 gizmo_extents = 0.45
 
