@@ -99,6 +99,11 @@ public partial class TrainConsist : Node
         }
     }
 
+    public override void _ExitTree()
+    {
+        ChildEnteredTree -= _on_child_entered_tree;
+    }
+
     /// <summary>
     /// Sets <paramref name="car"/> to the baked pose at its own <see cref="RollingStock.TrackOffset"/>.
     /// </summary>

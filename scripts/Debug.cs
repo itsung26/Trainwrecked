@@ -24,6 +24,14 @@ public partial class Debug : Node
 		{
 			GetWindow().EmitSignal(Window.SignalName.CloseRequested);
 		}
+
+		if (Input.IsActionJustPressed("Debug Action"))
+		{
+			Debug.Log($"Connected status: {NetworkManager.IsConnected()}");
+			Debug.Log($"Client status: {NetworkManager.IsClient()}");
+			Debug.Log(Multiplayer.MultiplayerPeer);
+			Debug.Log(GetTree().CurrentScene.Name);
+		}
 	}
 
 	/// <summary>

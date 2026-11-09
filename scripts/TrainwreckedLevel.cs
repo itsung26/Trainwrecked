@@ -17,48 +17,34 @@ using Array = Godot.Collections.Array;
 public partial class TrainwreckedLevel : Node3D
 {
 	[Export] public bool SpawningPlayersEnabled { get; set; } = true;
-
-
 	/// <summary>
 	/// Packed scene instantiated for each player. Must match a scene listed on
 	/// <see cref="PlayerSpawner"/>.
 	/// </summary>
 	[Export] protected PackedScene PlayerScene { get; set; }
-
-
-
 	/// <summary>
 	/// Spawner that replicates player nodes added under this level to remote peers.
 	/// Must be assigned and configured in the editor.
 	/// </summary>
 	[Export] protected MultiplayerSpawner PlayerSpawner { get; set; }
-
-
-
 	/// <summary>
 	/// Four spawn markers. Index <c>0</c> is the host spot; indices <c>1</c>–<c>3</c>
 	/// are used for clients in connection order from <see cref="NetworkManager.GetPeerIds"/>.
 	/// </summary>
 	[Export] protected Array<Node3D> PlayerSpawnPoints { get; set; } = new Array<Node3D>();
-
 	[Export] public SessionChat SessionChat { get; set; }
-
 	/// <summary>
 	/// Emitted when <see cref="PlayerSpawner"/> spawns a player under this level.
 	/// Wraps <see cref="MultiplayerSpawner.Spawned"/> and passes the spawned <see cref="Player"/>.
 	/// </summary>
 	/// <param name="player">The player node that was spawned.</param>
 	[Signal] public delegate void PlayerSpawnedEventHandler(Player player);
-
-
 	/// <summary>
 	/// Emitted when <see cref="PlayerSpawner"/> despawns a player under this level.
 	/// Wraps <see cref="MultiplayerSpawner.Despawned"/> and passes the despawned <see cref="Player"/>.
 	/// </summary>
 	/// <param name="player">The player node that was despawned.</param>
 	[Signal] public delegate void PlayerDespawnedEventHandler(Player player);
-
-
 
 	/// <summary>
 	/// On the server, spawns the local player (peer <c>1</c>). When a session is
@@ -84,6 +70,7 @@ public partial class TrainwreckedLevel : Node3D
 
 		NetworkManager.Instance.PeerConnected += _on_peer_connected;
 		NetworkManager.Instance.PeerDisconnected += _on_peer_disconnected;
+		NetworkManager.Instance.ServerDisconnected += _on_server_disconnected;
 
 		if (NetworkManager.IsServer() && SpawningPlayersEnabled)
 		{
@@ -108,7 +95,18 @@ public partial class TrainwreckedLevel : Node3D
 	{
 	}
 
+    public override void _ExitTree()
+    {
+        if (PlayerSpawner is not null)
+		{
+			PlayerSpawner.Spawned -= _on_player_spawner_spawned;
+			PlayerSpawner.Despawned -= _on_player_spawner_despawned;
+		}
 
+		NetworkManager.Instance.PeerConnected -= _on_peer_connected;
+		NetworkManager.Instance.PeerDisconnected -= _on_peer_disconnected;
+		NetworkManager.Instance.ServerDisconnected -= _on_server_disconnected;
+    }
 
 	/// <summary>
 	/// Instantiates a <see cref="Player"/> for <paramref name="peerId"/>, parents it under
@@ -247,5 +245,11 @@ public partial class TrainwreckedLevel : Node3D
 			return;
 		}
 		EmitSignal(SignalName.PlayerDespawned, node as Player);
+	}
+
+	private void _on_server_disconnected()
+	{
+		Debug.Log("LEVEL: SERVER HAS DISCONNECTED");
+		GetWindow().EmitSignal(Window.SignalName.CloseRequested);
 	}
 }

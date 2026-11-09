@@ -468,12 +468,13 @@ public partial class NetworkManager : Node
 
 	private void _on_multiplayer_server_disconnected()
 	{
+		Debug.Log("NetworkManager wrapper signal: SERVER HAS DISCONNECTED, EMITTING ServerDisconnected");
 		EmitSignal(SignalName.ServerDisconnected);
 	}
 
 	private void _on_close_requested()
 	{
-		Debug.Log("Window close requested.");
+		Debug.Log("NetworkManager: Window close requested.");
 
 		Disconnect();
 

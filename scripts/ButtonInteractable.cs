@@ -27,6 +27,14 @@ public partial class ButtonInteractable : Interactable
         base._Process(delta);
     }
 
+    public override void _ExitTree()
+    {
+        if (_animationPlayer is not null)
+        {
+            _animationPlayer.AnimationFinished += _on_animation_player_animation_finished;
+        }
+    }
+
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true)]
     public override void Interact()
     {

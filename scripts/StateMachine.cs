@@ -84,6 +84,11 @@ public partial class StateMachine : Node
 		}
 	}
 
+    public override void _ExitTree()
+    {
+		ChildEnteredTree -= _on_state_machine_child_entered_tree;
+    }
+
 	/// <summary>
 	/// Adds each direct child that is a <see cref="State"/> to <see cref="States"/>.
 	/// </summary>

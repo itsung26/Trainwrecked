@@ -63,6 +63,13 @@ public partial class TrainwreckedMainMenu : Control
 		}
 	}
 
+    public override void _ExitTree()
+    {
+		NetworkManager.Instance.ConnectedToServer -= _on_connected_to_server;
+		NetworkManager.Instance.ConnectionFailed -= _on_connection_failed;
+		NetworkManager.Instance.ServerDisconnected -= _on_server_disconnected;
+    }
+
 	public void UpdateButtonRestrictions()
 	{
 		bool isClient = NetworkManager.IsClient();
@@ -166,7 +173,7 @@ public partial class TrainwreckedMainMenu : Control
 
 	private void _on_quit_button_pressed()
 	{
-		GetTree().Quit();
+		GetWindow().EmitSignal(Window.SignalName.CloseRequested);
 	}
 
 	private void _on_multiplayer_lobby_menu_exited_menu()

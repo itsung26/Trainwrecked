@@ -128,6 +128,16 @@ public partial class MultiplayerLobbyMenu : Control
 		UniqueIdLabel.Text = "My unique ID: " + NetworkManager.GetUniqueId();
 	}
 
+    public override void _ExitTree()
+    {
+		NetworkManager.Instance.PeerConnected -= _on_peer_connected;
+		NetworkManager.Instance.ConnectedToServer -= _on_connected_to_server;
+		NetworkManager.Instance.ConnectionFailed -= _on_connection_failed;
+		NetworkManager.Instance.ServerDisconnected -= _on_server_disconnected;
+		NetworkManager.Instance.PeerDisconnected -= _on_peer_disconnected;
+		VisibilityChanged -= _on_visibility_changed;
+    }
+
 	/// <summary>
 	/// Instantiates <see cref="MultiplayerSessionButton"/> under <see cref="NodeToAddChildrenOf"/>
 	/// and configures it with the given endpoint.
@@ -429,7 +439,6 @@ public partial class MultiplayerLobbyMenu : Control
 		CheckingForNewSessions = true;
 		SessionListenerTimer.Start(4.0);
 		NetworkManager.BroadcastToListeningHosts();
-
 	}
 
 	private void _on_back_button_pressed()
@@ -548,6 +557,7 @@ public partial class MultiplayerLobbyMenu : Control
 	/// </summary>
 	private void _on_server_disconnected()
 	{
+		Debug.Log("multiplayer lobby event handler: SERVER HAS DISCONNECTED");
 		NetworkManager.GetCurrentPeer().Close();
 		NetworkManager.SetCurrentPeer(new OfflineMultiplayerPeer());
 		IpInput.Clear();

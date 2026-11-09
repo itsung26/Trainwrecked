@@ -162,6 +162,11 @@ public partial class SessionChat : Control
 		}
 	}
 
+    public override void _ExitTree()
+    {
+        NetworkManager.Instance.ConnectedToServer -= _on_connected_to_server;
+    }
+
 	/// <summary>
 	/// Returns whether <see cref="MessageInput"/> is currently being edited.
 	/// </summary>

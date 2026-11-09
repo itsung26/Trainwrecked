@@ -49,6 +49,11 @@ public partial class TrackPath : TrainwreckedPath
 		RebuildTracks();
 	}
 
+    public override void _ExitTree()
+    {
+        CurveChanged -= _on_curve_changed;
+    }
+
 	/// <summary>
 	/// Instantiates <see cref="TrackScene"/> along the curve at <see cref="TrackSpacing"/>
 	/// intervals so the full baked length is covered.
@@ -164,6 +169,5 @@ public partial class TrackPath : TrainwreckedPath
 	{
 		RebuildTracks();
 	}
-
 
 }
