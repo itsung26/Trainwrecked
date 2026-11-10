@@ -30,7 +30,7 @@ metadata/_custom_type_script = "uid://dv08jufhy0h5u"
 
 [node name="coupler_02" parent="." unique_id=799904395 instance=ExtResource("2_oxfdy")]
 
-[node name="IH" type="MeshInstance3D" parent="coupler_02/body" parent_id_path=PackedInt32Array(799904395, 106668304) index="0" unique_id=93445346]
+[node name="IH" type="MeshInstance3D" parent="coupler_02/body" parent_id_path=PackedInt32Array(799904395, 993618584) index="0" unique_id=93445346]
 material_override = ExtResource("3_bkjko")
 mesh = SubResource("ArrayMesh_oxfdy")
 
@@ -38,7 +38,7 @@ mesh = SubResource("ArrayMesh_oxfdy")
 shape = SubResource("ConvexPolygonShape3D_bkjko")
 
 [node name="CouplePoint" type="Marker3D" parent="." unique_id=665626586]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.6111791)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5709845)
 gizmo_extents = 0.45
 
 [editable path="coupler_02"]

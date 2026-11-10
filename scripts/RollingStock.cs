@@ -46,4 +46,28 @@ public abstract partial class RollingStock : AnimatableBody3D
             RearCoupler.Clamped = value is not null;
         }
     }
+
+    /// Returns the local z axis distance between the two coupler coupling points.
+    public float CouplerSpan()
+    {
+        if (FrontCoupler is null || RearCoupler is null)
+        {
+            throw new InvalidOperationException();
+        }
+
+        float frontZ = ToLocal(FrontCoupler.GetCouplingPointPosition()).Z;
+        float rearZ = ToLocal(RearCoupler.GetCouplingPointPosition()).Z;
+        return Mathf.Abs(frontZ - rearZ);
+    }
+
+    /// Returns the local z axis distance from the origin to the front coupler coupling point.
+    public float FrontCouplerDistance()
+    {
+        return Mathf.Abs(ToLocal(FrontCoupler.GetCouplingPointPosition()).Z);
+    }
+
+    public float RearCouplerDistance()
+    {
+        return Mathf.Abs(ToLocal(RearCoupler.GetCouplingPointPosition()).Z);
+    }
 }

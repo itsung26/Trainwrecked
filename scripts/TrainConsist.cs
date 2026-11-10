@@ -3,54 +3,25 @@ using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 
-/// <summary>
-/// A connected chain of <see cref="RollingStock"/> children on one <see cref="TrackPath"/>.
-/// A single child is a lone car.
-/// </summary>
-/// <remarks>
-/// Child order is the chain: child 0 is <see cref="Head"/> and the last child is <see cref="Tail"/>.
-/// Those references are captured in <see cref="_Ready"/> and are not refreshed if the child list changes.
-/// They name the ends of the chain. They are not the source of the other cars' positions.
-/// Cars in one consist are already coupled to their neighbors. Another consist joins this one only at an end whose coupler flag is set.
-/// On the host, each physics frame damps <see cref="Velocity"/>, adds that same arc step to every car's <see cref="RollingStock.TrackOffset"/>, and places each car from its own offset.
-/// The step is shortened so the outermost coupler stays on the baked curve. <see cref="Velocity"/> is cleared when the chain is already against the end it is moving toward.
-/// </remarks>
 [Tool, GlobalClass, Icon("res://assets/2d assets/train_consist_icon.svg")]
 public partial class TrainConsist : Node
 {
-    /// <summary>Curve this consist rides. Offsets are arc lengths on its current bake.</summary>
     [Export] public TrackPath Track { get; set; }
-    [Export] public float StartingOffset { get; set; }
-    /// <summary>
-    /// Shared arc-length speed, in units per second along <see cref="Track"/>.
-    /// Positive speed increases every <see cref="RollingStock.TrackOffset"/>.
-    /// </summary>
+    private float _headOffset;
+    [Export]
+    public float HeadOffset
+    {
+        get => _headOffset;
+        set => SetHeadOffset(value);
+    }
     [Export] public float Velocity { get; set; }
-    /// <summary>
-    /// Linear damping rate for <see cref="Velocity"/>, in inverse seconds at a combined mass of <c>1</c>.
-    /// </summary>
-    /// <remarks>
-    /// Intended decay is <c>exp(-Damping * delta / mass)</c>, where mass is <see cref="GetCombinedRollingMass"/>.
-    /// A heavier consist coasts longer. <c>0</c> leaves velocity unchanged.
-    /// </remarks>
     [Export] public float Damping { get; set; } = 1f;
-    /// <summary>Whether another consist can couple to <see cref="Head"/>.</summary>
     [Export] public bool CanCoupleFront { get; set; } = true;
-    /// <summary>
-    /// Whether another consist can couple to <see cref="Tail"/>.
-    /// A caboose consist sets this to <see langword="false"/>.
-    /// </summary>
     [Export] public bool CanCoupleRear { get; set; } = true;
-    /// <summary>Child 0, captured in <see cref="_Ready"/>. Not refreshed if the child list changes.</summary>
     public RollingStock Head => GetHead();
-    /// <summary>Last child, captured in <see cref="_Ready"/>. Not refreshed if the child list changes.</summary>
     public RollingStock Tail => GetTail();
-    /// <summary><see cref="RollingStock"/> children in child order. Returns <see cref="GetAllCars"/>.</summary>
     public Array<RollingStock> Cars => GetAllCars();
 
-    /// <summary>
-    /// Validates the chain, captures <see cref="Head"/> and <see cref="Tail"/>, and snaps every car onto <see cref="Track"/>.
-    /// </summary>
     public override void _Ready()
     {
         if (Engine.IsEditorHint())
@@ -73,19 +44,6 @@ public partial class TrainConsist : Node
 
     }
 
-    public override void _Process(double delta)
-    {
-        if (Engine.IsEditorHint())
-        {
-            Transform3D sampled = Track.GetPathTransformAtOffset(StartingOffset);
-            Cars[0].GlobalTransform = sampled;
-        }
-    }
-
-    /// <summary>
-    /// Damps <see cref="Velocity"/>, advances every <see cref="RollingStock.TrackOffset"/> by the same limited step, then places each car.
-    /// </summary>
-    /// <param name="delta">Physics frame time, in seconds.</param>
     public override void _PhysicsProcess(double delta)
     {
         if (Engine.IsEditorHint())
@@ -128,6 +86,28 @@ public partial class TrainConsist : Node
         ChildExitingTree -= _on_child_exiting_tree;
     }
 
+    private void SetHeadOffset(float value)
+    {
+        _headOffset = value;
+
+        if (!Engine.IsEditorHint() || Track is null || !IsInsideTree())
+        {
+            return;
+        }
+
+        Array<RollingStock> cars = Cars;
+        if (cars.Count == 0)
+        {
+            return;
+        }
+
+        RollingStock firstCar = cars[0];
+        firstCar.GlobalTransform = Track.GetPathTransformAtOffset(_headOffset);
+        RollingStock secondCar = cars[1];
+        float backwardsArcDelta = HeadOffset - firstCar.RearCouplerDistance() - secondCar.FrontCouplerDistance();
+        secondCar.GlobalTransform = Track.GetPathTransformAtOffset(backwardsArcDelta);
+    }
+
     private RollingStock GetHead()
     {
         RollingStock head = Cars[0];
@@ -142,37 +122,12 @@ public partial class TrainConsist : Node
         return tail;
     }
 
-    /// <summary>
-    /// Sets <paramref name="car"/> to the baked pose at its own <see cref="RollingStock.TrackOffset"/>.
-    /// </summary>
-    /// <param name="car">Car to move. Ignored when <see langword="null"/> or the track has no baked length.</param>
     private void PlaceCar(RollingStock car)
     {
-        if (car is null || !TryGetBakedLength(out _))
-        {
-            return;
-        }
 
     }    
 
-    /// <summary>
-    /// Returns <see langword="true"/> and the current baked length when <see cref="Track"/> has a curve with positive length.
-    /// </summary>
-    /// <param name="length">Baked length, or <c>0</c> when this returns <see langword="false"/>.</param>
-    private bool TryGetBakedLength(out float length)
-    {
-        length = 0f;
-        Curve3D curve = Track?.Curve;
-        if (curve == null || curve.PointCount == 0)
-        {
-            return false;
-        }
 
-        length = curve.GetBakedLength();
-        return length > 0f;
-    }
-
-    /// <summary>Places every car in <see cref="Cars"/> from its own <see cref="RollingStock.TrackOffset"/>.</summary>
     private void PlaceAllCars()
     {
         for (int i = 0; i < Cars.Count; i++)
@@ -181,7 +136,6 @@ public partial class TrainConsist : Node
         }
     }
 
-    /// <summary>Returns the sum of <see cref="RollingStock.RollingMass"/> over <see cref="RollingStock"/> children.</summary>
     public float GetCombinedRollingMass()
     {
         float total = 0f;
@@ -197,9 +151,6 @@ public partial class TrainConsist : Node
         return total;
     }
 
-    /// <summary>
-    /// Returns the <see cref="RollingStock"/> children in child order.
-    /// </summary>
     private Array<RollingStock> GetAllCars()
     {
         Array<Node> children = GetChildren();
@@ -241,10 +192,6 @@ public partial class TrainConsist : Node
         return poses;
     }
 
-    /// <summary>
-    /// Multiplies <see cref="Velocity"/> by <c>exp(-Damping * delta / mass)</c> when both <see cref="Damping"/> and the combined mass are positive.
-    /// </summary>
-    /// <param name="delta">Physics frame time, in seconds.</param>
     private void DampenVelocity(double delta)
     {
 
@@ -256,10 +203,6 @@ public partial class TrainConsist : Node
         }
     }
 
-    /// Splits this consist into two consists at index <param name="at">.
-    /// Follows the same index splitting conventions as strings.
-    /// For example, splitting at index 1 will split the head car from the
-    /// rest of the consist.
     public void Split(int at)
     {
         if(!NetworkManager.IsServer())
@@ -293,9 +236,6 @@ public partial class TrainConsist : Node
 
     }
 
-    /// Consist <param name="with"> will be joined with <this>, not the other way around.
-    /// If <paramref name="atFront"/> is true, the back of <paramref name="with"/> will be attatched to
-    /// the front of <this>.
     public void Join(TrainConsist with, bool atFront)
     {
         ArgumentNullException.ThrowIfNull(with);
