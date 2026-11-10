@@ -346,7 +346,6 @@ public partial class NetworkManager : Node
 			Instance.Query.Close();
 			Instance.Query = null;
 		}
-		Debug.Log("foo");
 	}
 
 	public static Array<LanDiscoverySession> GetKnownSessions()

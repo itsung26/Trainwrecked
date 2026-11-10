@@ -13,7 +13,39 @@ public abstract partial class RollingStock : AnimatableBody3D
     public bool HasPropulsion { get; protected set; }
     /// <summary>Baked arc length of this car's origin on its consist's track.</summary>
     public float TrackOffset { get; set; }
-    public RollingStock CoupledAhead { get; set; }
-    public RollingStock CoupledBehind { get; set; }
+    public RollingStock CoupledAhead
+    {
+        get => _coupledAhead;
+        set => SetCoupledAhead(value);
+    }
+    public RollingStock CoupledBehind
+    {
+        get => _coupledBehind;
+        set => SetCoupledBehind(value);
+    }
 
+    private RollingStock _coupledAhead;
+    private RollingStock _coupledBehind;
+
+    /// <summary>Stub: wire ahead coupling (clear neighbors, update Head/Tail, etc.).</summary>
+    protected virtual void SetCoupledAhead(RollingStock value)
+    {
+        _coupledAhead = value;
+
+        if (FrontCoupler is not null)
+        {
+            FrontCoupler.Clamped = value is not null;
+        }
+    }
+
+    /// <summary>Stub: wire behind coupling (clear neighbors, update Head/Tail, etc.).</summary>
+    protected virtual void SetCoupledBehind(RollingStock value)
+    {
+        _coupledBehind = value;
+
+        if (RearCoupler is not null)
+        {
+            RearCoupler.Clamped = value is not null;
+        }
+    }
 }

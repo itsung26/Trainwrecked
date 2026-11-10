@@ -27,10 +27,6 @@ public partial class Debug : Node
 
 		if (Input.IsActionJustPressed("Debug Action"))
 		{
-			Debug.Log($"Connected status: {NetworkManager.IsConnected()}");
-			Debug.Log($"Client status: {NetworkManager.IsClient()}");
-			Debug.Log(Multiplayer.MultiplayerPeer);
-			Debug.Log(GetTree().CurrentScene.Name);
 		}
 	}
 

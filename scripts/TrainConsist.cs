@@ -43,9 +43,9 @@ public partial class TrainConsist : Node
     /// </summary>
     [Export] public bool CanCoupleRear { get; set; } = true;
     /// <summary>Child 0, captured in <see cref="_Ready"/>. Not refreshed if the child list changes.</summary>
-    public RollingStock Head { get; private set; }
+    public RollingStock Head => GetHead();
     /// <summary>Last child, captured in <see cref="_Ready"/>. Not refreshed if the child list changes.</summary>
-    public RollingStock Tail { get; private set; }
+    public RollingStock Tail => GetTail();
     /// <summary><see cref="RollingStock"/> children in child order. Returns <see cref="GetAllCars"/>.</summary>
     public Array<RollingStock> Cars => GetAllCars();
     /// <summary>Host snapshots waiting on the client, sorted by <see cref="TrainPoseSnapshot.Tick"/>.</summary>
@@ -63,6 +63,7 @@ public partial class TrainConsist : Node
     public override void _Ready()
     {
         ChildEnteredTree += _on_child_entered_tree;
+        ChildExitingTree += _on_child_exiting_tree;
 
         if (!NetworkManager.IsServer())
         {
@@ -70,8 +71,6 @@ public partial class TrainConsist : Node
         }
 
         ValidateTrain();
-        Head = GetChild<RollingStock>(0);
-        Tail = GetChild<RollingStock>(GetChildCount() - 1);
 
 
         SnapConsistToTrack();
@@ -99,9 +98,34 @@ public partial class TrainConsist : Node
         }
     }
 
+    public override void _Input(InputEvent @event)
+    {
+        if (Input.IsActionJustPressed("Debug Action"))
+        {
+            int middle = (0 + Cars.Count - 1) / 2;
+            // Cars[middle].QueueFree();
+            Split(middle);
+        }
+    }
+
     public override void _ExitTree()
     {
         ChildEnteredTree -= _on_child_entered_tree;
+        ChildExitingTree -= _on_child_exiting_tree;
+    }
+
+    private RollingStock GetHead()
+    {
+        RollingStock head = Cars[0];
+
+        return head;
+    }
+
+    private RollingStock GetTail()
+    {
+        RollingStock tail = Cars[Cars.Count - 1];
+
+        return tail;
     }
 
     /// <summary>
@@ -618,7 +642,8 @@ public partial class TrainConsist : Node
             return;
         }
 
-
+        TrainConsist newConsist = this.Duplicate() as TrainConsist;
+        GetTree().CurrentScene.AddChild(newConsist);
     }
 
     /// Consist <param name="with"> will be joined with <this>, not the other way around.
@@ -639,6 +664,56 @@ public partial class TrainConsist : Node
         {
             Debug.LogWarn("Non RollingStock child added to TrainConsist.");
         }
+    }
+
+    private void _on_child_exiting_tree(Node node)
+    {
+        if (node is not RollingStock exitingCar)
+        {
+            return;
+        }
+
+        Array<RollingStock> cars = Cars;
+        int indexOfExitingCar = cars.IndexOf(exitingCar);
+        if (indexOfExitingCar < 0)
+        {
+            return;
+        }
+
+        exitingCar.CoupledAhead = null;
+        exitingCar.CoupledBehind = null;
+
+        // Sole car: nothing left to couple; drop the empty consist.
+        if (cars.Count == 1)
+        {
+            // Spawner replicates removing this consist root; clients must not free locally.
+            if (NetworkManager.IsServer())
+            {
+                QueueFree();
+            }
+            return;
+        }
+
+        int beforeIndex = indexOfExitingCar - 1;
+        int afterIndex = indexOfExitingCar + 1;
+
+        // Front car: new head has nothing ahead.
+        if (indexOfExitingCar == 0)
+        {
+            cars[afterIndex].CoupledAhead = null;
+            return;
+        }
+
+        // Back car: new tail has nothing behind.
+        if (indexOfExitingCar == cars.Count - 1)
+        {
+            cars[beforeIndex].CoupledBehind = null;
+            return;
+        }
+
+        // Middle car: bridge the gap.
+        cars[beforeIndex].CoupledBehind = cars[afterIndex];
+        cars[afterIndex].CoupledAhead = cars[beforeIndex];
     }
 
     /// <summary>One host physics sample of the chain, stored on clients for playback.</summary>
