@@ -15,8 +15,8 @@ classDiagram
         +float RollingMass
         +bool HasPropulsion
         +float TrackOffset
-        +RollingStock CoupledAhead
-        +RollingStock CoupledBehind
+        +RollingStock Ahead
+        +RollingStock Behind
     }
 
     class Locomotive {
@@ -55,7 +55,7 @@ classDiagram
     TrainConsist --> TrackPath : rides
 ```
 
-`RollingStock` is an `AnimatableBody3D`. It exports the front and rear coupler markers and `RollingMass` (default `1`). `HasPropulsion` defaults to false. `TrackOffset` is the baked arc length of the car origin on the consist's track. `CoupledAhead` and `CoupledBehind` are neighbor fields; the consist does not write them. The chain is the child list.
+`RollingStock` is an `AnimatableBody3D`. It exports the front and rear coupler markers and `RollingMass` (default `1`). `HasPropulsion` defaults to false. `TrackOffset` is the baked arc length of the car origin on the consist's track. `Ahead` and `Behind` are neighbor fields; the consist does not write them. The chain is the child list.
 
 `Locomotive` sets `HasPropulsion` in `_Ready`. It has no power-source subclasses and does not apply force.
 
@@ -65,6 +65,6 @@ classDiagram
 
 Snapping projects each car onto the closest baked offset, then rewrites offsets so adjacent coupler markers meet while the chain's average offset stays put. Child `i` sits ahead of child `i + 1` along increasing offset. The path pose points local `-Z` that way, and each coupler's arc is the marker's local `-Z`. A missing marker counts as the car origin. The whole chain then shifts so both coupler extremes lie on the baked curve. A chain longer than the curve throws.
 
-Each physics frame damps `Velocity` by `exp(-Damping * delta / mass)`, where mass is the sum of member `RollingMass`. A heavier consist coasts longer. `Damping` of `0` leaves velocity unchanged. The same arc step is then added to every `TrackOffset`, shortened so the outermost coupler cannot pass either end of the curve. `Velocity` is cleared when the chain is already against the end it is moving toward. Each car is placed from its own offset. The host sends those poses to clients, which apply them and do not step the chain.
+Each physics frame damps `Velocity` by `exp(-Damping * delta / mass)`, where mass is the sum of member `RollingMass`. A heavier consist coasts longer. `Damping` of `0` leaves velocity unchanged. The same arc step is then added to every `TrackOffset`, shortened so the outermost coupler cannot pass either end of the curve. `Velocity` is cleared when the chain is already against the end it is moving toward. Each car is placed from its own offset. Simulation runs on the host.
 
 `CanCoupleFront` and `CanCoupleRear` record whether another consist may join that end. The physics step does not read them. There is no insert, split, or propel method.

@@ -42,6 +42,7 @@ public partial class TrackPath : TrainwreckedPath
 
 	[ExportToolButton("Smoothen Track Curve", Icon = "Curve3D")]
 	public Callable EnforceCurveRestrictionsButton => Callable.From(EnforceCurveRestrictions);
+	private double _editorRebuildElapsed;
 
 	public override void _Ready()
 	{
@@ -49,9 +50,27 @@ public partial class TrackPath : TrainwreckedPath
 		RebuildTracks();
 	}
 
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+
+		if (Engine.IsEditorHint())
+		{
+			_editorRebuildElapsed += delta;
+			if (_editorRebuildElapsed >= 1.0)
+			{
+				_editorRebuildElapsed = 0.0;
+				RebuildTracks();
+			}
+		}
+    }
+
     public override void _ExitTree()
     {
-        CurveChanged -= _on_curve_changed;
+		if (IsConnected(SignalName.CurveChanged, Callable.From(_on_curve_changed)))
+		{
+			CurveChanged -= _on_curve_changed;
+		}
     }
 
 	/// <summary>
@@ -147,9 +166,11 @@ public partial class TrackPath : TrainwreckedPath
 	/// </summary>
 	public void EnforceCurveRestrictions()
 	{
-		// Momentarily disconnect the signal to prevent the signal emitting during every
-		// change in the validation cycle.
-		CurveChanged -= _on_curve_changed;
+		// Momentarily disconnect so elevation/tangent edits do not rebuild per point.
+		if (IsConnected(SignalName.CurveChanged, Callable.From(_on_curve_changed)))
+		{
+			CurveChanged -= _on_curve_changed;
+		}
 		try
 		{
 			// Order does matter here- tangents will not calculate correctly if

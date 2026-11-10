@@ -2,7 +2,7 @@ using System;
 using Godot;
 
 /// <summary>Represents a physical body that rides upon a railroad.</summary>
-[GlobalClass, Icon("res://assets/2d assets/rolling_stock_icon.svg")]
+[Tool, GlobalClass, Icon("res://assets/2d assets/rolling_stock_icon.svg")]
 public abstract partial class RollingStock : AnimatableBody3D
 {
     [Export] public CarCoupler FrontCoupler { get; set; }
@@ -11,26 +11,24 @@ public abstract partial class RollingStock : AnimatableBody3D
     [Export] public float RollingMass { get; protected set; } = 1.0f;
     /// <summary>Whether this stock can propel itself. Locomotives set this to true.</summary>
     public bool HasPropulsion { get; protected set; }
-    /// <summary>Baked arc length of this car's origin on its consist's track.</summary>
-    public float TrackOffset { get; set; }
-    public RollingStock CoupledAhead
+    public RollingStock Ahead
     {
-        get => _coupledAhead;
-        set => SetCoupledAhead(value);
+        get => _ahead;
+        set => SetAhead(value);
     }
-    public RollingStock CoupledBehind
+    public RollingStock Behind
     {
-        get => _coupledBehind;
-        set => SetCoupledBehind(value);
+        get => _behind;
+        set => SetBehind(value);
     }
 
-    private RollingStock _coupledAhead;
-    private RollingStock _coupledBehind;
+    private RollingStock _ahead;
+    private RollingStock _behind;
 
     /// <summary>Stub: wire ahead coupling (clear neighbors, update Head/Tail, etc.).</summary>
-    protected virtual void SetCoupledAhead(RollingStock value)
+    protected virtual void SetAhead(RollingStock value)
     {
-        _coupledAhead = value;
+        _ahead = value;
 
         if (FrontCoupler is not null)
         {
@@ -39,9 +37,9 @@ public abstract partial class RollingStock : AnimatableBody3D
     }
 
     /// <summary>Stub: wire behind coupling (clear neighbors, update Head/Tail, etc.).</summary>
-    protected virtual void SetCoupledBehind(RollingStock value)
+    protected virtual void SetBehind(RollingStock value)
     {
-        _coupledBehind = value;
+        _behind = value;
 
         if (RearCoupler is not null)
         {

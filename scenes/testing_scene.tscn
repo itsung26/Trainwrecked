@@ -226,11 +226,4 @@ metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 Track = NodePath("../TestTracks")
 Damping = 0.0
 
-[node name="TestRailCarBody" parent="TestTrain" index="0" unique_id=820957873]
-transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, 5.410927, 0, 19.024132)
-
-[node name="TestRailCarBody2" parent="TestTrain" index="1" unique_id=2139975253]
-transform = Transform3D(1.1924881e-08, 0, -1, 0, 1, 0, 1, 0, 1.1924881e-08, -9.481623, 0, 19.024132)
-
 [editable path="CactusMultiMesh/cactus"]
-[editable path="TestTrain"]

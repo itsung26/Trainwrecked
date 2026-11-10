@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-[GlobalClass]
+[Tool, GlobalClass]
 public partial class RailCar : RollingStock
 {
 
