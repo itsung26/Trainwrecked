@@ -103,4 +103,16 @@ public partial class TrainwreckedPath : Path3D
         Transform3D localOnCurve = curve.SampleBakedWithRotation(offset, cubic: false, applyTilt: true);
         return GlobalTransform * localOnCurve;
     }
+
+    /// Returns the total arc length of the curve.
+    public float Length()
+    {
+        Curve3D curve = Curve;
+        if (curve == null || curve.PointCount == 0)
+        {
+            return 0f;
+        }
+
+        return curve.GetBakedLength();
+    }
 }

@@ -52,22 +52,30 @@ public abstract partial class RollingStock : AnimatableBody3D
     {
         if (FrontCoupler is null || RearCoupler is null)
         {
-            throw new InvalidOperationException();
+            throw new InvalidOperationException("Neither coupler can be null.");
         }
 
-        float frontZ = ToLocal(FrontCoupler.GetCouplingPointPosition()).Z;
-        float rearZ = ToLocal(RearCoupler.GetCouplingPointPosition()).Z;
-        return Mathf.Abs(frontZ - rearZ);
+        return FrontCouplerDistance() + RearCouplerDistance();
     }
 
     /// Returns the local z axis distance from the origin to the front coupler coupling point.
     public float FrontCouplerDistance()
     {
+        if (FrontCoupler is null)
+        {
+            throw new InvalidOperationException("Front coupler cannot be null.");
+        }
+
         return Mathf.Abs(ToLocal(FrontCoupler.GetCouplingPointPosition()).Z);
     }
 
     public float RearCouplerDistance()
     {
+        if (RearCoupler is null)
+        {
+            throw new InvalidOperationException("Rear coupler cannot be null.");
+        }
+
         return Mathf.Abs(ToLocal(RearCoupler.GetCouplingPointPosition()).Z);
     }
 }

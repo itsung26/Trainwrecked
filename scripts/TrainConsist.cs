@@ -32,6 +32,8 @@ public partial class TrainConsist : Node
         ChildEnteredTree += _on_child_entered_tree;
         ChildExitingTree += _on_child_exiting_tree;
 
+        RebuildCouplingLinks();
+
         if (!NetworkManager.IsServer())
         {
             return;
@@ -39,9 +41,13 @@ public partial class TrainConsist : Node
 
         if (Cars.Count == 0)
         {
-            QueueFree();
+            // Clients must not free locally.
+            // Spawn replicator node will replicate this deletion.
+            if (NetworkManager.IsServer())
+            {
+                QueueFree();
+            }
         }
-
     }
 
     public override void _PhysicsProcess(double delta)
@@ -57,7 +63,7 @@ public partial class TrainConsist : Node
         }
 
         DampenVelocity(delta);
-        PlaceAllCars();
+        HeadOffset += Velocity * (float)delta;
     }
 
     public override void _Input(InputEvent @event)
@@ -88,24 +94,28 @@ public partial class TrainConsist : Node
 
     private void SetHeadOffset(float value)
     {
-        _headOffset = value;
+        if (Head is null)
+        {
+            return;
+        }
 
-        if (!Engine.IsEditorHint() || Track is null || !IsInsideTree())
+        if (Track is null)
         {
             return;
         }
 
         Array<RollingStock> cars = Cars;
-        if (cars.Count == 0)
+        float headToLastCouplerDistance = cars[0].RearCouplerDistance();
+        for (int i = 1; i < cars.Count; i++)
         {
-            return;
+            headToLastCouplerDistance += cars[i].CouplerSpan();
         }
 
-        RollingStock firstCar = cars[0];
-        firstCar.GlobalTransform = Track.GetPathTransformAtOffset(_headOffset);
-        RollingStock secondCar = cars[1];
-        float backwardsArcDelta = HeadOffset - firstCar.RearCouplerDistance() - secondCar.FrontCouplerDistance();
-        secondCar.GlobalTransform = Track.GetPathTransformAtOffset(backwardsArcDelta);
+        value = Mathf.Clamp(value, headToLastCouplerDistance, Track.Length() - Head.FrontCouplerDistance());
+
+        _headOffset = value;
+
+        PlaceCars();
     }
 
     private RollingStock GetHead()
@@ -122,17 +132,29 @@ public partial class TrainConsist : Node
         return tail;
     }
 
-    private void PlaceCar(RollingStock car)
+    /// Doubly linked references are determined by child order.
+    private void RebuildCouplingLinks()
     {
+        Array<RollingStock> cars = Cars;
+        for (int i = 0; i < cars.Count; i++)
+        {
+            RollingStock current = cars[i];
+            current.Ahead = i > 0 ? cars[i - 1] : null;
+            current.Behind = i < cars.Count - 1 ? cars[i + 1] : null;
+        }
+    }
 
-    }    
-
-
-    private void PlaceAllCars()
+    private void PlaceCars()
     {
+        float offset = HeadOffset;
         for (int i = 0; i < Cars.Count; i++)
         {
-            PlaceCar(Cars[i]);
+            Cars[i].GlobalTransform = Track.GetPathTransformAtOffset(offset);
+            if (i + 1 >= Cars.Count)
+            {
+                break;
+            }
+            offset -= Cars[i].RearCouplerDistance() + Cars[i + 1].FrontCouplerDistance();
         }
     }
 
@@ -174,24 +196,6 @@ public partial class TrainConsist : Node
         return sorted;
     }
 
-    public Array<Transform3D> GetAllCarPoses()
-    {
-        Array<Transform3D> poses = new Array<Transform3D>();
-
-        if (Cars.Count == 0)
-        {
-            return poses;
-        }
-
-        foreach (RollingStock car in Cars)
-        {
-            poses.Add(car.GlobalTransform);
-        }
-
-
-        return poses;
-    }
-
     private void DampenVelocity(double delta)
     {
 
@@ -203,6 +207,30 @@ public partial class TrainConsist : Node
         }
     }
 
+    /// Returns the full arc length of the train, from frontmost coupler to back coupler.
+    public float Length()
+    {
+        if (Cars.Count == 0)
+        {
+            throw new InvalidOperationException("Cannot measure length; consist has no cars.");
+        }
+
+        if (Cars.Count == 1)
+        {
+            return Head.CouplerSpan();
+        }
+
+        float totalSpan = 0.0f;
+        RollingStock current = Head;
+        while (current is not null)
+        {
+            totalSpan += current.CouplerSpan();
+            current = current.Behind;
+        }
+
+        return totalSpan;
+    }
+
     public void Split(int at)
     {
         if(!NetworkManager.IsServer())
@@ -212,7 +240,7 @@ public partial class TrainConsist : Node
 
         if (at < 0 || at > Cars.Count)
         {
-            throw new IndexOutOfRangeException();
+            throw new IndexOutOfRangeException($"Split index {at} is outside [0, {Cars.Count}].");
         }
 
         if (at == 0 || at == Cars.Count)
@@ -233,7 +261,8 @@ public partial class TrainConsist : Node
             cars[i].Reparent(newConsist);
         }
 
-
+        RebuildCouplingLinks();
+        newConsist.RebuildCouplingLinks();
     }
 
     public void Join(TrainConsist with, bool atFront)
@@ -244,6 +273,8 @@ public partial class TrainConsist : Node
         {
             return;
         }
+
+        throw new NotImplementedException("TrainConsist.Join is not implemented.");
     }
 
     private void _on_child_entered_tree(Node node)
@@ -253,17 +284,23 @@ public partial class TrainConsist : Node
             return;
         }
 
-        RollingStock newCarChild = node as RollingStock;
-
-        if (newCarChild is null)
+        if (node is not RollingStock)
         {
             Debug.LogWarn("Non RollingStock child added to TrainConsist.");
+            return;
         }
+
+        RebuildCouplingLinks();
     }
 
     private void _on_child_exiting_tree(Node node)
     {
         if (Engine.IsEditorHint())
+        {
+            return;
+        }
+
+        if (!NetworkManager.IsServer())
         {
             return;
         }
@@ -286,34 +323,12 @@ public partial class TrainConsist : Node
         // Sole car: nothing left to couple; drop the empty consist.
         if (cars.Count == 1)
         {
-            // Spawner replicates removing this consist root; clients must not free locally.
-            if (NetworkManager.IsServer())
-            {
-                QueueFree();
-            }
+            QueueFree();
             return;
         }
 
-        int beforeIndex = indexOfExitingCar - 1;
-        int afterIndex = indexOfExitingCar + 1;
-
-        // Front car: new head has nothing ahead.
-        if (indexOfExitingCar == 0)
-        {
-            cars[afterIndex].Ahead = null;
-            return;
-        }
-
-        // Back car: new tail has nothing behind.
-        if (indexOfExitingCar == cars.Count - 1)
-        {
-            cars[beforeIndex].Behind = null;
-            return;
-        }
-
-        // Middle car: bridge the gap.
-        cars[beforeIndex].Behind = cars[afterIndex];
-        cars[afterIndex].Ahead = cars[beforeIndex];
+        // Exiting car is still in Cars until this signal returns; rebuild after it leaves.
+        CallDeferred(MethodName.RebuildCouplingLinks);
     }
 
 }

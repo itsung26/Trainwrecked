@@ -28,6 +28,7 @@ public partial class CarCoupler : Interactable
     /// <see cref="TrainConsist"/> join/split.
     /// </remarks>
     public bool Clamped { get; set; }
+    public RollingStock CarParent => GetParent() as RollingStock;
 
     [ExportGroup("Editor Configuration")]
     /// <summary>Marker at the coupling contact point along the car local <c>-Z</c> axis.</summary>
