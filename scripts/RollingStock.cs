@@ -66,7 +66,7 @@ public abstract partial class RollingStock : AnimatableBody3D
             throw new InvalidOperationException("Front coupler cannot be null.");
         }
 
-        return Mathf.Abs(ToLocal(FrontCoupler.GetCouplingPointPosition()).Z);
+        return Mathf.Abs(FrontCoupler.GetCouplingPointLocalPosition().Z);
     }
 
     public float RearCouplerDistance()
@@ -76,6 +76,6 @@ public abstract partial class RollingStock : AnimatableBody3D
             throw new InvalidOperationException("Rear coupler cannot be null.");
         }
 
-        return Mathf.Abs(ToLocal(RearCoupler.GetCouplingPointPosition()).Z);
+        return Mathf.Abs(RearCoupler.GetCouplingPointLocalPosition().Z);
     }
 }

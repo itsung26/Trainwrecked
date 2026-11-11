@@ -109,6 +109,18 @@ public partial class CarCoupler : Interactable
     }
 
     /// <summary>
+    /// Returns the coupling contact marker in this coupler's parent local space.
+    /// </summary>
+    /// <remarks>
+    /// Uses local transforms only, so it is valid while the car is outside the scene tree.
+    /// Parent is expected to be the owning <see cref="RollingStock"/>.
+    /// </remarks>
+    public Vector3 GetCouplingPointLocalPosition()
+    {
+        return Transform * _couplePoint.Position;
+    }
+
+    /// <summary>
     /// Eases <c>_hookMesh</c> rotation toward open or closed based on <see cref="Clamped"/>.
     /// </summary>
     private void RotateHookIfClamped(double delta)

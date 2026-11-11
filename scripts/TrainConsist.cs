@@ -20,6 +20,7 @@ public partial class TrainConsist : Node
     [Export] public bool CanCoupleRear { get; set; } = true;
     public RollingStock Head => GetHead();
     public RollingStock Tail => GetTail();
+    /// When accessed, returns a copy of all RollingStock children. Cannot be modified.
     public Array<RollingStock> Cars => GetAllCars();
 
     public override void _Ready()
@@ -34,19 +35,14 @@ public partial class TrainConsist : Node
 
         RebuildCouplingLinks();
 
+        if (Cars.Count == 0)
+        {
+            Debug.LogWarn($"{Name} ready with no RollingStock children.");
+        }
+
         if (!NetworkManager.IsServer())
         {
             return;
-        }
-
-        if (Cars.Count == 0)
-        {
-            // Clients must not free locally.
-            // Spawn replicator node will replicate this deletion.
-            if (NetworkManager.IsServer())
-            {
-                QueueFree();
-            }
         }
     }
 
@@ -101,6 +97,7 @@ public partial class TrainConsist : Node
 
         if (Track is null)
         {
+            Debug.LogWarn("No track set, returning.");
             return;
         }
 
@@ -207,6 +204,42 @@ public partial class TrainConsist : Node
         }
     }
 
+    /// Returns {this} copied. This is preferred over node.Duplicate as it
+    /// instantiates from the scene path, which allows network spawning replication
+    /// to work properly.
+    public TrainConsist Copy()
+    {
+        PackedScene copiedScene = GD.Load<PackedScene>(SceneFilePath);
+        TrainConsist copiedTrain = copiedScene.Instantiate<TrainConsist>();
+
+        // Copy over the properties from {this} to the newly copied train.
+        copiedTrain.Track = Track;
+        copiedTrain.HeadOffset = HeadOffset;
+        copiedTrain.Velocity = Velocity;
+        copiedTrain.Damping = Damping;
+        copiedTrain.CanCoupleFront = CanCoupleFront;
+        copiedTrain.CanCoupleRear = CanCoupleRear;
+
+        // Delete trailing copied cars beyond this train's live count.
+        Array<RollingStock> copiedCars = copiedTrain.Cars;
+        for (int i = Cars.Count; i < copiedCars.Count; i++)
+        {
+            copiedCars[i].Free();
+        }
+
+        // Copy car transforms.
+        for (int i = 0; i < Cars.Count; i++)
+        {
+            RollingStock car = Cars[i];
+
+            copiedTrain.Cars[i].GlobalTransform = car.GlobalTransform;
+        }
+
+        copiedTrain.RebuildCouplingLinks();
+
+        return copiedTrain;
+    }
+
     /// Returns the full arc length of the train, from frontmost coupler to back coupler.
     public float Length()
     {
@@ -248,18 +281,19 @@ public partial class TrainConsist : Node
             return;
         }
 
-        TrainConsist newConsist = Duplicate() as TrainConsist;
-        foreach (RollingStock car in newConsist.Cars)
+        TrainConsist newConsist = Copy();
+        // Strip all children in front of {at} on the copied train.
+        for(int i = 0; i < at; i++)
         {
-            car.Free();
+            newConsist.Cars[i].Free();
         }
-        GetTree().CurrentScene.AddChild(newConsist);
+        GetTree().CurrentScene.AddChild(newConsist, true);
 
-        Array<RollingStock> cars = Cars;
-        for (int i = at; i < cars.Count; i++)
-        {
-            cars[i].Reparent(newConsist);
-        }
+        // Array<RollingStock> cars = Cars;
+        // for (int i = at; i < cars.Count; i++)
+        // {
+        //     cars[i].Reparent(newConsist);
+        // }
 
         RebuildCouplingLinks();
         newConsist.RebuildCouplingLinks();
@@ -320,10 +354,10 @@ public partial class TrainConsist : Node
         exitingCar.Ahead = null;
         exitingCar.Behind = null;
 
-        // Sole car: nothing left to couple; drop the empty consist.
+        // Sole car: nothing left to couple.
         if (cars.Count == 1)
         {
-            QueueFree();
+            Debug.LogWarn($"{Name}: last RollingStock child is leaving; consist is empty.");
             return;
         }
 

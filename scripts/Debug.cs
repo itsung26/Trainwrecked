@@ -30,12 +30,12 @@ public partial class Debug : Node
 		}
 	}
 
-	/// <summary>
-	/// Prints <paramref name="message"/> to the Godot console.
-	/// </summary>
-	/// <typeparam name="T">Type of the value to print.</typeparam>
-	/// <param name="message">Value passed to <see cref="GD.Print(object)"/>. <see langword="null"/> is allowed.</param>
-	public static void Log<T>(T message)
+    /// <summary>
+    /// Prints <paramref name="message"/> to the Godot console.
+    /// </summary>
+    /// <typeparam name="T">Type of the value to print.</typeparam>
+    /// <param name="message">Value passed to <see cref="GD.Print(object[])"/>. <see langword="null"/> is allowed.</param>
+    public static void Log<T>(T message)
 	{
 		GD.Print(message);
 	}
