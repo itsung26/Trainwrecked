@@ -1,0 +1,354 @@
+[remap]
+
+importer="scene"
+importer_version=1
+type="PackedScene"
+uid="uid://b0qat311ag644"
+path="res://.godot/imported/gem_pack.blend-26f95c7350ca15d028334ee10ea212be.scn"
+
+[deps]
+
+source_file="res://assets/3d assets/gem_pack/gem_pack.blend"
+dest_files=["res://.godot/imported/gem_pack.blend-26f95c7350ca15d028334ee10ea212be.scn"]
+
+[params]
+
+nodes/root_type=""
+nodes/root_name=""
+nodes/root_script=null
+mesh_library/use_node_names_as_mesh_names=false
+array_mesh/deduplicate_surfaces=true
+nodes/apply_root_scale=true
+nodes/root_scale=0.175
+nodes/import_as_skeleton_bones=false
+nodes/use_name_suffixes=true
+nodes/use_node_type_suffixes=true
+meshes/ensure_tangents=true
+meshes/generate_lods=true
+meshes/create_shadow_meshes=true
+meshes/light_baking=1
+meshes/lightmap_texel_size=0.2
+meshes/force_disable_compression=false
+skins/use_named_skins=true
+animation/import=true
+animation/fps=30
+animation/trimming=false
+animation/remove_immutable_tracks=true
+animation/import_rest_as_RESET=false
+import_script/path=""
+materials/extract=0
+materials/extract_format=0
+materials/extract_path=""
+_subresources={
+"meshes": {
+"gem_pack_Mesh": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh.res",
+"save_to_file/path": "uid://7vbb7sghpxrg"
+},
+"gem_pack_Mesh_001": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_001.res",
+"save_to_file/path": "uid://bxri06goshet6"
+},
+"gem_pack_Mesh_002": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_002.res",
+"save_to_file/path": "uid://b51py21mpjmfv"
+},
+"gem_pack_Mesh_003": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_003.res",
+"save_to_file/path": "uid://dtb3b2ifa3ok4"
+},
+"gem_pack_Mesh_004": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_004.res",
+"save_to_file/path": "uid://ck10v245ilca6"
+},
+"gem_pack_Mesh_005": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_005.res",
+"save_to_file/path": "uid://djvb6kbismac1"
+},
+"gem_pack_Mesh_006": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_006.res",
+"save_to_file/path": "uid://coic6dr7oeevh"
+},
+"gem_pack_Mesh_007": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_007.res",
+"save_to_file/path": "uid://cawficg21ysgb"
+},
+"gem_pack_Mesh_008": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_008.res",
+"save_to_file/path": "uid://do382tcd5tlk5"
+},
+"gem_pack_Mesh_009": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_009.res",
+"save_to_file/path": "uid://ehbk32ua3xjy"
+},
+"gem_pack_Mesh_010": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_010.res",
+"save_to_file/path": "uid://dckcuovy77s1k"
+},
+"gem_pack_Mesh_020": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_020.res",
+"save_to_file/path": "uid://bmnrgtasblcor"
+},
+"gem_pack_Mesh_021": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_021.res",
+"save_to_file/path": "uid://dro70xnchvpro"
+},
+"gem_pack_Mesh_022": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_022.res",
+"save_to_file/path": "uid://bev46k3l2npyb"
+},
+"gem_pack_Mesh_023": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_023.res",
+"save_to_file/path": "uid://dap535m1p32oq"
+},
+"gem_pack_Mesh_024": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_024.res",
+"save_to_file/path": "uid://csfxgs2khjdv6"
+},
+"gem_pack_Mesh_025": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_025.res",
+"save_to_file/path": "uid://krl6rgxnymsw"
+},
+"gem_pack_Mesh_033": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_033.res",
+"save_to_file/path": "uid://cygl6exmuh3g8"
+},
+"gem_pack_Mesh_036": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_036.res",
+"save_to_file/path": "uid://mtysaetdaupc"
+},
+"gem_pack_Mesh_037": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_037.res",
+"save_to_file/path": "uid://tgg1nha1ikk0"
+},
+"gem_pack_Mesh_038": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_038.res",
+"save_to_file/path": "uid://do6maq7vtdugu"
+},
+"gem_pack_Mesh_039": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_039.res",
+"save_to_file/path": "uid://b1d3xd7cm7cxc"
+},
+"gem_pack_Mesh_040": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_040.res",
+"save_to_file/path": "uid://uxuwv87sx6n2"
+},
+"gem_pack_Mesh_041": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_041.res",
+"save_to_file/path": "uid://bf31dcnbwm26y"
+},
+"gem_pack_Mesh_048": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_048.res",
+"save_to_file/path": "uid://bcx7118d34uks"
+},
+"gem_pack_Mesh_061": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_061.res",
+"save_to_file/path": "uid://dok15uxb08tl1"
+},
+"gem_pack_Mesh_062": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_062.res",
+"save_to_file/path": "uid://b5j6w5ef05y4u"
+},
+"gem_pack_Mesh_063": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_063.res",
+"save_to_file/path": "uid://bxbbs5com8vnb"
+},
+"gem_pack_Mesh_064": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_064.res",
+"save_to_file/path": "uid://bts0vgggajn1x"
+},
+"gem_pack_Mesh_065": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_065.res",
+"save_to_file/path": "uid://kqlh3b1r4igg"
+},
+"gem_pack_Mesh_066": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_066.res",
+"save_to_file/path": "uid://b7t8o5c4ogun3"
+},
+"gem_pack_Mesh_073": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://assets/3d assets/gem_pack/mesh_resources/gem_pack_Mesh_073.res",
+"save_to_file/path": "uid://dq8faspyhe3kw"
+}
+}
+}
+blender/nodes/visible=0
+blender/nodes/active_collection_only=false
+blender/nodes/punctual_lights=true
+blender/nodes/cameras=true
+blender/nodes/custom_properties=true
+blender/nodes/modifiers=1
+blender/meshes/vertex_colors=1
+blender/meshes/uvs=true
+blender/meshes/normals=true
+blender/meshes/export_geometry_nodes_instances=false
+blender/meshes/gpu_instances=false
+blender/meshes/tangents=true
+blender/meshes/skins=2
+blender/meshes/export_bones_deforming_mesh_only=false
+blender/materials/unpack_enabled=true
+blender/materials/export_materials=1
+blender/animation/limit_playback=true
+blender/animation/always_sample=true
+blender/animation/group_tracks=true
+gltf/naming_version=2
+gltf/texture_map_mode=1
