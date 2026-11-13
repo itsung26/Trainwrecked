@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://clqr77tgjrxw5" path="res://scripts/RailCar.cs" id="2_rkt2r"]
 [ext_resource type="PackedScene" uid="uid://jx2471tdo5yu" path="res://assets/TrainwreckedEntities/car_coupler.tscn" id="3_rkt2r"]
 [ext_resource type="Material" uid="uid://nay4oceq21q2" path="res://assets/materials/blueprint_grid.tres" id="4_q6psy"]
+[ext_resource type="Material" uid="uid://ycx1b2myd8fy" path="res://assets/materials/sandy_dunes.tres" id="5_fylv5"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_dehhp"]
 size = Vector3(3.293, 3.293, 12.224)
@@ -24,6 +25,12 @@ size = Vector3(3.293, 0.15454882, 12.224)
 size = Vector3(3.293, 3.275, 12.224)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_58wuf"]
+size = Vector3(3.293, 3.275, 12.224)
+
+[sub_resource type="BoxMesh" id="BoxMesh_58wuf"]
+size = Vector3(3.293, 3.275, 12.224)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2gq8u"]
 size = Vector3(3.293, 3.275, 12.224)
 
 [node name="TestTrain" type="Node" unique_id=1571218383]
@@ -104,4 +111,30 @@ target_position = Vector3(0, 0, -5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.363, -6.1021156)
 
 [node name="Back3" parent="TestRailCarBody3" unique_id=2077524626 instance=ExtResource("3_rkt2r")]
+transform = Transform3D(-1, 0, 8.940697e-08, 0, 1, 0, -8.940697e-08, 0, -1, 5.302299e-09, 0.363, 6.110695)
+
+[node name="TestRailCarBody4" type="AnimatableBody3D" parent="." unique_id=1110200925 node_paths=PackedStringArray("FrontCoupler", "RearCoupler")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 49.836742)
+script = ExtResource("2_rkt2r")
+FrontCoupler = NodePath("Front3")
+RearCoupler = NodePath("Back3")
+metadata/_custom_type_script = "uid://clqr77tgjrxw5"
+
+[node name="RailCarVisual" type="MeshInstance3D" parent="TestRailCarBody4" unique_id=230894547]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9412186, 0)
+mesh = SubResource("BoxMesh_58wuf")
+surface_material_override/0 = ExtResource("5_fylv5")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TestRailCarBody4" unique_id=1046843393]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9412186, 0)
+shape = SubResource("BoxShape3D_2gq8u")
+
+[node name="Forwards" type="RayCast3D" parent="TestRailCarBody4" unique_id=188130250]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9468727, -6.112)
+target_position = Vector3(0, 0, -5)
+
+[node name="Front3" parent="TestRailCarBody4" unique_id=1392007458 instance=ExtResource("3_rkt2r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.363, -6.1021156)
+
+[node name="Back3" parent="TestRailCarBody4" unique_id=919841557 instance=ExtResource("3_rkt2r")]
 transform = Transform3D(-1, 0, 8.940697e-08, 0, 1, 0, -8.940697e-08, 0, -1, 5.302299e-09, 0.363, 6.110695)

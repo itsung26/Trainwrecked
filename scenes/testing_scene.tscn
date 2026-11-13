@@ -174,7 +174,7 @@ mesh = SubResource("BoxMesh_dehhp")
 shape = SubResource("ConcavePolygonShape3D_tvk4s")
 
 [node name="Pedestal4" type="MeshInstance3D" parent="." unique_id=6453019]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.1152143, -0.72172236, 15.162303)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.8960905, -0.72172236, 12.211208)
 mesh = SubResource("BoxMesh_65vkx")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Pedestal4" unique_id=1386975085]
@@ -196,16 +196,16 @@ transform = Transform3D(0.7784428, 0, -0.6277155, 0, 1, 0, 0.6277155, 0, 0.77844
 transform = Transform3D(-0.6446342, 0.18064909, -0.7428412, 7.450581e-09, 0.9716802, 0.23629959, 0.7644912, 0.15232679, -0.62637824, -4.3439198, -1.3752052, 2.1884718)
 
 [node name="ModelTrainPickupable" parent="." unique_id=1554800455 instance=ExtResource("10_glees")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.85633945, -0.008614123, 15.168439)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.6372156, -0.008614123, 12.217344)
 
 [node name="ModelTrainPickupableRedLoco" parent="." unique_id=1511877849 instance=ExtResource("11_bwcr2")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.3438425, -0.008635879, 15.118445)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1.1247187, -0.008635879, 12.167351)
 
 [node name="CurlyPooPickupable" parent="." unique_id=1762888275 instance=ExtResource("12_glees")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.8778796, -1.3500495, 0.86823606)
 
 [node name="ButtonInteractable" parent="." unique_id=1492329018 instance=ExtResource("13_bwcr2")]
-transform = Transform3D(-8.7422784e-08, -4.371139e-08, -1, 1, -4.371139e-08, -8.742278e-08, -4.3711385e-08, -1, 4.3711395e-08, -0.91426957, -0.47736236, 14.624642)
+transform = Transform3D(-8.7422784e-08, -4.371139e-08, -1, 1, -4.371139e-08, -8.742278e-08, -4.3711385e-08, -1, 4.3711395e-08, -0.6951457, -0.47736236, 11.673548)
 
 [node name="MirrorModernTallPickupable" parent="." unique_id=1531969028 instance=ExtResource("14_0vd70")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.168244, -0.36040246, -2.4096525)
@@ -224,7 +224,7 @@ metadata/_custom_type_script = "uid://tvuqi8gn8gx1"
 
 [node name="TestTrain" parent="." unique_id=1571218383 node_paths=PackedStringArray("Track") instance=ExtResource("17_dy6ti")]
 Track = NodePath("../TestTracks")
-HeadOffset = 64.719
+HeadOffset = 65.0
 Damping = 0.0
 
 [editable path="CactusMultiMesh/cactus"]
