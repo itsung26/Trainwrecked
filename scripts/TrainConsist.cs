@@ -201,40 +201,86 @@ public partial class TrainConsist : Node
         }
     }
 
-    /// Returns {this} copied. This is preferred over node.Duplicate as it
-    /// instantiates from the scene path, which allows network spawning replication
-    /// to work properly.
+    /// <summary>
+    /// Returns a new consist that matches this live train's cars and properties.
+    /// </summary>
+    /// <remarks>
+    /// Instantiates an empty shell from <see cref="Node.SceneFilePath"/> (for spawn
+    /// replication), removes the packed placeholder cars, then duplicates each live
+    /// <see cref="RollingStock"/> in order. Coupler exports are re-bound to the
+    /// duplicated subtree because <see cref="Node.Duplicate(int)"/> does not remap
+    /// typed node exports reliably. The returned node is not yet in the scene tree.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <see cref="Node.SceneFilePath"/> is missing or the scene fails to load.
+    /// </exception>
     public TrainConsist Copy()
     {
-        PackedScene copiedScene = GD.Load<PackedScene>(SceneFilePath);
-        TrainConsist copiedTrain = copiedScene.Instantiate<TrainConsist>();
+        if (string.IsNullOrEmpty(SceneFilePath))
+        {
+            throw new InvalidOperationException($"{Name} has no SceneFilePath; cannot Copy.");
+        }
 
-        // Copy over the properties from {this} to the newly copied train.
+        PackedScene packedScene = GD.Load<PackedScene>(SceneFilePath);
+        if (packedScene is null)
+        {
+            throw new InvalidOperationException($"Failed to load consist scene '{SceneFilePath}'.");
+        }
+
+        TrainConsist copiedTrain = packedScene.Instantiate<TrainConsist>();
+
+        // Packed cars are the original scene lineup, not this live consist's cars.
+        Array<RollingStock> placeholderCars = copiedTrain.Cars;
+        for (int i = placeholderCars.Count - 1; i >= 0; i--)
+        {
+            placeholderCars[i].Free();
+        }
+
+        Array<RollingStock> sourceCars = Cars;
+        for (int i = 0; i < sourceCars.Count; i++)
+        {
+            RollingStock copiedCar = CopyCar(sourceCars[i]);
+            copiedTrain.AddChild(copiedCar);
+            copiedCar.GlobalTransform = sourceCars[i].GlobalTransform;
+        }
+
         copiedTrain.Track = Track;
-        copiedTrain.HeadOffset = HeadOffset;
         copiedTrain.Velocity = Velocity;
         copiedTrain.Damping = Damping;
         copiedTrain.CanCoupleFront = CanCoupleFront;
         copiedTrain.CanCoupleRear = CanCoupleRear;
-
-        // Delete trailing copied cars beyond this train's live count.
-        Array<RollingStock> copiedCars = copiedTrain.Cars;
-        for (int i = Cars.Count; i < copiedCars.Count; i++)
-        {
-            copiedCars[i].Free();
-        }
-
-        // Copy car transforms.
-        for (int i = 0; i < Cars.Count; i++)
-        {
-            RollingStock car = Cars[i];
-
-            copiedTrain.Cars[i].GlobalTransform = car.GlobalTransform;
-        }
+        copiedTrain.HeadOffset = HeadOffset;
 
         copiedTrain.RebuildCouplingLinks();
 
         return copiedTrain;
+    }
+
+    /// <summary>
+    /// Duplicates <paramref name="source"/> and rebinds coupler exports to the copy's children.
+    /// </summary>
+    private static RollingStock CopyCar(RollingStock source)
+    {
+        RollingStock copy = (RollingStock)source.Duplicate();
+        copy.Ahead = null;
+        copy.Behind = null;
+        RebindCouplerExports(source, copy);
+        return copy;
+    }
+
+    /// <summary>
+    /// Points <paramref name="copy"/>'s coupler exports at the duplicated nodes that
+    /// correspond to <paramref name="source"/>'s coupler paths.
+    /// </summary>
+    private static void RebindCouplerExports(RollingStock source, RollingStock copy)
+    {
+        copy.FrontCoupler = source.FrontCoupler is null
+            ? null
+            : copy.GetNodeOrNull<CarCoupler>(source.GetPathTo(source.FrontCoupler));
+
+        copy.RearCoupler = source.RearCoupler is null
+            ? null
+            : copy.GetNodeOrNull<CarCoupler>(source.GetPathTo(source.RearCoupler));
     }
 
     /// Returns the full arc length of the train, from frontmost coupler to back coupler.
@@ -279,7 +325,7 @@ public partial class TrainConsist : Node
             return;
         }
 
-        TrainConsist newConsist = (TrainConsist)Duplicate();
+        TrainConsist newConsist = Copy();
         Array<RollingStock> copied = newConsist.Cars;
         // Strip the head (front of {at}) on the copied train; it keeps the rear.
         for (int i = at - 1; i >= 0; i--)
@@ -301,7 +347,7 @@ public partial class TrainConsist : Node
         Array<RollingStock> cars = Cars;
         for (int i = cars.Count - 1; i >= at; i--)
         {
-            cars[i].QueueFree();
+            cars[i].Free();
         }
 
         RebuildCouplingLinks();

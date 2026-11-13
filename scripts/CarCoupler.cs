@@ -28,6 +28,7 @@ public partial class CarCoupler : Interactable
     /// <see cref="TrainConsist"/> join/split.
     /// </remarks>
     public bool Clamped { get; set; }
+
     public RollingStock CarParent => GetParent() as RollingStock;
 
     [ExportGroup("Editor Configuration")]
@@ -93,13 +94,6 @@ public partial class CarCoupler : Interactable
         return warnings.ToArray();
     }
 
-    /// <summary>
-    /// Handles player interact on this coupler.
-    /// </summary>
-    /// <remarks>
-    /// Currently logs only. Coupling should ultimately go through <see cref="TrainConsist"/> join/split
-    /// so both mating <see cref="Clamped"/> flags update together. RPC is AnyPeer with CallLocal.
-    /// </remarks>
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal=true)]
     public override void Interact()
     {
@@ -108,7 +102,7 @@ public partial class CarCoupler : Interactable
             return;
         }
 
-        Debug.Log($"Interacted with {this}");
+        CarParent.ConsistParent.Split(GetSplittingIndex());
     }
 
     /// <summary>
@@ -133,6 +127,49 @@ public partial class CarCoupler : Interactable
     public Vector3 GetCouplingPointLocalPosition()
     {
         return Transform * _couplePoint.Position;
+    }
+
+    /// <summary>
+    /// Returns the <see cref="TrainConsist.Split"/> index for the joint this coupler represents.
+    /// </summary>
+    /// <returns>
+    /// Front coupler of car <c>i</c> returns <c>i</c> (head front is <c>0</c>).
+    /// Rear coupler of car <c>i</c> returns <c>i + 1</c> (tail rear is <see cref="TrainConsist.Cars"/>.Count).
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when there is no <see cref="CarParent"/>, no <see cref="RollingStock.ConsistParent"/>,
+    /// the car is not in that consist, or this coupler is not assigned as front or rear.
+    /// </exception>
+    public int GetSplittingIndex()
+    {
+        if (CarParent is null)
+        {
+            throw new InvalidOperationException("Coupler has no RollingStock parent.");
+        }
+
+        TrainConsist consist = CarParent.ConsistParent;
+        if (consist is null)
+        {
+            throw new InvalidOperationException("Car is not parented to a TrainConsist.");
+        }
+
+        int carIndex = consist.Cars.IndexOf(CarParent);
+        if (carIndex < 0)
+        {
+            throw new InvalidOperationException("Car is not in its consist's Cars list.");
+        }
+
+        if (ReferenceEquals(CarParent.FrontCoupler, this))
+        {
+            return carIndex;
+        }
+
+        if (ReferenceEquals(CarParent.RearCoupler, this))
+        {
+            return carIndex + 1;
+        }
+
+        throw new InvalidOperationException("Coupler is not assigned as FrontCoupler or RearCoupler on its car.");
     }
 
     /// <summary>

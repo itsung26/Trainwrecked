@@ -30,6 +30,15 @@ public abstract partial class RollingStock : AnimatableBody3D
     public bool HasPropulsion { get; protected set; }
 
     /// <summary>
+    /// Owning <see cref="TrainConsist"/>, or <see langword="null"/> if the parent is not one.
+    /// </summary>
+    /// <remarks>
+    /// Resolved each access via <see cref="Node.GetParent"/>. Cars are expected to be
+    /// direct children of a <see cref="TrainConsist"/> while in a consist.
+    /// </remarks>
+    public TrainConsist ConsistParent => GetParent() as TrainConsist;
+
+    /// <summary>
     /// Neighbor toward the head of the consist, or <see langword="null"/> if this car is the head.
     /// </summary>
     /// <remarks>

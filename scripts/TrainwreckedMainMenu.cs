@@ -102,12 +102,7 @@ public partial class TrainwreckedMainMenu : Control
 			cameraUpAnchor,
 			cameraDownAnchor,
 			mouseNormalized
-		);
-		
-		if (Input.IsActionJustPressed("Debug Action"))
-		{
-			MainMenuCamera.GlobalPosition = cameraDownAnchor;
-		}
+		);		
 	}
 
 	private static Vector3 BilinearInterpolate(Vector3 left, Vector3 right, Vector3 top, Vector3 bottom, Vector2 uv)
