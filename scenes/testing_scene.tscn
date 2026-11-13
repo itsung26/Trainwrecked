@@ -211,7 +211,8 @@ transform = Transform3D(-8.7422784e-08, -4.371139e-08, -1, 1, -4.371139e-08, -8.
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.168244, -0.36040246, -2.4096525)
 freeze = true
 MaxHoldDistance = 1.25
-PreventSelection = true
+DisplayDescription = "A tall, intimidating mirror."
+Selectable = false
 
 [node name="TestTracks" type="Path3D" parent="." unique_id=1231287367]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.918991, -1.4350557, 19.329218)

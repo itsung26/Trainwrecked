@@ -49,7 +49,6 @@ public partial class PickupableBody : Interactable
 	public override void _Ready()
 	{
 		base._Ready();
-		Selectable = true;
 		WarnIfNoSynchronizer();
 		ContinuousCd = UseContinuousCollision;
 	}

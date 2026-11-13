@@ -265,16 +265,18 @@ public partial class Player : CharacterBody3D
 		Interactable hitInteractable = InteractRaycast.GetCollider() as Interactable;
 		Interactable previous = CurrentSelection;
 
+		// Treat non-selectable hits as empty space so the old selection clears.
+		// Must run before the same-target early out: Selectable can flip to false
+		// while still looking at the current selection (e.g. pickup hold).
+		if (hitInteractable is not null && !hitInteractable.Selectable)
+		{
+			hitInteractable = null;
+		}
+
 		// Prevent reselecting the same thing
 		if (CurrentSelection is not null && CurrentSelection.Equals(hitInteractable))
 		{
 			return;
-		}
-
-		// Treat non-selectable hits as empty space so the old selection clears.
-		if (hitInteractable is not null && hitInteractable.PreventSelection)
-		{
-			hitInteractable = null;
 		}
 
 		// looking off of a selected object into nothing

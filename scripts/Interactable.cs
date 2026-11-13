@@ -41,10 +41,11 @@ public abstract partial class Interactable : RigidBody3D
 	/// Whether this interactable can become <see cref="Selected"/>.
 	/// </summary>
 	/// <remarks>
-	/// Setting this to <see langword="false"/> clears <see cref="Selected"/>.
-	/// Setting <see cref="Selected"/> to <see langword="true"/> while this is
-	/// <see langword="false"/> is ignored.
+	/// When <see langword="false"/>, the player raycast treats this as empty space
+	/// (no highlight / HUD target), clears <see cref="Selected"/>, and ignores
+	/// attempts to set <see cref="Selected"/> to <see langword="true"/>.
 	/// </remarks>
+	[Export]
 	public bool Selectable
 	{
 		get { return _selectable; }
@@ -64,8 +65,6 @@ public abstract partial class Interactable : RigidBody3D
 		get { return _selected; }
 		set { SetSelected(value); }
 	}
-
-	[Export] public bool PreventSelection { get; set; }
 
 	/// <summary>
 	/// Caches inverted-hull meshes, then hides the outline.
@@ -182,7 +181,7 @@ public abstract partial class Interactable : RigidBody3D
 	/// <see langword="true"/> to allow selection; <see langword="false"/> to
 	/// disallow it and clear <see cref="Selected"/>.
 	/// </param>
-	public void SetSelectable(bool value)
+	private void SetSelectable(bool value)
 	{
 		_selectable = value;
 
@@ -204,7 +203,7 @@ public abstract partial class Interactable : RigidBody3D
 	/// Does nothing when selecting while <see cref="Selectable"/> is
 	/// <see langword="false"/>.
 	/// </remarks>
-	public void SetSelected(bool value)
+	private void SetSelected(bool value)
 	{
 		if (!Selectable && value == true)
 		{
@@ -222,6 +221,11 @@ public abstract partial class Interactable : RigidBody3D
 			OutlineVisible = false;
 		}
 	}
+
+    public override string ToString()
+    {
+        return Debug.GenerateInstanceToString(this);
+    }
 
 	/// <summary>
 	/// Performs this interactable's activation when the player presses Interact.

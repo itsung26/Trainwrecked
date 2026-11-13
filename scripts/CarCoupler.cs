@@ -41,6 +41,12 @@ public partial class CarCoupler : Interactable
     public override void _Ready()
     {
         base._Ready();
+
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+
     }
 
     /// <summary>
@@ -55,7 +61,12 @@ public partial class CarCoupler : Interactable
             return;
         }
 
-        RotateHookIfClamped(delta);
+        if (!NetworkManager.IsServer())
+        {
+            return;
+        }
+
+        UpdateHookRotation(delta);
     }
 
     /// <summary>
@@ -93,6 +104,11 @@ public partial class CarCoupler : Interactable
     [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal=true)]
     public override void Interact()
     {
+        if (!NetworkManager.IsServer())
+        {
+            return;
+        }
+
         Debug.Log($"Interacted with {this}");
     }
 
@@ -123,7 +139,7 @@ public partial class CarCoupler : Interactable
     /// <summary>
     /// Eases <c>_hookMesh</c> rotation toward open or closed based on <see cref="Clamped"/>.
     /// </summary>
-    private void RotateHookIfClamped(double delta)
+    private void UpdateHookRotation(double delta)
     {
         if (_hookMesh is null)
         {
