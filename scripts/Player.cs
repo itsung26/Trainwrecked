@@ -10,6 +10,7 @@ public partial class Player : CharacterBody3D
 	#endregion
 
 	#region Exported Variables
+	[ExportGroup("Nodes")]
 	[Export] public Node3D PlayerCameraPivot { get; set; }
 	[Export] public Camera3D PlayerCamera { get; set; }
 	[Export] public StateMachine LocomotionStateMachine { get; set; }
@@ -19,23 +20,24 @@ public partial class Player : CharacterBody3D
 	/// <summary>Level session chat; used to block input while typing.</summary>
 	[Export] public SessionChat SessionChat { get; set; }
 	[Export] public Node3D PlayerModelTreeRoot { get; set; }
-	[Export] public bool LoggingDebug = false;
+
+	[ExportGroup("Movement")]
 	[Export] public float Speed = 5.0f;
 	[Export] public float MaxAirSpeed { get; set; } = 7.0f;
 	[Export] public float AirAcceleration { get; set; } = 10.0f;
 	[Export] public float GlobalSpeedModifier { get; set; } = 1.0f;
 	[Export] public float JumpVelocity = 4.5f;
-	[Export] public float MouseSensitivity = 1.0f;
 	[Export] public float SprintSpeedMultiplier = 1.5f;
+
+	[ExportGroup("Input")]
+	[Export] public float MouseSensitivity = 1.0f;
 	[Export] public bool InputDisabled = false;
 	[Export] public bool LookDisabled = false;
-
 	#endregion
 
 	#region Signals
 	[Signal]
 	public delegate void SelectionChangedEventHandler(Interactable previous, Interactable current);
-
 	#endregion
 
 	// MultiplayerSpawner requires authority changes here (not in _Ready / after AddChild),

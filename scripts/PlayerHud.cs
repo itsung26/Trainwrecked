@@ -1,15 +1,16 @@
-using Godot;
 using System;
+using Godot;
 using Godot.Collections;
 
 public partial class PlayerHud : Control
 {
-	[Export] public TextureRect DotCrosshair;
-	[Export] public TextureRect SprintCrosshair;
-	[Export] public Label CurrentSelectedLabel;
-	[Export] public Label InteractableNameLabel;
+	[Export] private TextureRect DotCrosshair;
+	[Export] private TextureRect SprintCrosshair;
+	[Export] private Label InteractableNameLabel;
+	[Export] public Label InteractableDescriptionLabel { get; set; }
 
 	// Called when the node enters the scene tree for the first time.
+
 	public override void _Ready()
 	{
 		if (!IsMultiplayerAuthority())
@@ -18,19 +19,48 @@ public partial class PlayerHud : Control
 			return;
 		}
 
-		InteractableNameLabel.Visible = false;
+		SetInteractableNameLabelText("");
+		SetInteractableDescriptionLabelText("");
 	}
 
-	public void SetInteractableNameText(string Name)
+	public void SetInteractableNameLabelText(string text)
 	{
-		InteractableNameLabel.Text = Name;
+		// Null? -> ""
+        text ??= "";
+
+		if (text == "")
+		{
+			InteractableNameLabel.Text = "";
+		}
+		else
+		{
+			InteractableNameLabel.Text = $"'{text}'";
+		}
 	}
 
-	public void _on_locomotion_state_machine_state_changed(State NewState, State OldState)
+	
+	public void SetInteractableDescriptionLabelText(string text)
 	{
-		if (!IsMultiplayerAuthority()) {
+		// Null? -> ""
+		text ??= "";
+
+		if (text == "")
+		{
+			InteractableDescriptionLabel.Text = "";
+		}
+		else
+		{
+			InteractableDescriptionLabel.Text = $"{text}";
+		}
+	}
+
+	private void _on_locomotion_state_machine_state_changed(State NewState, State OldState)
+	{
+		if (!IsMultiplayerAuthority())
+		{
 			return;
 		}
+
 		if (NewState.Name == "SprintingState")
 		{
 			SprintCrosshair.Visible = true;
@@ -41,6 +71,20 @@ public partial class PlayerHud : Control
 			DotCrosshair.Visible = true;
 			SprintCrosshair.Visible = false;
 		}
+	}
+
+	private void _on_player_selection_changed(Interactable previous, Interactable current)
+	{
+		if (!IsMultiplayerAuthority())
+		{
+			return;
+		}
+
+		string currentName = current == null ? "" : current.DisplayName;
+		string currentDesc = current == null ? "" : current.DisplayDescription;
+
+		SetInteractableNameLabelText(currentName);
+		SetInteractableDescriptionLabelText(currentDesc);
 	}
 
 

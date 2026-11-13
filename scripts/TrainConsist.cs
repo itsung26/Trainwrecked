@@ -65,21 +65,6 @@ public partial class TrainConsist : Node
         PlaceCars();
     }
 
-    public override void _Input(InputEvent @event)
-    {
-        if (Engine.IsEditorHint())
-        {
-            return;
-        }
-
-        if (Input.IsActionJustPressed("Debug Action"))
-        {
-            int middle = (0 + Cars.Count - 1) / 2;
-            // Cars[middle].QueueFree();
-            Split(2);
-        }
-    }
-
     public override void _ExitTree()
     {
         if (Engine.IsEditorHint())
