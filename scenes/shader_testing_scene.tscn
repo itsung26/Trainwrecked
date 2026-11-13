@@ -11,6 +11,8 @@
 [ext_resource type="Texture2D" uid="uid://60xua2es7vvs" path="res://assets/2d assets/textures/prototype_textures/Light/texture_06.png" id="7_slbsu"]
 [ext_resource type="Material" uid="uid://nay4oceq21q2" path="res://assets/materials/blueprint_grid.tres" id="10_5nw5h"]
 [ext_resource type="PackedScene" uid="uid://cwoeroni2y0ee" path="res://assets/3d assets/playermodel_assets/male_base_mesh/male_base.blend" id="11_5nw5h"]
+[ext_resource type="Shader" uid="uid://cvbk3qoalo0y4" path="res://assets/shaders/derivatives_test.gdshader" id="12_316vc"]
+[ext_resource type="Texture2D" uid="uid://cs578nlh76qoy" path="res://assets/2d assets/textures/pattern_pack/PNG/Double/pattern_21.png" id="13_a38iq"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lg35i"]
 shader = ExtResource("1_x43m2")
@@ -104,6 +106,17 @@ shader_parameter/uv_offset = Vector2(0, 0)
 
 [sub_resource type="BoxMesh" id="BoxMesh_rddtp"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g2b1t"]
+render_priority = 0
+shader = ExtResource("12_316vc")
+shader_parameter/tex = ExtResource("13_a38iq")
+shader_parameter/scale = -2.56
+shader_parameter/offset = Vector2(0, 0)
+shader_parameter/back_layer_brightness = 0.0
+shader_parameter/normal_strength = 0.475
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_dehhp"]
+
 [node name="ShaderTestingScene" type="Node3D" unique_id=2064292606]
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=956139993]
@@ -157,5 +170,16 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.56
 
 [node name="male_base" parent="BluePrintShader/male_base2/male_base_rig/Skeleton3D" parent_id_path=PackedInt32Array(1230194301, 585819236) index="0" unique_id=1761765966]
 material_override = ExtResource("10_5nw5h")
+
+[node name="DerivativesTest" type="Node3D" parent="." unique_id=443357980]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5527985, 0, 4.257252)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="DerivativesTest" unique_id=1879501356]
+transform = Transform3D(1, 0, 0, 0, 0.7223013, -0.69157845, 0, 0.69157845, 0.7223013, -0.15552855, -0.07349953, -0.0117378235)
+material_override = SubResource("ShaderMaterial_g2b1t")
+mesh = SubResource("PlaneMesh_dehhp")
+
+[node name="AreaLight3D" type="AreaLight3D" parent="DerivativesTest" unique_id=739329065]
+transform = Transform3D(1, 0, 0, 0, 0.75856197, 0.65160096, 0, -0.65160096, 0.75856197, -0.21821904, 0.47440565, 1.4683843)
 
 [editable path="BluePrintShader/male_base2"]
