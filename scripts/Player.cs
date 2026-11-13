@@ -263,7 +263,20 @@ public partial class Player : CharacterBody3D
 	public void UpdateInteractableSelection()
 	{
 		Interactable hitInteractable = InteractRaycast.GetCollider() as Interactable;
+
+		// Prevent selection of invalid objects.
+		if (!GodotObject.IsInstanceValid(hitInteractable))
+		{
+			hitInteractable = null;
+		}
+
 		Interactable previous = CurrentSelection;
+
+		// Prevent previous from referencing invalid objects.
+		if (!GodotObject.IsInstanceValid(previous))
+		{
+			previous = null;
+		}
 
 		// Treat non-selectable hits as empty space so the old selection clears.
 		// Must run before the same-target early out: Selectable can flip to false
@@ -273,13 +286,13 @@ public partial class Player : CharacterBody3D
 			hitInteractable = null;
 		}
 
-		// Prevent reselecting the same thing
+		// selected object -> same selected object: abort
 		if (CurrentSelection is not null && CurrentSelection.Equals(hitInteractable))
 		{
 			return;
 		}
 
-		// looking off of a selected object into nothing
+		// selected object -> nothing
 		if (hitInteractable is null && CurrentSelection is not null)
 		{
 			CurrentSelection.Selected = false;
@@ -287,7 +300,6 @@ public partial class Player : CharacterBody3D
 			CurrentSelection = hitInteractable;
 		}
 		// Selected object -> different selected object
-		// looking from a selected object onto a different object
 		else if (hitInteractable is not null && CurrentSelection is not null)
 		{
 			CurrentSelection.Selected = false;
@@ -295,7 +307,7 @@ public partial class Player : CharacterBody3D
 			
 			CurrentSelection = hitInteractable;
 		}
-		// looking onto a selected object from nothing
+		// nothing -> selected object
 		else if (hitInteractable is not null && CurrentSelection is null)
 		{
 			hitInteractable.Selected = true;
