@@ -1,19 +1,29 @@
 using Godot;
 using Godot.Collections;
-using System;
-using System.Linq;
 
 /// <summary>
 /// Abstract base for world objects that can be highlighted when looked at and
 /// activated when the player presses Interact.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Selection and outline are local visual state: peers do not see each other's
-/// highlights. Outline VFX uses descendant <see cref="MeshInstance3D"/> nodes
-/// whose name contains <c>IH</c> (inverted hull). Subclasses such as
-/// <see cref="PickupableBody"/> and <see cref="ButtonInteractable"/> implement
-/// <see cref="Interact"/>. <see cref="Player"/> drives <see cref="Selected"/>
-/// from its interact raycast.
+/// highlights. <see cref="Player"/> drives <see cref="Selected"/> from its
+/// interact raycast; <see cref="PlayerHud"/> reads <see cref="DisplayName"/> and
+/// <see cref="DisplayDescription"/> when selection changes.
+/// </para>
+/// <para>
+/// Outline VFX uses descendant <see cref="MeshInstance3D"/> nodes whose name
+/// contains <c>IH</c> (inverted hull). Subclasses such as
+/// <see cref="PickupableBody"/>, <see cref="ButtonInteractable"/>, and
+/// <see cref="CarCoupler"/> implement <see cref="Interact"/>.
+/// </para>
+/// <para>
+/// <see cref="Selectable"/> is not replicated by default. Multiplayer code that
+/// must keep it in sync (for example <see cref="PickupableBody"/> hold state)
+/// should set it on each peer via RPC or add it to a
+/// <see cref="MultiplayerSynchronizer"/> config.
+/// </para>
 /// </remarks>
 [Tool]
 [GlobalClass]
@@ -23,14 +33,25 @@ public abstract partial class Interactable : RigidBody3D
 	private bool _outlineVisible = false;
 	private bool _selectable = true;
 	private bool _selected = false;
+
+	/// <summary>
+	/// Short label shown in the local player's HUD when this interactable is selected.
+	/// </summary>
 	[Export] public string DisplayName { get; set; } = "???";
+
+	/// <summary>
+	/// Optional longer text shown in the local player's HUD when this interactable is selected.
+	/// </summary>
 	[Export] public string DisplayDescription { get; set; } = "";
 
 	/// <summary>
 	/// Whether the inverted-hull outline meshes are shown.
-	/// Setting this updates every cached IH <see cref="MeshInstance3D"/>'s
-	/// <see cref="Node3D.Visible"/> flag.
 	/// </summary>
+	/// <remarks>
+	/// Setting this updates every cached IH <see cref="MeshInstance3D"/>'s
+	/// <see cref="Node3D.Visible"/> flag. Driven by <see cref="Selected"/>;
+	/// peers do not share this state.
+	/// </remarks>
 	public bool OutlineVisible
 	{
 		get { return _outlineVisible; }
@@ -41,9 +62,11 @@ public abstract partial class Interactable : RigidBody3D
 	/// Whether this interactable can become <see cref="Selected"/>.
 	/// </summary>
 	/// <remarks>
-	/// When <see langword="false"/>, the player raycast treats this as empty space
-	/// (no highlight / HUD target), clears <see cref="Selected"/>, and ignores
-	/// attempts to set <see cref="Selected"/> to <see langword="true"/>.
+	/// When <see langword="false"/>, <see cref="Player.UpdateInteractableSelection"/>
+	/// treats a raycast hit as empty space (no highlight / HUD target), this type
+	/// clears <see cref="Selected"/>, and attempts to set <see cref="Selected"/> to
+	/// <see langword="true"/> are ignored. Defaults to <see langword="true"/>.
+	/// Not networked unless a subclass or synchronizer replicates it.
 	/// </remarks>
 	[Export]
 	public bool Selectable
@@ -59,6 +82,7 @@ public abstract partial class Interactable : RigidBody3D
 	/// When set to <see langword="true"/>, shows the outline via
 	/// <see cref="OutlineVisible"/>; when <see langword="false"/>, hides it.
 	/// Requires <see cref="Selectable"/> to be <see langword="true"/> to select.
+	/// Local only; not replicated to other peers.
 	/// </remarks>
 	public bool Selected
 	{
@@ -69,6 +93,10 @@ public abstract partial class Interactable : RigidBody3D
 	/// <summary>
 	/// Caches inverted-hull meshes, then hides the outline.
 	/// </summary>
+	/// <remarks>
+	/// Skips all setup while <see cref="Engine.IsEditorHint"/> is
+	/// <see langword="true"/>.
+	/// </remarks>
 	public override void _Ready()
 	{
 		if (Engine.IsEditorHint())
@@ -81,8 +109,12 @@ public abstract partial class Interactable : RigidBody3D
 	}
 
 	/// <summary>
-	/// Warns in the editor when no descendant mesh is named for inverted-hull outlining.
+	/// Returns editor warnings when no descendant mesh is named for inverted-hull outlining.
 	/// </summary>
+	/// <returns>
+	/// Base warnings plus an entry when no descendant <see cref="MeshInstance3D"/>
+	/// name contains <c>IH</c>.
+	/// </returns>
 	public override string[] _GetConfigurationWarnings()
 	{
 		string[] baseWarnings = base._GetConfigurationWarnings() ?? System.Array.Empty<string>();
@@ -114,8 +146,14 @@ public abstract partial class Interactable : RigidBody3D
 
 	/// <summary>
 	/// Returns whether any descendant <see cref="MeshInstance3D"/> name contains <c>IH</c>.
-	/// Used by configuration warnings in the editor (where the runtime cache is not filled).
 	/// </summary>
+	/// <returns>
+	/// <see langword="true"/> if at least one matching mesh exists; otherwise
+	/// <see langword="false"/>.
+	/// </returns>
+	/// <remarks>
+	/// Used by configuration warnings in the editor (where the runtime cache is not filled).
+	/// </remarks>
 	private bool HasInvertedHullMesh()
 	{
 		foreach (MeshInstance3D mesh in CollectDescendants<MeshInstance3D>())
@@ -222,17 +260,25 @@ public abstract partial class Interactable : RigidBody3D
 		}
 	}
 
-    public override string ToString()
-    {
-        return Debug.GenerateInstanceToString(this);
-    }
+	/// <summary>
+	/// Returns a debug label for this node in the form <c>&lt;Name#InstanceId&gt;</c>.
+	/// </summary>
+	/// <returns>
+	/// The string produced by <see cref="Debug.GenerateInstanceToString"/>.
+	/// </returns>
+	public override string ToString()
+	{
+		return Debug.GenerateInstanceToString(this);
+	}
 
 	/// <summary>
 	/// Performs this interactable's activation when the player presses Interact.
 	/// </summary>
 	/// <remarks>
-	/// Subclasses define the behavior. Networking (for example an <c>[Rpc]</c> on
-	/// an override) is the subclass's responsibility; this base method is not an RPC.
+	/// Subclasses define the behavior. <see cref="Player"/> invokes this via
+	/// <c>Rpc(Interactable.MethodName.Interact)</c> on the current selection or
+	/// held body. Networking (for example an <c>[Rpc]</c> on an override) is the
+	/// subclass's responsibility; this base method is not an RPC.
 	/// </remarks>
 	public abstract void Interact();
 }

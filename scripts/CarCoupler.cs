@@ -31,7 +31,6 @@ public partial class CarCoupler : Interactable
     public RollingStock CarParent => GetParent() as RollingStock;
 
     [ExportGroup("Editor Configuration")]
-    /// <summary>Marker at the coupling contact point along the car local <c>-Z</c> axis.</summary>
     [Export] private Marker3D _couplePoint;
     /// <summary>Hook mesh whose local rotation is animated between open and closed.</summary>
     [Export] private MeshInstance3D _hookMesh;
