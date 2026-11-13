@@ -103,6 +103,7 @@ public partial class CarCoupler : Interactable
         }
 
         CarParent.ConsistParent.Split(GetSplittingIndex());
+        // TODO: Spawn some particle VFX at the coupling point.
     }
 
     /// <summary>
