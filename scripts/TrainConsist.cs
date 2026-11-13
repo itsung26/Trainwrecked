@@ -44,6 +44,8 @@ public partial class TrainConsist : Node
         {
             return;
         }
+
+        PlaceCars();
     }
 
     public override void _PhysicsProcess(double delta)
@@ -60,6 +62,7 @@ public partial class TrainConsist : Node
 
         DampenVelocity(delta);
         HeadOffset += Velocity * (float)delta;
+        PlaceCars();
     }
 
     public override void _Input(InputEvent @event)
@@ -73,7 +76,7 @@ public partial class TrainConsist : Node
         {
             int middle = (0 + Cars.Count - 1) / 2;
             // Cars[middle].QueueFree();
-            Split(middle);
+            Split(2);
         }
     }
 
@@ -90,6 +93,8 @@ public partial class TrainConsist : Node
 
     private void SetHeadOffset(float value)
     {
+        _headOffset = value;
+
         if (Head is null)
         {
             return;
@@ -108,15 +113,17 @@ public partial class TrainConsist : Node
             headToLastCouplerDistance += cars[i].CouplerSpan();
         }
 
-        value = Mathf.Clamp(value, headToLastCouplerDistance, Track.Length() - Head.FrontCouplerDistance());
+        _headOffset = Mathf.Clamp(value, headToLastCouplerDistance, Track.Length() - Head.FrontCouplerDistance());
 
-        _headOffset = value;
-
-        PlaceCars();
     }
 
     private RollingStock GetHead()
     {
+        if (Cars.Count == 0)
+        {
+            throw new IndexOutOfRangeException("No head present.");
+        }
+
         RollingStock head = Cars[0];
 
         return head;
@@ -124,6 +131,11 @@ public partial class TrainConsist : Node
 
     private RollingStock GetTail()
     {
+        if (Cars.Count == 0)
+        {
+            throw new IndexOutOfRangeException("No tail present.");
+        }
+        
         RollingStock tail = Cars[Cars.Count - 1];
 
         return tail;
@@ -276,24 +288,36 @@ public partial class TrainConsist : Node
             throw new IndexOutOfRangeException($"Split index {at} is outside [0, {Cars.Count}].");
         }
 
+        // Skip splitting at ends.
         if (at == 0 || at == Cars.Count)
         {
             return;
         }
 
-        TrainConsist newConsist = Copy();
-        // Strip all children in front of {at} on the copied train.
-        for(int i = 0; i < at; i++)
+        TrainConsist newConsist = (TrainConsist)Duplicate();
+        Array<RollingStock> copied = newConsist.Cars;
+        // Strip the head (front of {at}) on the copied train; it keeps the rear.
+        for (int i = at - 1; i >= 0; i--)
         {
-            newConsist.Cars[i].Free();
+            copied[i].Free();
         }
+
+        // Move the headoffset to account for the new head car of the copied train.
+        float frontCarsSpan = 0.0f;
+        for (int i = 0; i < at; i++)
+        {
+            frontCarsSpan += Cars[i].CouplerSpan();
+        }
+        newConsist.HeadOffset -= frontCarsSpan;
+
         GetTree().CurrentScene.AddChild(newConsist, true);
 
-        // Array<RollingStock> cars = Cars;
-        // for (int i = at; i < cars.Count; i++)
-        // {
-        //     cars[i].Reparent(newConsist);
-        // }
+        // Strip the rear (from {at} back) on this train; it keeps the head.
+        Array<RollingStock> cars = Cars;
+        for (int i = cars.Count - 1; i >= at; i--)
+        {
+            cars[i].QueueFree();
+        }
 
         RebuildCouplingLinks();
         newConsist.RebuildCouplingLinks();
