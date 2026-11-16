@@ -67,6 +67,23 @@ public partial class Debug : Node
 	}
 
 	/// <summary>
+	/// Prints a C# dictionary to the Godot console as a Godot dictionary.
+	/// </summary>
+	/// <typeparam name="T">Key type. Must be a Variant-compatible type.</typeparam>
+	/// <typeparam name="E">Value type. Must be a Variant-compatible type.</typeparam>
+	/// <param name="dictionary">
+	/// Dictionary copied into a <see cref="Godot.Collections.Dictionary{TKey, TValue}"/> before printing.
+	/// Must not be <see langword="null"/>.
+	/// </param>
+	/// <remarks>
+	/// Logging format example: <c>{ "health": 100, "mana": 50, "level": 3 }</c>.
+	/// </remarks>
+	public static void Log<[MustBeVariant] T, [MustBeVariant] E>(System.Collections.Generic.Dictionary<T, E> dictionary)
+	{
+		Log(new Godot.Collections.Dictionary<T, E>(dictionary));
+	}
+
+	/// <summary>
 	/// Prints <paramref name="message"/> to the Godot console in <paramref name="color"/>.
 	/// </summary>
 	/// <typeparam name="T">Type of the value to print.</typeparam>
@@ -119,6 +136,25 @@ public partial class Debug : Node
 	{
 		Array<T> godotArray = new Array<T>(systemListMessage);
 		LogColored(godotArray, color);
+	}
+
+	/// <summary>
+	/// Prints a C# dictionary to the Godot console in <paramref name="color"/>.
+	/// </summary>
+	/// <typeparam name="T">Key type. Must be a Variant-compatible type.</typeparam>
+	/// <typeparam name="E">Value type. Must be a Variant-compatible type.</typeparam>
+	/// <param name="dictionary">
+	/// Dictionary copied into a <see cref="Godot.Collections.Dictionary{TKey, TValue}"/> before printing.
+	/// Must not be <see langword="null"/>.
+	/// </param>
+	/// <param name="color">RGB color applied with BBCode. Alpha is ignored.</param>
+	/// <remarks>
+	/// The printed text is the Godot dictionary's string form, so its brackets are parsed as BBCode
+	/// the same way as <see cref="LogColored{T}(T, Color)"/>.
+	/// </remarks>
+	public static void LogColored<[MustBeVariant] T, [MustBeVariant] E>(System.Collections.Generic.Dictionary<T, E> dictionary, Color color)
+	{
+		LogColored(new Godot.Collections.Dictionary<T, E>(dictionary), color);
 	}
 
 	/// <summary>
