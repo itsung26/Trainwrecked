@@ -103,9 +103,16 @@ public partial class CarCoupler : Interactable
             return;
         }
 
-        Debug.Log(IsOverlapping());
-        Debug.Log(GetOverlapper());
-        CarParent.ConsistParent.Split(GetSplittingIndex());
+        if (Clamped)
+        {
+            CarParent.ConsistParent.Split(GetSplittingIndex());
+        }
+        else if (!Clamped && IsOverlapping())
+        {
+            TrainConsist overlapperTrain = GetOverlapper().CarParent.ConsistParent;
+            // TODO: implement join.
+            CarParent.ConsistParent.Join(overlapperTrain);
+        }
         // TODO: Spawn some particle VFX at the coupling point.
     }
 
@@ -174,6 +181,22 @@ public partial class CarCoupler : Interactable
         }
 
         throw new InvalidOperationException("Coupler is not assigned as FrontCoupler or RearCoupler on its car.");
+    }
+
+    /// <summary>
+    /// Returns whether this coupler is assigned as <see cref="RollingStock.FrontCoupler"/> on its car.
+    /// </summary>
+    public bool IsFrontCoupler()
+    {
+        return CarParent is not null && ReferenceEquals(CarParent.FrontCoupler, this);
+    }
+
+    /// <summary>
+    /// Returns whether this coupler is assigned as <see cref="RollingStock.RearCoupler"/> on its car.
+    /// </summary>
+    public bool IsRearCoupler()
+    {
+        return CarParent is not null && ReferenceEquals(CarParent.RearCoupler, this);
     }
 
     /// Returns true if this coupler is in connection range with another coupler.

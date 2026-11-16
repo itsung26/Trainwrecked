@@ -354,7 +354,7 @@ public partial class TrainConsist : Node
         newConsist.RebuildCouplingLinks();
     }
 
-    public void Join(TrainConsist with, bool atFront)
+    public void Join(TrainConsist with)
     {
         ArgumentNullException.ThrowIfNull(with);
 

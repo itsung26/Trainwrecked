@@ -32,6 +32,7 @@ ConfigParser="*uid://suvuwhce2x8q"
 UserSaveParser="*uid://bbqjata3gjie4"
 GameSaveParser="*uid://dgi144lsmclpx"
 LevelLoader="*uid://b6jghqwi5kwmd"
+ParticleRegistry="*uid://bxt2afg2h3oq7"
 
 [display]
 

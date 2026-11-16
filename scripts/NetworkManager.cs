@@ -13,7 +13,7 @@ public partial class NetworkManager : Node
 {
 	private Array<LanDiscoverySession> _knownSessions = new Array<LanDiscoverySession>();
 
-	public static NetworkManager Instance;
+	public static NetworkManager Instance { get; private set; }
 	public const string Address = "localhost";
 	// The port that the host uses to receive packets from the UDP packet peer.
 	public const int DiscoveryPort = 7778;
