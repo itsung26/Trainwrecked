@@ -37,6 +37,7 @@ public partial class CarCoupler : Interactable
     [Export] private MeshInstance3D _hookMesh;
     private Vector3 _openHookRotation = Vector3.Zero;
     private Vector3 _closedHookRotation = new Vector3(0.0f, Mathf.DegToRad(104.3f), 0.0f);
+    private CarCoupler _overlapper;
 
     public override void _Ready()
     {
@@ -102,6 +103,8 @@ public partial class CarCoupler : Interactable
             return;
         }
 
+        Debug.Log(IsOverlapping());
+        Debug.Log(GetOverlapper());
         CarParent.ConsistParent.Split(GetSplittingIndex());
         // TODO: Spawn some particle VFX at the coupling point.
     }
@@ -173,6 +176,22 @@ public partial class CarCoupler : Interactable
         throw new InvalidOperationException("Coupler is not assigned as FrontCoupler or RearCoupler on its car.");
     }
 
+    /// Returns true if this coupler is in connection range with another coupler.
+    public bool IsOverlapping()
+    {
+        return _overlapper is not null;
+    }
+
+    public CarCoupler GetOverlapper()
+    {
+        if (!IsOverlapping())
+        {
+            return null;
+        }
+
+        return _overlapper;
+    }
+
     /// <summary>
     /// Eases <c>_hookMesh</c> rotation toward open or closed based on <see cref="Clamped"/>.
     /// </summary>
@@ -202,6 +221,24 @@ public partial class CarCoupler : Interactable
             Mathf.RotateToward(from.Y, to.Y, delta),
             Mathf.RotateToward(from.Z, to.Z, delta)
         );
+    }
+
+    public void _on_hook_overlap_detector_area_entered(Area3D area)
+    {
+        CarCoupler couplerParent = area.GetParent() as CarCoupler;
+        if (couplerParent is not null && _overlapper is null)
+        {
+            _overlapper = couplerParent;
+        }
+    }
+
+    public void _on_hook_overlap_detector_area_exited(Area3D area)
+    {
+        CarCoupler couplerParent = area.GetParent() as CarCoupler;
+        if (ReferenceEquals(_overlapper, couplerParent))
+        {
+            _overlapper = null;
+        }
     }
 
 }
