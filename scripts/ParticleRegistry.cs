@@ -1,3 +1,4 @@
+using System;
 using Godot;
 using Godot.Collections;
 
@@ -15,7 +16,24 @@ public partial class ParticleRegistry : Node
     {
         Instance = this;
         ReadFiles();
-        Debug.Log(GetParticlePackedSceneRootNodeNames());
+        PopulateCatalog();
+    }
+
+    private void PopulateCatalog()
+    {
+        Array<string> names = GetParticlePackedSceneRootNodeNames();
+        Array<PackedScene> scenes = GetGpuParticlePackedScenes();
+
+        if (names.Count != scenes.Count)
+        {
+            throw new IndexOutOfRangeException(
+                $"Particle catalog name/scene count mismatch: {names.Count} names, {scenes.Count} scenes.");
+        }
+
+        for (int i = 0; i < names.Count; i++)
+        {
+            _catalog.Add(names[i], scenes[i]);
+        }
     }
 
     /// Called once on ready to read the particle asset directory.
@@ -46,8 +64,8 @@ public partial class ParticleRegistry : Node
         return paths;
     }
 
-    /// Returns an array of PackedScenes with a root node type of T.
-    private Array<PackedScene> GetPackedScenes<T>() where T : Node
+    /// Returns packed scenes under ParticleAssetsPath whose root node is a GpuParticles3D.
+    private Array<PackedScene> GetGpuParticlePackedScenes()
     {
         Array<string> foundFiles = GetSceneFilePaths();
         Array<PackedScene> scenes = new Array<PackedScene>();
@@ -55,12 +73,17 @@ public partial class ParticleRegistry : Node
         foreach (string fileName in foundFiles)
         {
             PackedScene currentScene = GD.Load<PackedScene>(fileName);
+            if (currentScene is null)
+            {
+                continue;
+            }
+
             Node currentRoot = currentScene.Instantiate();
-            if (currentRoot is T)
+            if (currentRoot is GpuParticles3D)
             {
                 scenes.Add(currentScene);
             }
-            currentRoot.QueueFree();
+            currentRoot.Free();
         }
 
         return scenes;
@@ -69,7 +92,7 @@ public partial class ParticleRegistry : Node
     private Array<string> GetParticlePackedSceneRootNodeNames()
     {
         Array<string> names = new Array<string>();
-        Array<PackedScene> particlePackedScenes = GetPackedScenes<GpuParticles3D>();
+        Array<PackedScene> particlePackedScenes = GetGpuParticlePackedScenes();
 
         foreach (var particlePackedScene in particlePackedScenes)
         {
@@ -80,13 +103,34 @@ public partial class ParticleRegistry : Node
         return names;
     }
 
-    // public void SpawnParticle(string name, Vector3 globalPos)
-    // {
-
-    // }
-
-    // public void SpawnParticle(string name, Transform3D globalTransform)
-    // {
+    public static void SpawnParticle(string name, Transform3D globalTransform)
+    {
+        if (!Instance._catalog.ContainsKey(name))
+        {
+            Debug.LogWarn($"Failed to find particle asset named {name}.");
+            return;
+        }
         
-    // }
+        PackedScene particleScene = Instance._catalog[name];
+        GpuParticles3D particle = particleScene.Instantiate<GpuParticles3D>();
+
+        // Non one-shot particles are not currently supported.
+        if (!particle.OneShot)
+        {
+            Debug.LogWarn($"Particle '{name}' is not OneShot; forcing OneShot.");
+            particle.OneShot = true;
+        }
+
+        Instance.GetTree().CurrentScene.AddChild(particle);
+        particle.GlobalTransform = globalTransform;
+        particle.Finished += () => {
+            particle.QueueFree();
+        };
+        particle.Restart();
+    }
+
+    public static void SpawnParticle(string name, Vector3 globalPos)
+    {
+        SpawnParticle(name, new Transform3D(Basis.Identity, globalPos));
+    }
 }
