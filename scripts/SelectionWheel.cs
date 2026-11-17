@@ -7,6 +7,7 @@ using System.Linq;
 public partial class SelectionWheel : Control
 {
 	#region Backing Fields
+	private float _wheelRotation = 0.0f;
 	private float _segmentSpacing = 1.0f;
 	private float _wheelRadius = 25.0f;
 	private float _ringRadius = 25.0f;
@@ -18,6 +19,16 @@ public partial class SelectionWheel : Control
 	#endregion
 
 	#region Public Properties
+	[Export] public float WheelRotation
+	{
+		get => _wheelRotation;
+		set
+		{
+			_wheelRotation = value;
+			Update();
+		}
+	}
+
 	[Export] public float SegmentSpacing
 	{
 		get => _segmentSpacing;
@@ -180,6 +191,7 @@ public partial class SelectionWheel : Control
 	}
 
 	/// Builds a segmented ring as explicit triangles between the outer and inner arcs.
+	/// Each WheelSlots float is an angular weight; spans are normalized around the ring.
 	private void DrawRing()
 	{
 		if (RingPolygon is null)
@@ -187,7 +199,8 @@ public partial class SelectionWheel : Control
 			throw new InvalidOperationException();
 		}
 
-		int segments = GetSegmentCount();
+		float[] weights = GetSegmentWeights();
+		int segments = weights.Length;
 		int resolution = Mathf.Clamp(WheelResolution, 3, 256);
 		float radius = Mathf.Max(RingRadius, 0.0f);
 		float thickness = Mathf.Max(RingThickness, 0.0f);
@@ -199,28 +212,48 @@ public partial class SelectionWheel : Control
 			return;
 		}
 
+		float totalWeight = 0.0f;
+		for (int i = 0; i < segments; i++)
+		{
+			totalWeight += weights[i];
+		}
+
 		float innerRadius = radius;
 		float outerRadius = radius + thickness;
-		float segmentSpan = Mathf.Tau / segments;
-		// SegmentSpacing is degrees of gutter between slices (none when there's only one segment).
-		float gap = segments == 1 ? 0.0f : Mathf.DegToRad(SegmentSpacing);
-		gap = Mathf.Min(gap, segmentSpan * 0.95f);
-		float arcSpan = segmentSpan - gap;
-		int stepsPerSegment = Mathf.Max(2, Mathf.CeilToInt((float)resolution / segments));
-		int pointsPerSegment = stepsPerSegment + 1;
+		float baseGap = segments == 1 ? 0.0f : Mathf.DegToRad(SegmentSpacing);
 
-		Vector2[] vertices = new Vector2[segments * pointsPerSegment * 2];
-		Godot.Collections.Array triangles = new();
+		float[] segmentSpans = new float[segments];
+		float[] gaps = new float[segments];
+		float[] arcSpans = new float[segments];
+		int[] steps = new int[segments];
+		int totalPointPairs = 0;
+
+		for (int i = 0; i < segments; i++)
+		{
+			segmentSpans[i] = weights[i] / totalWeight * Mathf.Tau;
+			gaps[i] = Mathf.Min(baseGap, segmentSpans[i] * 0.95f);
+			arcSpans[i] = segmentSpans[i] - gaps[i];
+			steps[i] = Mathf.Max(2, Mathf.CeilToInt(resolution * (segmentSpans[i] / Mathf.Tau)));
+			totalPointPairs += steps[i] + 1;
+		}
+
+		Vector2[] vertices = new Vector2[totalPointPairs * 2];
+		Godot.Collections.Array triangles = new Godot.Collections.Array();
+
+		int vertexCursor = 0;
+		float angleCursor = 0.0f;
 
 		for (int segment = 0; segment < segments; segment++)
 		{
-			float startAngle = segment * segmentSpan + gap * 0.5f;
-			int outerBase = segment * pointsPerSegment * 2;
-			int innerBase = outerBase + pointsPerSegment;
+			int stepsPerSegment = steps[segment];
+			int pointsPerSegment = stepsPerSegment + 1;
+			float startAngle = angleCursor + gaps[segment] * 0.5f;
+			int outerBase = vertexCursor;
+			int innerBase = vertexCursor + pointsPerSegment;
 
 			for (int i = 0; i < pointsPerSegment; i++)
 			{
-				float angle = startAngle + arcSpan * i / stepsPerSegment;
+				float angle = startAngle + arcSpans[segment] * i / stepsPerSegment;
 				Vector2 direction = Vector2.FromAngle(angle);
 
 				vertices[outerBase + i] = direction * outerRadius;
@@ -237,6 +270,9 @@ public partial class SelectionWheel : Control
 				triangles.Add(new int[] { outer0, outer1, inner0 });
 				triangles.Add(new int[] { outer1, inner1, inner0 });
 			}
+
+			vertexCursor += pointsPerSegment * 2;
+			angleCursor += segmentSpans[segment];
 		}
 
 		RingPolygon.Polygon = vertices;
@@ -269,5 +305,38 @@ public partial class SelectionWheel : Control
 		}
 
 		return WheelSlots.Count;
+	}
+
+	/// Angular weights from WheelSlots values. Empty or all-zero falls back to equal shares.
+	private float[] GetSegmentWeights()
+	{
+		int segments = GetSegmentCount();
+		float[] weights = new float[segments];
+
+		if (WheelSlots.Count == 0)
+		{
+			weights[0] = 1.0f;
+			return weights;
+		}
+
+		int index = 0;
+		float total = 0.0f;
+
+		foreach (float weight in WheelSlots.Values)
+		{
+			weights[index] = Mathf.Max(weight, 0.0f);
+			total += weights[index];
+			index++;
+		}
+
+		if (total <= 0.0f)
+		{
+			for (int i = 0; i < segments; i++)
+			{
+				weights[i] = 1.0f;
+			}
+		}
+
+		return weights;
 	}
 }
