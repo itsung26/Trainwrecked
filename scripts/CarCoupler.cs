@@ -110,10 +110,9 @@ public partial class CarCoupler : Interactable
         else if (!Clamped && IsOverlapping())
         {
             TrainConsist overlapperTrain = GetOverlapper().CarParent.ConsistParent;
-            // TODO: implement join.
             CarParent.ConsistParent.Join(overlapperTrain);
         }
-        // TODO: Spawn some particle VFX at the coupling point.
+        ParticleRegistry.SpawnParticle("SparksSharp", GetCouplingPointPosition());
     }
 
     /// <summary>
