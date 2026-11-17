@@ -16,7 +16,6 @@ run/main_scene="uid://cni7aua4ujny2"
 config/auto_accept_quit=false
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 boot_splash/stretch_mode=2
-boot_splash/image="uid://msxfw5eum4kn"
 config/icon="res://icon.svg"
 
 [audio]

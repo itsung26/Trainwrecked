@@ -15,6 +15,14 @@ public partial class Debug : Node
 		}
 	}
 
+    public override void _Input(InputEvent @event)
+    {
+        if (Input.IsActionJustPressed("Debug Action"))
+		{
+			ParticleRegistry.SpawnParticle("SparksSharp", Vector3.Zero);
+		}
+    }
+
 	/// <summary>
 	/// Quits the scene tree when the <c>Debug Quit</c> action is just pressed.
 	/// </summary>

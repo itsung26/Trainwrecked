@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Godot;
 using Godot.Collections;
 
@@ -98,19 +99,21 @@ public partial class ParticleRegistry : Node
         {
             GpuParticles3D current = particlePackedScene.Instantiate<GpuParticles3D>();
             names.Add(current.Name);
+            current.QueueFree();
         }
 
         return names;
     }
 
-    public static void SpawnParticle(string name, Transform3D globalTransform)
+    [Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    public void SpawnParticleLocal(string name, Vector3 globalPos)
     {
         if (!Instance._catalog.ContainsKey(name))
         {
             Debug.LogWarn($"Failed to find particle asset named {name}.");
             return;
         }
-        
+
         PackedScene particleScene = Instance._catalog[name];
         GpuParticles3D particle = particleScene.Instantiate<GpuParticles3D>();
 
@@ -122,7 +125,7 @@ public partial class ParticleRegistry : Node
         }
 
         Instance.GetTree().CurrentScene.AddChild(particle);
-        particle.GlobalTransform = globalTransform;
+        particle.GlobalPosition = globalPos;
         particle.Finished += () => {
             particle.QueueFree();
         };
@@ -131,6 +134,6 @@ public partial class ParticleRegistry : Node
 
     public static void SpawnParticle(string name, Vector3 globalPos)
     {
-        SpawnParticle(name, new Transform3D(Basis.Identity, globalPos));
+        Instance.Rpc(MethodName.SpawnParticleLocal, name, globalPos);
     }
 }
