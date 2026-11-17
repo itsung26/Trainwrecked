@@ -62,11 +62,6 @@ public partial class CarCoupler : Interactable
             return;
         }
 
-        if (!NetworkManager.IsServer())
-        {
-            return;
-        }
-
         UpdateHookRotation(delta);
     }
 

@@ -296,10 +296,16 @@ public partial class TrainConsist : Node
     /// 0 is at the very front. Cars.count is at the very back.
     /// 1 inserts {this} consist between the frontmost car and the second car.
     /// The car calling this will be freed, merging into {with}.
+    /// <paramref name="withPath"/> must be an absolute NodePath; node refs cannot be RPC'd.
     [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-    public void JoinLocal(TrainConsist with, int insertionIndex)
+    public void JoinLocal(NodePath withPath, int insertionIndex)
     {
-        ArgumentNullException.ThrowIfNull(with);
+        // Absolute path from GetPath(); resolves from any in-tree node.
+        TrainConsist with = GetNodeOrNull<TrainConsist>(withPath);
+        if (with is null)
+        {
+            throw new InvalidOperationException($"Join target not found at '{withPath}'.");
+        }
 
         if (with == this)
         {
@@ -330,6 +336,14 @@ public partial class TrainConsist : Node
 
         bool insertAtFront = insertionIndex == 0;
 
+        // Car index != child index when non-RollingStock siblings exist (e.g. MultiplayerSynchronizer).
+        // After Split the synchronizer is often child 0, so MoveChild(..., Cars.Count) scrambles order.
+        int childInsertionIndex = insertionIndex >= destinationCars.Count
+            ? (destinationCars.Count == 0
+                ? with.GetChildCount()
+                : destinationCars[destinationCars.Count - 1].GetIndex() + 1)
+            : destinationCars[insertionIndex].GetIndex();
+
         foreach (RollingStock car in joiningCars)
         {
             car.Reparent(with);
@@ -337,7 +351,7 @@ public partial class TrainConsist : Node
 
         for (int i = 0; i < joiningCars.Count; i++)
         {
-            with.MoveChild(joiningCars[i], insertionIndex + i);
+            with.MoveChild(joiningCars[i], childInsertionIndex + i);
         }
 
         if (insertAtFront)
@@ -350,7 +364,13 @@ public partial class TrainConsist : Node
 
     public void Join(TrainConsist with, int insertionIndex)
     {
-        Rpc(method: MethodName.JoinLocal, with, insertionIndex);
+        ArgumentNullException.ThrowIfNull(with);
+        if (insertionIndex < 0 || insertionIndex > with.Cars.Count)
+        {
+            throw new IndexOutOfRangeException(
+                $"Join insertion index {insertionIndex} is outside [0, {with.Cars.Count}].");
+        }
+        Rpc(MethodName.JoinLocal, with.GetPath(), insertionIndex);
     }
 
     private void _on_child_entered_tree(Node node)
