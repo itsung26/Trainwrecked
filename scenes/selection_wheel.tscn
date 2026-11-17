@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://yhtq5j10a1yp"]
+
+[ext_resource type="Script" uid="uid://cmhre23v8s4vn" path="res://scripts/SelectionWheel.cs" id="1_nkeuc"]
+[ext_resource type="Shader" uid="uid://b4p2tuid4c8gc" path="res://assets/shaders/selection_wheel_screen_darken.gdshader" id="1_t3epp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dehhp"]
+shader = ExtResource("1_t3epp")
+
+[node name="SelectionWheel" type="Control" unique_id=645832777 node_paths=PackedStringArray("WheelPolygon")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nkeuc")
+WheelRadius = 455.65
+WheelResolution = 64
+WheelPolygon = NodePath("WheelPolygon")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1265416169]
+material = SubResource("ShaderMaterial_dehhp")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WheelPolygon" type="Polygon2D" parent="." unique_id=554021510]
+position = Vector2(960, 540)
+antialiased = true
+polygon = PackedVector2Array(455.65, 0, 453.4559, 44.66151, 446.8948, 88.89291, 436.02988, 132.2682, 420.9657, 174.36972, 401.8474, 214.79193, 378.85913, 253.14558, 352.22223, 289.06128, 322.19324, 322.1932, 289.0613, 352.2222, 253.1456, 378.85913, 214.79193, 401.8474, 174.3697, 420.9657, 132.26819, 436.02988, 88.89286, 446.8948, 44.661453, 453.4559, -7.4234806e-05, 455.65, -44.661602, 453.4559, -88.89301, 446.8948, -132.26834, 436.02982, -174.36984, 420.96564, -214.79205, 401.84735, -253.14572, 378.85904, -289.06146, 352.22208, -322.19336, 322.19305, -352.22235, 289.0611, -378.85928, 253.14536, -401.84753, 214.79167, -420.96582, 174.36943, -436.02994, 132.26791, -446.89487, 88.89258, -453.45593, 44.661163, -455.65, -0.00036574047, -453.45587, -44.66189, -446.89474, -88.893295, -436.02972, -132.26862, -420.9655, -174.3701, -401.84723, -214.79231, -378.8589, -253.14597, -352.2219, -289.06168, -322.19284, -322.19357, -289.06097, -352.22247, -253.14531, -378.8593, -214.7917, -401.84753, -174.36957, -420.96576, -132.26816, -436.02988, -88.89293, -446.8948, -44.66163, -453.4559, -0.00021183728, -455.65, 44.66121, -453.45593, 88.89252, -446.89487, 132.26775, -436.03, 174.36917, -420.96594, 214.79134, -401.84772, 253.14496, -378.85956, 289.06064, -352.22275, 322.19254, -322.19388, 352.22156, -289.06207, 378.8585, -253.1465, 401.84686, -214.79298, 420.9652, -174.3709, 436.02945, -132.26953, 446.89453, -88.89435, 453.45575, -44.66307)
+uv = PackedVector2Array(-59.600037, -22.799995, -9.200012, -52.399994, 82, -35.6, 102.79999, 5.2000046, 40.399963, 64.4, -1.2000122, 63.6, -87.60004, 33.200005)

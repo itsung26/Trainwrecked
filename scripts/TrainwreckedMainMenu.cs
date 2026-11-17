@@ -147,6 +147,7 @@ public partial class TrainwreckedMainMenu : Control
 	#region Event Handlers
 	private void _on_continue_button_pressed()
 	{
+		throw new NotImplementedException();
 	}
 
 	private void _on_multiplayer_button_pressed()
@@ -161,15 +162,22 @@ public partial class TrainwreckedMainMenu : Control
 
 	private void _on_load_button_pressed()
 	{
+		throw new NotImplementedException();
 	}
 
 	private void _on_options_button_pressed()
 	{
+		throw new NotImplementedException();
 	}
 
 	private void _on_quit_button_pressed()
 	{
 		ExitHandler.RequestClose();
+	}
+
+	private void _on_player_options_button_pressed()
+	{
+		throw new NotImplementedException();
 	}
 
 	private void _on_multiplayer_lobby_menu_exited_menu()

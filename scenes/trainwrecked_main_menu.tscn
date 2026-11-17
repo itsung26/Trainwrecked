@@ -9,7 +9,7 @@
 [ext_resource type="Script" uid="uid://tvuqi8gn8gx1" path="res://scripts/TrackPath.cs" id="5_r60r8"]
 [ext_resource type="Material" uid="uid://ycx1b2myd8fy" path="res://assets/materials/sandy_dunes.tres" id="6_27gen"]
 [ext_resource type="PackedScene" uid="uid://du6gxi03wkppk" path="res://scenes/single_track_mesh.tscn" id="6_fk41g"]
-[ext_resource type="PackedScene" uid="uid://do6nlpwwu66rs" path="res://assets/3d assets/cactus/cactus.blend" id="7_8qy8p"]
+[ext_resource type="PackedScene" uid="uid://bq3sd25f0ficj" path="res://assets/3d assets/cactus/cactus.blend" id="7_8qy8p"]
 [ext_resource type="Shader" uid="uid://wq7oa27iovho" path="res://assets/shaders/heat_haze.gdshader" id="7_fk41g"]
 [ext_resource type="ArrayMesh" uid="uid://bvxmdsra07jsg" path="res://assets/3d assets/cactus/mesh resources/cactus_cactu01_Material_002_0.res" id="7_odklb"]
 [ext_resource type="ArrayMesh" uid="uid://cw4jstmp1cbcj" path="res://assets/3d assets/cactus/mesh resources/cactus_Cactu_02_Material_002_0.res" id="7_px1wt"]
@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://wc37b7h2vw56" path="res://assets/particles/circling_vultures.tscn" id="10_j53pp"]
 [ext_resource type="PackedScene" uid="uid://c1ooomqyw3i2g" path="res://scenes/lens_flare_shader.tscn" id="10_xfftf"]
 [ext_resource type="Script" uid="uid://bhsg271e1lvlh" path="res://scripts/StateMachine.cs" id="18_6ycsm"]
+[ext_resource type="Texture2D" uid="uid://btvv3yq5b113f" path="res://icon.svg" id="18_gs35m"]
 [ext_resource type="Script" uid="uid://d13b5kdgkflx4" path="res://scripts/State.cs" id="19_gs35m"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_j45et"]
@@ -647,6 +648,19 @@ anchor_bottom = 1.0
 grow_horizontal = 0
 grow_vertical = 0
 
+[node name="TopRightHbox" type="HBoxContainer" parent="MainMenuCanvasLayer/MainMenuScreenAssembly" unique_id=650592534]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.909375
+anchor_top = 0.025925925
+anchor_right = 0.98020834
+anchor_bottom = 0.15185185
+metadata/_edit_use_anchors_ = true
+
+[node name="PlayerOptionsButton" type="Button" parent="MainMenuCanvasLayer/MainMenuScreenAssembly/TopRightHbox" unique_id=1200012722]
+layout_mode = 2
+icon = ExtResource("18_gs35m")
+
 [node name="MenuIntroAnimator" type="AnimationPlayer" parent="." unique_id=1249592002]
 libraries/ = SubResource("AnimationLibrary_6ycsm")
 
@@ -678,6 +692,7 @@ metadata/_custom_type_script = "uid://d13b5kdgkflx4"
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/OptionsButton" to="." method="_on_options_button_pressed"]
 [connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/ButtonsBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
 [connection signal="ExitedMenu" from="MainMenuCanvasLayer/MainMenuScreenAssembly/MultiplayerLobbyMenu" to="." method="_on_multiplayer_lobby_menu_exited_menu"]
+[connection signal="pressed" from="MainMenuCanvasLayer/MainMenuScreenAssembly/TopRightHbox/PlayerOptionsButton" to="." method="_on_player_options_button_pressed"]
 [connection signal="StateChanged" from="StateMachine" to="." method="_on_state_machine_state_changed"]
 
 [editable path="CactusMultiMesh/cactus"]
