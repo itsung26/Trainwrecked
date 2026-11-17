@@ -29,7 +29,7 @@ public partial class SelectionWheel : Control
 		get => _wheelThickness;
 		set
 		{
-			_wheelThickness = value;
+			_wheelThickness = Mathf.Max(value, 0.0f);
 			Update();
 		}
 	}
@@ -57,6 +57,7 @@ public partial class SelectionWheel : Control
 
 	[ExportGroup("Node Refs")]
 	[Export] public Polygon2D WheelPolygon { get; set; }
+	[Export] public Polygon2D RingPolygon { get; set; }
 
     public override string[] _GetConfigurationWarnings()
     {
@@ -86,29 +87,34 @@ public partial class SelectionWheel : Control
 	private void LockWheelToCenter()
 	{
 		ArgumentNullException.ThrowIfNull(WheelPolygon);
+		ArgumentNullException.ThrowIfNull(RingPolygon);
 
-		WheelPolygon.GlobalPosition = GetRect().GetCenter();
+		Vector2 center = GetRect().GetCenter();
+
+		WheelPolygon.GlobalPosition = center;
+		RingPolygon.GlobalPosition = center;
 	}
 
-	/// Redraws the wheel based on exported parameters.
+	/// Redraws the entire wheel based on exported parameters.
 	private void Update()
 	{
-		if (WheelPolygon is null)
+		if (WheelPolygon is null || RingPolygon is null)
 		{
-			Debug.LogWarn("WheelPolygon is null, returning.");
 			return;
 		}
 
-		WheelPolygon.Polygon = DrawCircle(WheelRadius, WheelResolution);
+		DrawCircle(WheelRadius, WheelResolution);
+		DrawRing(WheelRadius, WheelThickness, WheelResolution);
 	}
 
-	private static Vector2[] DrawCircle(float radius, int resolution)
+	private void DrawCircle(float radius, int resolution)
 	{
 		resolution = Mathf.Clamp(resolution, 3, 256);
 
 		if (Mathf.IsEqualApprox(radius, 0.0f))
 		{
-			return new Vector2[0];
+			WheelPolygon.Polygon = System.Array.Empty<Vector2>();
+			return;
 		}
 
 		Vector2[] circle = new Vector2[resolution];
@@ -121,7 +127,60 @@ public partial class SelectionWheel : Control
 			angle += (2.0f * Mathf.Pi) / resolution;
 		}
 
-		return circle;
+		WheelPolygon.Polygon = circle;
+	}
+
+	/// Builds the ring as explicit triangles between the outer and inner circles.
+	private void DrawRing(float radius, float thickness, int resolution)
+	{
+		if (RingPolygon is null)
+		{
+			throw new InvalidOperationException();
+		}
+		
+		resolution = Mathf.Clamp(resolution, 3, 256);
+		radius = Mathf.Max(radius, 0.0f);
+		thickness = Mathf.Max(thickness, 0.0f);
+
+		if (Mathf.IsZeroApprox(thickness))
+		{
+			RingPolygon.Polygon = System.Array.Empty<Vector2>();
+			RingPolygon.Polygons = new Godot.Collections.Array();
+			return;
+		}
+
+		float innerRadius = radius;
+		float outerRadius = radius + thickness;
+
+		Vector2[] vertices = new Vector2[resolution * 2];
+		Godot.Collections.Array triangles = new();
+
+		for (int i = 0; i < resolution; i++)
+		{
+			float angle = Mathf.Tau * i / resolution;
+			Vector2 direction = Vector2.FromAngle(angle);
+
+			vertices[i] = direction * outerRadius;
+			vertices[i + resolution] = direction * innerRadius;
+		}
+
+		for (int i = 0; i < resolution; i++)
+		{
+			int next = (i + 1) % resolution;
+
+			triangles.Add(new int[]
+			{
+				i, next, i + resolution
+			});
+
+			triangles.Add(new int[]
+			{
+				next, next + resolution, i + resolution
+			});
+		}
+
+		RingPolygon.Polygon = vertices;
+		RingPolygon.Polygons = triangles;
 	}
 
 	/// Converts rectangular (x, y) to polar (radius, angle in radians).
