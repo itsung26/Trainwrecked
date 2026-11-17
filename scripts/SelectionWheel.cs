@@ -7,6 +7,7 @@ using System.Linq;
 public partial class SelectionWheel : Control
 {
 	#region Backing Fields
+	private float _segmentSpacing = 1.0f;
 	private float _wheelRadius = 25.0f;
 	private float _ringRadius = 25.0f;
 	private float _ringThickness = 50.0f;
@@ -17,6 +18,16 @@ public partial class SelectionWheel : Control
 	#endregion
 
 	#region Public Properties
+	[Export] public float SegmentSpacing
+	{
+		get => _segmentSpacing;
+		set
+		{
+			_segmentSpacing = Mathf.Max(value, 0.0f);
+			Update();
+		}
+	}
+
 	[Export] public float WheelRadius
 	{
 		get => _wheelRadius;
@@ -137,20 +148,19 @@ public partial class SelectionWheel : Control
 			return;
 		}
 
-		// Update shapes.
-		DrawCircle(WheelRadius, WheelResolution);
-		DrawRing(RingRadius, RingThickness, WheelResolution);
+		DrawCircle();
+		DrawRing();
 
 		// Update colors.
 		WheelPolygon.Color = WheelColor;
 		RingPolygon.Color = RingColor;
 	}
 
-	private void DrawCircle(float radius, int resolution)
+	private void DrawCircle()
 	{
-		resolution = Mathf.Clamp(resolution, 3, 256);
+		int resolution = Mathf.Clamp(WheelResolution, 3, 256);
 
-		if (Mathf.IsEqualApprox(radius, 0.0f))
+		if (Mathf.IsEqualApprox(WheelRadius, 0.0f))
 		{
 			WheelPolygon.Polygon = System.Array.Empty<Vector2>();
 			return;
@@ -161,7 +171,7 @@ public partial class SelectionWheel : Control
 
 		for (int i = 0; i < circle.Length; i++)
 		{
-			Vector2 point = ToRectangular(new Vector2(radius, angle));
+			Vector2 point = ToRectangular(new Vector2(WheelRadius, angle));
 			circle[i] = point;
 			angle += (2.0f * Mathf.Pi) / resolution;
 		}
@@ -169,17 +179,18 @@ public partial class SelectionWheel : Control
 		WheelPolygon.Polygon = circle;
 	}
 
-	/// Builds the ring as explicit triangles between the outer and inner circles.
-	private void DrawRing(float radius, float thickness, int resolution)
+	/// Builds a segmented ring as explicit triangles between the outer and inner arcs.
+	private void DrawRing()
 	{
 		if (RingPolygon is null)
 		{
 			throw new InvalidOperationException();
 		}
-		
-		resolution = Mathf.Clamp(resolution, 3, 256);
-		radius = Mathf.Max(radius, 0.0f);
-		thickness = Mathf.Max(thickness, 0.0f);
+
+		int segments = GetSegmentCount();
+		int resolution = Mathf.Clamp(WheelResolution, 3, 256);
+		float radius = Mathf.Max(RingRadius, 0.0f);
+		float thickness = Mathf.Max(RingThickness, 0.0f);
 
 		if (Mathf.IsZeroApprox(thickness))
 		{
@@ -190,32 +201,42 @@ public partial class SelectionWheel : Control
 
 		float innerRadius = radius;
 		float outerRadius = radius + thickness;
+		float segmentSpan = Mathf.Tau / segments;
+		// SegmentSpacing is degrees of gutter between slices (none when there's only one segment).
+		float gap = segments == 1 ? 0.0f : Mathf.DegToRad(SegmentSpacing);
+		gap = Mathf.Min(gap, segmentSpan * 0.95f);
+		float arcSpan = segmentSpan - gap;
+		int stepsPerSegment = Mathf.Max(2, Mathf.CeilToInt((float)resolution / segments));
+		int pointsPerSegment = stepsPerSegment + 1;
 
-		Vector2[] vertices = new Vector2[resolution * 2];
+		Vector2[] vertices = new Vector2[segments * pointsPerSegment * 2];
 		Godot.Collections.Array triangles = new();
 
-		for (int i = 0; i < resolution; i++)
+		for (int segment = 0; segment < segments; segment++)
 		{
-			float angle = Mathf.Tau * i / resolution;
-			Vector2 direction = Vector2.FromAngle(angle);
+			float startAngle = segment * segmentSpan + gap * 0.5f;
+			int outerBase = segment * pointsPerSegment * 2;
+			int innerBase = outerBase + pointsPerSegment;
 
-			vertices[i] = direction * outerRadius;
-			vertices[i + resolution] = direction * innerRadius;
-		}
-
-		for (int i = 0; i < resolution; i++)
-		{
-			int next = (i + 1) % resolution;
-
-			triangles.Add(new int[]
+			for (int i = 0; i < pointsPerSegment; i++)
 			{
-				i, next, i + resolution
-			});
+				float angle = startAngle + arcSpan * i / stepsPerSegment;
+				Vector2 direction = Vector2.FromAngle(angle);
 
-			triangles.Add(new int[]
+				vertices[outerBase + i] = direction * outerRadius;
+				vertices[innerBase + i] = direction * innerRadius;
+			}
+
+			for (int i = 0; i < stepsPerSegment; i++)
 			{
-				next, next + resolution, i + resolution
-			});
+				int outer0 = outerBase + i;
+				int outer1 = outerBase + i + 1;
+				int inner0 = innerBase + i;
+				int inner1 = innerBase + i + 1;
+
+				triangles.Add(new int[] { outer0, outer1, inner0 });
+				triangles.Add(new int[] { outer1, inner1, inner0 });
+			}
 		}
 
 		RingPolygon.Polygon = vertices;
@@ -232,5 +253,21 @@ public partial class SelectionWheel : Control
 	private static Vector2 ToRectangular(Vector2 polarCoord)
 	{
 		return Vector2.FromAngle(polarCoord.Y) * polarCoord.X;
+	}
+
+	/// Derive segment count from the amount of elements in WheelSlots.
+	private int GetSegmentCount()
+	{
+		if (WheelSlots is null)
+		{
+			throw new InvalidOperationException();
+		}
+
+		if (WheelSlots.Count == 0)
+		{
+			return 1;
+		}
+
+		return WheelSlots.Count;
 	}
 }
