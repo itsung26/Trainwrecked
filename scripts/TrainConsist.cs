@@ -338,11 +338,19 @@ public partial class TrainConsist : Node
 
         // Car index != child index when non-RollingStock siblings exist (e.g. MultiplayerSynchronizer).
         // After Split the synchronizer is often child 0, so MoveChild(..., Cars.Count) scrambles order.
-        int childInsertionIndex = insertionIndex >= destinationCars.Count
-            ? (destinationCars.Count == 0
-                ? with.GetChildCount()
-                : destinationCars[destinationCars.Count - 1].GetIndex() + 1)
-            : destinationCars[insertionIndex].GetIndex();
+        int childInsertionIndex;
+        if (insertionIndex < destinationCars.Count)
+        {
+            childInsertionIndex = destinationCars[insertionIndex].GetIndex();
+        }
+        else if (destinationCars.Count == 0)
+        {
+            childInsertionIndex = with.GetChildCount();
+        }
+        else
+        {
+            childInsertionIndex = destinationCars[destinationCars.Count - 1].GetIndex() + 1;
+        }
 
         foreach (RollingStock car in joiningCars)
         {

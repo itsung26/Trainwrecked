@@ -106,6 +106,16 @@ public partial class NetworkManager : Node
 		ListenForHostsAsClient();
 	}
 
+    public override void _ExitTree()
+    {
+		Multiplayer.PeerConnected -= _on_multiplayer_peer_connected;
+		Multiplayer.PeerDisconnected -= _on_multiplayer_peer_disconnected;
+		Multiplayer.ConnectedToServer -= _on_multiplayer_connected_to_server;
+		Multiplayer.ConnectionFailed -= _on_multiplayer_connection_failed;
+		Multiplayer.ServerDisconnected -= _on_multiplayer_server_disconnected;
+		GetWindow().CloseRequested -= _on_close_requested;
+    }
+
 	// Receive incoming packets, and when the prefix signature is detected,
 	// respond with the host response prefix packet.
 	public void ListenForClientsAsHost()
