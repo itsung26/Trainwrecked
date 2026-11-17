@@ -31,6 +31,7 @@ public partial class TrainConsist : Node
         }
 
         ChildEnteredTree += _on_child_entered_tree;
+        ChildOrderChanged += _on_child_order_changed;
         ChildExitingTree += _on_child_exiting_tree;
 
         RebuildCouplingLinks();
@@ -68,6 +69,7 @@ public partial class TrainConsist : Node
         }
 
         ChildEnteredTree -= _on_child_entered_tree;
+        ChildOrderChanged -= _on_child_order_changed;
         ChildExitingTree -= _on_child_exiting_tree;
     }
 
@@ -101,7 +103,7 @@ public partial class TrainConsist : Node
     {
         if (Cars.Count == 0)
         {
-            throw new IndexOutOfRangeException("No head present.");
+            return null;
         }
 
         RollingStock head = Cars[0];
@@ -113,7 +115,7 @@ public partial class TrainConsist : Node
     {
         if (Cars.Count == 0)
         {
-            throw new IndexOutOfRangeException("No tail present.");
+            return null;
         }
         
         RollingStock tail = Cars[Cars.Count - 1];
@@ -294,7 +296,12 @@ public partial class TrainConsist : Node
         newConsist.RebuildCouplingLinks();
     }
 
-    public void Join(TrainConsist with)
+    /// Merges {this} consist into {with}, reparenting children cars.
+    /// Original empty consist is freed. Index is an insertion index.
+    /// 0 is at the very front. Cars.count is at the very back.
+    /// 1 inserts {this} consist between the frontmost car and the second car.
+    /// The car calling this will be freed, merging into {with}.
+    public void Join(TrainConsist with, int insertionIndex)
     {
         ArgumentNullException.ThrowIfNull(with);
 
@@ -303,7 +310,62 @@ public partial class TrainConsist : Node
             return;
         }
 
-        throw new NotImplementedException("TrainConsist.Join is not implemented.");
+        if (with == this)
+        {
+            throw new InvalidOperationException("Cannot join a consist with itself.");
+        }
+
+        Array<RollingStock> destinationCars = with.Cars;
+
+        if (insertionIndex < 0 || insertionIndex > destinationCars.Count)
+        {
+            throw new IndexOutOfRangeException($"Join insertion index {insertionIndex} is outside [0, {destinationCars.Count}].");
+        }
+
+        Array<RollingStock> cars = Cars;
+
+        // Snapshot before reparenting mutates this consist's children.
+        List<RollingStock> joiningCars = new List<RollingStock>();
+        for (int i = 0; i < cars.Count; i++)
+        {
+            joiningCars.Add(cars[i]);
+        }
+
+        if (joiningCars.Count == 0)
+        {
+            QueueFree();
+            return;
+        }
+
+        bool insertAtFront = insertionIndex == 0;
+        bool insertAtRear = insertionIndex == destinationCars.Count;
+
+        if (insertAtFront)
+        {
+            with.CanCoupleFront = CanCoupleFront;
+        }
+
+        if (insertAtRear)
+        {
+            with.CanCoupleRear = CanCoupleRear;
+        }
+
+        foreach (RollingStock car in joiningCars)
+        {
+            car.Reparent(with);
+        }
+
+        for (int i = 0; i < joiningCars.Count; i++)
+        {
+            with.MoveChild(joiningCars[i], insertionIndex + i);
+        }
+
+        if (insertAtFront)
+        {
+            with.HeadOffset = HeadOffset;
+        }
+
+        QueueFree();
     }
 
     private void _on_child_entered_tree(Node node)
@@ -322,14 +384,19 @@ public partial class TrainConsist : Node
         RebuildCouplingLinks();
     }
 
-    private void _on_child_exiting_tree(Node node)
+    private void _on_child_order_changed()
     {
         if (Engine.IsEditorHint())
         {
             return;
         }
+        
+        RebuildCouplingLinks();
+    }
 
-        if (!NetworkManager.IsServer())
+    private void _on_child_exiting_tree(Node node)
+    {
+        if (Engine.IsEditorHint())
         {
             return;
         }
@@ -348,13 +415,6 @@ public partial class TrainConsist : Node
 
         exitingCar.Ahead = null;
         exitingCar.Behind = null;
-
-        // Sole car: nothing left to couple.
-        if (cars.Count == 1)
-        {
-            Debug.LogWarn($"{Name}: last RollingStock child is leaving; consist is empty.");
-            return;
-        }
 
         // Exiting car is still in Cars until this signal returns; rebuild after it leaves.
         CallDeferred(MethodName.RebuildCouplingLinks);

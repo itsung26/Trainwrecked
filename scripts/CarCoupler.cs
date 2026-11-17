@@ -106,13 +106,23 @@ public partial class CarCoupler : Interactable
         if (Clamped)
         {
             CarParent.ConsistParent.Split(GetSplittingIndex());
+            ParticleRegistry.SpawnParticle("SparksSharp", GetCouplingPointPosition());
         }
         else if (!Clamped && IsOverlapping())
         {
             TrainConsist overlapperTrain = GetOverlapper().CarParent.ConsistParent;
-            CarParent.ConsistParent.Join(overlapperTrain);
+
+            if (IsFrontCoupler() && CarParent.Ahead is null)
+            {
+                CarParent.ConsistParent.Join(overlapperTrain, overlapperTrain.Cars.Count);
+            }
+            else if (IsRearCoupler() && CarParent.Behind is null)
+            {
+                CarParent.ConsistParent.Join(overlapperTrain, 0);
+            }
+
+            ParticleRegistry.SpawnParticle("SparksSharp", GetCouplingPointPosition());
         }
-        ParticleRegistry.SpawnParticle("SparksSharp", GetCouplingPointPosition());
     }
 
     /// <summary>

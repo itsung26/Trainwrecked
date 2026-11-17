@@ -35,6 +35,7 @@ public partial class Debug : Node
 		{
 			TrainConsist train = GetTree().CurrentScene.GetNode<TrainConsist>("TestTrain");
 			train.Split(2);
+			// train.Cars[2].QueueFree();
 		}
     }
 
