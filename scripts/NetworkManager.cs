@@ -77,7 +77,6 @@ public partial class NetworkManager : Node
 		Multiplayer.ConnectedToServer += _on_multiplayer_connected_to_server;
 		Multiplayer.ConnectionFailed += _on_multiplayer_connection_failed;
 		Multiplayer.ServerDisconnected += _on_multiplayer_server_disconnected;
-		GetWindow().CloseRequested += _on_close_requested;
 
 		// Check for executable arguments: open a session if found.
 		if (RunArguments.HasHostFlag)
@@ -113,7 +112,6 @@ public partial class NetworkManager : Node
 		Multiplayer.ConnectedToServer -= _on_multiplayer_connected_to_server;
 		Multiplayer.ConnectionFailed -= _on_multiplayer_connection_failed;
 		Multiplayer.ServerDisconnected -= _on_multiplayer_server_disconnected;
-		GetWindow().CloseRequested -= _on_close_requested;
     }
 
 	// Receive incoming packets, and when the prefix signature is detected,
@@ -468,15 +466,6 @@ public partial class NetworkManager : Node
 	private void _on_multiplayer_server_disconnected()
 	{
 		EmitSignal(SignalName.ServerDisconnected);
-	}
-
-	private void _on_close_requested()
-	{
-		Debug.Log("NetworkManager: Window close requested.");
-
-		Disconnect();
-
-		GetTree().Quit();
 	}
 
 }

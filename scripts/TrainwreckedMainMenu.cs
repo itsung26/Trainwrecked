@@ -169,7 +169,7 @@ public partial class TrainwreckedMainMenu : Control
 
 	private void _on_quit_button_pressed()
 	{
-		GetWindow().EmitSignal(Window.SignalName.CloseRequested);
+		ExitHandler.RequestClose();
 	}
 
 	private void _on_multiplayer_lobby_menu_exited_menu()
