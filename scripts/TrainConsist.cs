@@ -16,8 +16,6 @@ public partial class TrainConsist : Node
     }
     [Export] public float Velocity { get; set; }
     [Export] public float Damping { get; set; } = 1f;
-    [Export] public bool CanCoupleFront { get; set; } = true;
-    [Export] public bool CanCoupleRear { get; set; } = true;
     public RollingStock Head => GetHead();
     public RollingStock Tail => GetTail();
     /// When accessed, returns a copy of all RollingStock children. Cannot be modified.
@@ -220,7 +218,8 @@ public partial class TrainConsist : Node
         return totalSpan;
     }
 
-    public void Split(int at)
+    [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    public void SplitLocal(int at)
     {
         Array<RollingStock> cars = Cars;
 
@@ -273,8 +272,6 @@ public partial class TrainConsist : Node
         newConsist.TrackNodePath = TrackNodePath;
         newConsist.Velocity = Velocity;
         newConsist.Damping = Damping;
-        newConsist.CanCoupleFront = CanCoupleFront;
-        newConsist.CanCoupleRear = CanCoupleRear;
 
         GetTree().CurrentScene.AddChild(newConsist, true);
 
@@ -289,12 +286,18 @@ public partial class TrainConsist : Node
         newConsist.RebuildCouplingLinks();
     }
 
+    public void Split(int at)
+    {
+        Rpc(method: MethodName.SplitLocal, at);
+    }
+
     /// Merges {this} consist into {with}, reparenting children cars.
     /// Original empty consist is freed. Index is an insertion index.
     /// 0 is at the very front. Cars.count is at the very back.
     /// 1 inserts {this} consist between the frontmost car and the second car.
     /// The car calling this will be freed, merging into {with}.
-    public void Join(TrainConsist with, int insertionIndex)
+    [Rpc(MultiplayerApi.RpcMode.Authority, CallLocal = true, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
+    public void JoinLocal(TrainConsist with, int insertionIndex)
     {
         ArgumentNullException.ThrowIfNull(with);
 
@@ -326,17 +329,6 @@ public partial class TrainConsist : Node
         }
 
         bool insertAtFront = insertionIndex == 0;
-        bool insertAtRear = insertionIndex == destinationCars.Count;
-
-        if (insertAtFront)
-        {
-            with.CanCoupleFront = CanCoupleFront;
-        }
-
-        if (insertAtRear)
-        {
-            with.CanCoupleRear = CanCoupleRear;
-        }
 
         foreach (RollingStock car in joiningCars)
         {
@@ -354,6 +346,11 @@ public partial class TrainConsist : Node
         }
 
         QueueFree();
+    }
+
+    public void Join(TrainConsist with, int insertionIndex)
+    {
+        Rpc(method: MethodName.JoinLocal, with, insertionIndex);
     }
 
     private void _on_child_entered_tree(Node node)
