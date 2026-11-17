@@ -33,6 +33,17 @@ size = Vector3(3.293, 3.275, 12.224)
 [sub_resource type="BoxShape3D" id="BoxShape3D_2gq8u"]
 size = Vector3(3.293, 3.275, 12.224)
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_fylv5"]
+properties/0/path = NodePath(".:HeadOffset")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:Velocity")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:Damping")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
 [node name="TestTrain" type="Node" unique_id=1571218383]
 script = ExtResource("1_c7d61")
 metadata/_custom_type_script = "uid://dmng1kajcssbw"
@@ -138,3 +149,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.363, -6.1021156)
 
 [node name="Back3" parent="TestRailCarBody4" unique_id=919841557 instance=ExtResource("3_rkt2r")]
 transform = Transform3D(-1, 0, 8.940697e-08, 0, 1, 0, -8.940697e-08, 0, -1, 5.302299e-09, 0.363, 6.110695)
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=634305619]
+replication_config = SubResource("SceneReplicationConfig_fylv5")

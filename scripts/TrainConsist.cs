@@ -152,13 +152,11 @@ public partial class TrainConsist : Node
     public float GetCombinedRollingMass()
     {
         float total = 0f;
+        Array<RollingStock> cars = Cars;
 
-        for (int i = 0; i < GetChildCount(); i++)
+        foreach (RollingStock car in cars)
         {
-            if (GetChild<RollingStock>(i) is RollingStock childCar)
-            {
-                total += childCar.RollingMass;
-            }
+            total += car.RollingMass;
         }
 
         return total;
