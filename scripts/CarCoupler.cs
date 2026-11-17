@@ -27,7 +27,7 @@ public partial class CarCoupler : Interactable
     /// <see langword="false"/>, toward the open pose. Visual only until gameplay sets it from
     /// <see cref="TrainConsist"/> join/split.
     /// </remarks>
-    public bool Clamped { get; set; }
+    [Export] public bool Clamped { get; set; }
 
     public RollingStock CarParent => GetParent() as RollingStock;
 
@@ -257,6 +257,11 @@ public partial class CarCoupler : Interactable
 
     public void _on_hook_overlap_detector_area_entered(Area3D area)
     {
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+
         CarCoupler couplerParent = area.GetParent() as CarCoupler;
         if (couplerParent is not null && _overlapper is null)
         {
@@ -266,6 +271,11 @@ public partial class CarCoupler : Interactable
 
     public void _on_hook_overlap_detector_area_exited(Area3D area)
     {
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+
         CarCoupler couplerParent = area.GetParent() as CarCoupler;
         if (ReferenceEquals(_overlapper, couplerParent))
         {
