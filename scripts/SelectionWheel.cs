@@ -159,8 +159,12 @@ public partial class SelectionWheel : Control
 			return;
 		}
 
+		// Update polygon shape renderers.
 		DrawCircle();
 		DrawRing();
+
+		// Update polygon object transforms.
+		RingPolygon.Rotation = WheelRotation;
 
 		// Update colors.
 		WheelPolygon.Color = WheelColor;
