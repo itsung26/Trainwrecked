@@ -257,6 +257,7 @@ public partial class CarCoupler : Interactable
 
     public void _on_hook_overlap_detector_area_entered(Area3D area)
     {
+        // Just to be safe, we prevent signals from firing in the editor.
         if (Engine.IsEditorHint())
         {
             return;

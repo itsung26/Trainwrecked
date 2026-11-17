@@ -24,7 +24,7 @@ points = PackedVector3Array(-0.23021129, -0.0583, -0.5645769, 0.25764495, 0.0350
 size = Vector3(0.53905666, 0.362, 0.70230275)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_bkjko"]
-properties/0/path = NodePath("coupler_02/hook:rotation")
+properties/0/path = NodePath(".:Clamped")
 properties/0/spawn = true
 properties/0/replication_mode = 1
 
