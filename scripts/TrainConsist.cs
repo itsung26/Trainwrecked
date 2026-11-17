@@ -6,7 +6,7 @@ using Godot.Collections;
 [Tool, GlobalClass, Icon("res://assets/2d assets/train_consist_icon.svg")]
 public partial class TrainConsist : Node
 {
-    [Export] public TrackPath Track { get; set; }
+    [Export] public NodePath TrackNodePath { get; set; }
     private float _headOffset;
     [Export]
     public float HeadOffset
@@ -36,22 +36,12 @@ public partial class TrainConsist : Node
 
         RebuildCouplingLinks();
 
-        if (!NetworkManager.IsServer())
-        {
-            return;
-        }
-
         PlaceCars();
     }
 
     public override void _PhysicsProcess(double delta)
     {
         if (Engine.IsEditorHint())
-        {
-            return;
-        }
-
-        if (!NetworkManager.IsServer())
         {
             return;
         }
@@ -77,26 +67,35 @@ public partial class TrainConsist : Node
     {
         _headOffset = value;
 
-        if (Head is null)
-        {
-            return;
-        }
+        TrackPath track = GetNodeOrNull<TrackPath>(TrackNodePath);
 
-        if (Track is null)
+        // Clamping range cannot be correctly calculated without knowledge of the track,
+        // so return if it is null.        
+        if (track is null)
         {
-            Debug.LogWarn("No track set, returning.");
             return;
         }
 
         Array<RollingStock> cars = Cars;
-        float headToLastCouplerDistance = cars[0].RearCouplerDistance();
-        for (int i = 1; i < cars.Count; i++)
+        if (cars.Count == 0)
         {
-            headToLastCouplerDistance += cars[i].CouplerSpan();
+            return;
         }
 
-        _headOffset = Mathf.Clamp(value, headToLastCouplerDistance, Track.Length() - Head.FrontCouplerDistance());
+        float minOffset = cars[0].RearCouplerDistance();
+        for (int i = 1; i < cars.Count; i++)
+        {
+            minOffset += cars[i].CouplerSpan();
+        }
 
+        float maxOffset = track.Length() - cars[0].FrontCouplerDistance();
+        _headOffset = Mathf.Clamp(value, minOffset, maxOffset);
+
+        // Stop motion into a buffer; leave velocity that points away from the end.
+        if ((_headOffset <= minOffset && Velocity < 0f) || (_headOffset >= maxOffset && Velocity > 0f))
+        {
+            Velocity = 0f;
+        }
     }
 
     private RollingStock GetHead()
@@ -137,10 +136,11 @@ public partial class TrainConsist : Node
 
     private void PlaceCars()
     {
+        TrackPath track = GetNodeOrNull<TrackPath>(TrackNodePath);
         float offset = HeadOffset;
         for (int i = 0; i < Cars.Count; i++)
         {
-            Cars[i].GlobalTransform = Track.GetPathTransformAtOffset(offset);
+            Cars[i].GlobalTransform = track.GetPathTransformAtOffset(offset);
             if (i + 1 >= Cars.Count)
             {
                 break;
@@ -222,11 +222,6 @@ public partial class TrainConsist : Node
 
     public void Split(int at)
     {
-        if (!NetworkManager.IsServer())
-        {
-            return;
-        }
-
         Array<RollingStock> cars = Cars;
 
         if (at < 0 || at > cars.Count)
@@ -275,7 +270,7 @@ public partial class TrainConsist : Node
             rearCars.Add(cars[i]);
         }
 
-        newConsist.Track = Track;
+        newConsist.TrackNodePath = TrackNodePath;
         newConsist.Velocity = Velocity;
         newConsist.Damping = Damping;
         newConsist.CanCoupleFront = CanCoupleFront;
@@ -302,11 +297,6 @@ public partial class TrainConsist : Node
     public void Join(TrainConsist with, int insertionIndex)
     {
         ArgumentNullException.ThrowIfNull(with);
-
-        if (!NetworkManager.IsServer())
-        {
-            return;
-        }
 
         if (with == this)
         {
