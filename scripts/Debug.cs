@@ -9,9 +9,23 @@ using System.Collections.Generic;
 public partial class Debug : Node
 {
 	public override void _Ready()
-	{	if (RunArguments.HasNameWindowFlag)
+	{
+		if (RunArguments.HasNameWindowFlag)
 		{
-			GetWindow().Title = RunArguments.WindowName;
+			Window window = GetWindow();
+			window.Title = RunArguments.WindowName;
+
+			Vector2I screenPosition = DisplayServer.ScreenGetPosition(window.CurrentScreen);
+			Vector2I screenSize = DisplayServer.ScreenGetSize(window.CurrentScreen);
+
+			if (RunArguments.WindowName == "Host")
+			{
+				window.Position = screenPosition;
+			}
+			else if (RunArguments.WindowName == "Client")
+			{
+				window.Position = screenPosition + screenSize - window.Size;
+			}
 		}
 	}
 
@@ -19,7 +33,8 @@ public partial class Debug : Node
     {
         if (Input.IsActionJustPressed("Debug Action"))
 		{
-			ParticleRegistry.SpawnParticle("SparksSharp", Vector3.Zero);
+			TrainConsist train = GetTree().CurrentScene.GetNode<TrainConsist>("TestTrain");
+			train.Split(2);
 		}
     }
 

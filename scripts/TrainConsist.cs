@@ -35,11 +35,6 @@ public partial class TrainConsist : Node
 
         RebuildCouplingLinks();
 
-        if (Cars.Count == 0)
-        {
-            Debug.LogWarn($"{Name} ready with no RollingStock children.");
-        }
-
         if (!NetworkManager.IsServer())
         {
             return;
@@ -199,89 +194,7 @@ public partial class TrainConsist : Node
         {
             Velocity *= Mathf.Exp(-Damping * (float)delta / combinedMass);
         }
-    }
-
-    /// <summary>
-    /// Returns a new consist that matches this live train's cars and properties.
-    /// </summary>
-    /// <remarks>
-    /// Instantiates an empty shell from <see cref="Node.SceneFilePath"/> (for spawn
-    /// replication), removes the packed placeholder cars, then duplicates each live
-    /// <see cref="RollingStock"/> in order. Coupler exports are re-bound to the
-    /// duplicated subtree because <see cref="Node.Duplicate(int)"/> does not remap
-    /// typed node exports reliably. The returned node is not yet in the scene tree.
-    /// </remarks>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when <see cref="Node.SceneFilePath"/> is missing or the scene fails to load.
-    /// </exception>
-    public TrainConsist Copy()
-    {
-        if (string.IsNullOrEmpty(SceneFilePath))
-        {
-            throw new InvalidOperationException($"{Name} has no SceneFilePath; cannot Copy.");
-        }
-
-        PackedScene packedScene = GD.Load<PackedScene>(SceneFilePath);
-        if (packedScene is null)
-        {
-            throw new InvalidOperationException($"Failed to load consist scene '{SceneFilePath}'.");
-        }
-
-        TrainConsist copiedTrain = packedScene.Instantiate<TrainConsist>();
-
-        // Packed cars are the original scene lineup, not this live consist's cars.
-        Array<RollingStock> placeholderCars = copiedTrain.Cars;
-        for (int i = placeholderCars.Count - 1; i >= 0; i--)
-        {
-            placeholderCars[i].Free();
-        }
-
-        Array<RollingStock> sourceCars = Cars;
-        for (int i = 0; i < sourceCars.Count; i++)
-        {
-            RollingStock copiedCar = CopyCar(sourceCars[i]);
-            copiedTrain.AddChild(copiedCar);
-            copiedCar.GlobalTransform = sourceCars[i].GlobalTransform;
-        }
-
-        copiedTrain.Track = Track;
-        copiedTrain.Velocity = Velocity;
-        copiedTrain.Damping = Damping;
-        copiedTrain.CanCoupleFront = CanCoupleFront;
-        copiedTrain.CanCoupleRear = CanCoupleRear;
-        copiedTrain.HeadOffset = HeadOffset;
-
-        copiedTrain.RebuildCouplingLinks();
-
-        return copiedTrain;
-    }
-
-    /// <summary>
-    /// Duplicates <paramref name="source"/> and rebinds coupler exports to the copy's children.
-    /// </summary>
-    private static RollingStock CopyCar(RollingStock source)
-    {
-        RollingStock copy = (RollingStock)source.Duplicate();
-        copy.Ahead = null;
-        copy.Behind = null;
-        RebindCouplerExports(source, copy);
-        return copy;
-    }
-
-    /// <summary>
-    /// Points <paramref name="copy"/>'s coupler exports at the duplicated nodes that
-    /// correspond to <paramref name="source"/>'s coupler paths.
-    /// </summary>
-    private static void RebindCouplerExports(RollingStock source, RollingStock copy)
-    {
-        copy.FrontCoupler = source.FrontCoupler is null
-            ? null
-            : copy.GetNodeOrNull<CarCoupler>(source.GetPathTo(source.FrontCoupler));
-
-        copy.RearCoupler = source.RearCoupler is null
-            ? null
-            : copy.GetNodeOrNull<CarCoupler>(source.GetPathTo(source.RearCoupler));
-    }
+    }    
 
     /// Returns the full arc length of the train, from frontmost coupler to back coupler.
     public float Length()
@@ -309,46 +222,73 @@ public partial class TrainConsist : Node
 
     public void Split(int at)
     {
-        if(!NetworkManager.IsServer())
+        if (!NetworkManager.IsServer())
         {
             return;
         }
 
-        if (at < 0 || at > Cars.Count)
+        Array<RollingStock> cars = Cars;
+
+        if (at < 0 || at > cars.Count)
         {
-            throw new IndexOutOfRangeException($"Split index {at} is outside [0, {Cars.Count}].");
+            throw new IndexOutOfRangeException($"Split index {at} is outside [0, {cars.Count}].");
         }
 
         // Skip splitting at ends.
-        if (at == 0 || at == Cars.Count)
+        if (at == 0 || at == cars.Count)
         {
             return;
         }
 
-        TrainConsist newConsist = Copy();
-        Array<RollingStock> copied = newConsist.Cars;
-        // Strip the head (front of {at}) on the copied train; it keeps the rear.
-        for (int i = at - 1; i >= 0; i--)
+        if (string.IsNullOrEmpty(SceneFilePath))
         {
-            copied[i].Free();
+            throw new InvalidOperationException($"{Name} has no SceneFilePath; cannot Split.");
         }
 
-        // Move the headoffset to account for the new head car of the copied train.
+        PackedScene packedScene = GD.Load<PackedScene>(SceneFilePath);
+        if (packedScene is null)
+        {
+            throw new InvalidOperationException($"Failed to load consist scene '{SceneFilePath}'.");
+        }
+
+        TrainConsist newConsist = packedScene.Instantiate<TrainConsist>();
+
+        // Packed cars are the original scene lineup, not this live consist's cars.
+        Array<RollingStock> placeholderCars = newConsist.Cars;
+        for (int i = placeholderCars.Count - 1; i >= 0; i--)
+        {
+            placeholderCars[i].Free();
+        }
+
         float frontCarsSpan = 0.0f;
         for (int i = 0; i < at; i++)
         {
-            frontCarsSpan += Cars[i].CouplerSpan();
+            frontCarsSpan += cars[i].CouplerSpan();
         }
-        newConsist.HeadOffset -= frontCarsSpan;
+
+        float rearHeadOffset = HeadOffset - frontCarsSpan;
+
+        // Snapshot before reparenting mutates this consist's children.
+        List<RollingStock> rearCars = new List<RollingStock>();
+        for (int i = at; i < cars.Count; i++)
+        {
+            rearCars.Add(cars[i]);
+        }
+
+        newConsist.Track = Track;
+        newConsist.Velocity = Velocity;
+        newConsist.Damping = Damping;
+        newConsist.CanCoupleFront = CanCoupleFront;
+        newConsist.CanCoupleRear = CanCoupleRear;
 
         GetTree().CurrentScene.AddChild(newConsist, true);
 
-        // Strip the rear (from {at} back) on this train; it keeps the head.
-        Array<RollingStock> cars = Cars;
-        for (int i = cars.Count - 1; i >= at; i--)
+        foreach (RollingStock car in rearCars)
         {
-            cars[i].Free();
+            car.Reparent(newConsist);
         }
+
+        newConsist.HeadOffset = rearHeadOffset;
 
         RebuildCouplingLinks();
         newConsist.RebuildCouplingLinks();
