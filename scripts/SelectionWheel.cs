@@ -8,9 +8,12 @@ public partial class SelectionWheel : Control
 {
 	#region Backing Fields
 	private float _wheelRadius = 25.0f;
-	private float _wheelThickness = 50.0f;
+	private float _ringRadius = 25.0f;
+	private float _ringThickness = 50.0f;
 	private int _wheelResolution = 32;
-	private Dictionary<float, Resource> _wheelSlots = new();
+	private Color _ringColor = Colors.White;
+	private Color _wheelColor = Colors.White;
+	private Dictionary<Resource, float> _wheelSlots = new();
 	#endregion
 
 	#region Public Properties
@@ -24,12 +27,22 @@ public partial class SelectionWheel : Control
 		}
 	}
 
-	[Export] public float WheelThickness
+	[Export] public float RingRadius
 	{
-		get => _wheelThickness;
+		get => _ringRadius;
 		set
 		{
-			_wheelThickness = Mathf.Max(value, 0.0f);
+			_ringRadius = Mathf.Max(value, 0.0f);
+			Update();
+		}
+	}
+
+	[Export] public float RingThickness
+	{
+		get => _ringThickness;
+		set
+		{
+			_ringThickness = Mathf.Max(value, 0.0f);
 			Update();
 		}
 	}
@@ -44,12 +57,33 @@ public partial class SelectionWheel : Control
 		}
 	}
 
-	[Export] public Dictionary<float, Resource> WheelSlots
+	[Export] public Color RingColor
+	{
+		get => _ringColor;
+		set
+		{
+			_ringColor = value;
+			Update();
+		}
+	}
+
+	[Export] public Color WheelColor
+	{
+		get => _wheelColor;
+		set
+		{
+			_wheelColor = value;
+			Update();
+		}
+	}
+
+	[Export] public Dictionary<Resource, float> WheelSlots
 	{
 		get => _wheelSlots;
 		set
 		{
 			_wheelSlots = value;
+			Debug.Log(value.Keys.Count);
 			Update();
 		}
 	}
@@ -103,8 +137,13 @@ public partial class SelectionWheel : Control
 			return;
 		}
 
+		// Update shapes.
 		DrawCircle(WheelRadius, WheelResolution);
-		DrawRing(WheelRadius, WheelThickness, WheelResolution);
+		DrawRing(RingRadius, RingThickness, WheelResolution);
+
+		// Update colors.
+		WheelPolygon.Color = WheelColor;
+		RingPolygon.Color = RingColor;
 	}
 
 	private void DrawCircle(float radius, int resolution)
