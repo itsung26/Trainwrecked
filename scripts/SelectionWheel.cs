@@ -39,7 +39,7 @@ public partial class SelectionWheel : Control
 
 	[ExportGroup("Node Refs")]
 	[Export] public Polygon2D WheelPolygon { get; set; }
-	[Export] public Polygon2D RingPolygon { get; set; }
+	[Export] public Node2D Ring { get; set; }
 
     public override string[] _GetConfigurationWarnings()
     {
@@ -60,11 +60,6 @@ public partial class SelectionWheel : Control
 		Update();
     }
 
-    public override void _ExitTree()
-    {
-        
-    }
-
     public override void _Process(double delta)
     {
         LockWheelToCenter();
@@ -74,19 +69,21 @@ public partial class SelectionWheel : Control
 	/// Keeps the wheel in the center of this control's rectangle.
 	private void LockWheelToCenter()
 	{
-		ArgumentNullException.ThrowIfNull(WheelPolygon);
-		ArgumentNullException.ThrowIfNull(RingPolygon);
+		if (WheelPolygon is null || Ring is null)
+		{
+			throw new InvalidOperationException();
+		}
 
 		Vector2 center = GetRect().GetCenter();
 
 		WheelPolygon.GlobalPosition = center;
-		RingPolygon.GlobalPosition = center;
+		Ring.GlobalPosition = center;
 	}
 
 	/// Redraws the entire wheel based on exported parameters.
 	private void Update()
 	{
-		if (WheelPolygon is null || RingPolygon is null)
+		if (WheelPolygon is null || Ring is null)
 		{
 			return;
 		}
@@ -96,11 +93,10 @@ public partial class SelectionWheel : Control
 		DrawRing();
 
 		// Update polygon object transforms.
-		RingPolygon.Rotation = WheelRotation;
+		Ring.Rotation = WheelRotation;
 
 		// Update colors.
 		WheelPolygon.Color = WheelDefaultColor;
-		RingPolygon.Color = DefaultRingColor;
 	}
 
 	private void DrawCircle()
@@ -126,11 +122,11 @@ public partial class SelectionWheel : Control
 		WheelPolygon.Polygon = circle;
 	}
 
-	/// Builds a segmented ring as explicit triangles between the outer and inner arcs.
+	/// Builds a segmented ring as one Polygon2D child per segment under Ring.
 	/// Each WheelSlots float is an angular weight; spans are normalized around the ring.
 	private void DrawRing()
 	{
-		if (RingPolygon is null)
+		if (Ring is null)
 		{
 			throw new InvalidOperationException();
 		}
@@ -143,10 +139,11 @@ public partial class SelectionWheel : Control
 
 		if (Mathf.IsZeroApprox(thickness))
 		{
-			RingPolygon.Polygon = System.Array.Empty<Vector2>();
-			RingPolygon.Polygons = new Godot.Collections.Array();
+			SyncRingSegmentCount(0);
 			return;
 		}
+
+		SyncRingSegmentCount(segments);
 
 		float totalWeight = 0.0f;
 		for (int i = 0; i < segments; i++)
@@ -162,7 +159,6 @@ public partial class SelectionWheel : Control
 		float[] gaps = new float[segments];
 		float[] arcSpans = new float[segments];
 		int[] steps = new int[segments];
-		int totalPointPairs = 0;
 
 		for (int i = 0; i < segments; i++)
 		{
@@ -170,13 +166,8 @@ public partial class SelectionWheel : Control
 			gaps[i] = Mathf.Min(baseGap, segmentSpans[i] * 0.95f);
 			arcSpans[i] = segmentSpans[i] - gaps[i];
 			steps[i] = Mathf.Max(2, Mathf.CeilToInt(resolution * (segmentSpans[i] / Mathf.Tau)));
-			totalPointPairs += steps[i] + 1;
 		}
 
-		Vector2[] vertices = new Vector2[totalPointPairs * 2];
-		Godot.Collections.Array triangles = new Godot.Collections.Array();
-
-		int vertexCursor = 0;
 		float angleCursor = 0.0f;
 
 		for (int segment = 0; segment < segments; segment++)
@@ -184,8 +175,11 @@ public partial class SelectionWheel : Control
 			int stepsPerSegment = steps[segment];
 			int pointsPerSegment = stepsPerSegment + 1;
 			float startAngle = angleCursor + gaps[segment] * 0.5f;
-			int outerBase = vertexCursor;
-			int innerBase = vertexCursor + pointsPerSegment;
+			const int outerBase = 0;
+			int innerBase = pointsPerSegment;
+
+			Vector2[] vertices = new Vector2[pointsPerSegment * 2];
+			Godot.Collections.Array triangles = new Godot.Collections.Array();
 
 			for (int i = 0; i < pointsPerSegment; i++)
 			{
@@ -207,12 +201,32 @@ public partial class SelectionWheel : Control
 				triangles.Add(new int[] { outer1, inner1, inner0 });
 			}
 
-			vertexCursor += pointsPerSegment * 2;
+			Polygon2D segmentPolygon = Ring.GetChild<Polygon2D>(segment);
+			segmentPolygon.Polygon = vertices;
+			segmentPolygon.Polygons = triangles;
+
 			angleCursor += segmentSpans[segment];
 		}
+	}
 
-		RingPolygon.Polygon = vertices;
-		RingPolygon.Polygons = triangles;
+	/// Adds or removes Polygon2D children under Ring to match the segment count.
+	private void SyncRingSegmentCount(int segmentCount)
+	{
+		while (Ring.GetChildCount() > segmentCount)
+		{
+			Node child = Ring.GetChild(Ring.GetChildCount() - 1);
+			Ring.RemoveChild(child);
+			child.QueueFree();
+		}
+
+		while (Ring.GetChildCount() < segmentCount)
+		{
+			Polygon2D segment = new Polygon2D
+			{
+				Name = $"Segment{Ring.GetChildCount()}"
+			};
+			Ring.AddChild(segment);
+		}
 	}
 
 	/// Converts rectangular (x, y) to polar (radius, angle in radians).
@@ -301,8 +315,4 @@ public partial class SelectionWheel : Control
 		return true;
 	}
 
-	// private void _on_selection_wheel_resource_changed()
-	// {
-	// 	Update();
-	// }
 }

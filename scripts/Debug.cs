@@ -33,9 +33,6 @@ public partial class Debug : Node
     {
         if (Input.IsActionJustPressed("Debug Action"))
 		{
-			TrainConsist train = GetTree().CurrentScene.GetNode<TrainConsist>("TestTrain");
-			train.Split(2);
-			// train.Cars[2].QueueFree();
 		}
     }
 

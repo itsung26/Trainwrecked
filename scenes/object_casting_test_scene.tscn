@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bggea0dtxrhln"]
+
+[ext_resource type="Script" uid="uid://tl63770rcpmm" path="res://scripts/ObjectCastingTestScene.cs" id="1_m1ykl"]
+[ext_resource type="Script" uid="uid://ug54grtsno8j" path="res://scripts/SelectionWheelSlot.cs" id="2_ragjs"]
+
+[sub_resource type="Resource" id="Resource_u3aio"]
+script = ExtResource("2_ragjs")
+metadata/_custom_type_script = "uid://ug54grtsno8j"
+
+[sub_resource type="Resource" id="Resource_eaakd"]
+script = ExtResource("2_ragjs")
+metadata/_custom_type_script = "uid://ug54grtsno8j"
+
+[sub_resource type="Resource" id="Resource_01igl"]
+script = ExtResource("2_ragjs")
+metadata/_custom_type_script = "uid://ug54grtsno8j"
+
+[node name="ObjectCastingTestScene" type="Node2D" unique_id=1495762112]
+script = ExtResource("1_m1ykl")
+testArr = Array[ExtResource("2_ragjs")]([SubResource("Resource_u3aio"), SubResource("Resource_eaakd"), null, SubResource("Resource_01igl")])
