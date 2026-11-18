@@ -6,109 +6,36 @@ using System.Linq;
 [Tool]
 public partial class SelectionWheel : Control
 {
-	#region Backing Fields
-	private float _wheelRotation = 0.0f;
 	private float _segmentSpacing = 1.0f;
-	private float _wheelRadius = 25.0f;
 	private float _ringRadius = 25.0f;
 	private float _ringThickness = 50.0f;
 	private int _wheelResolution = 32;
-	private Color _ringColor = Colors.White;
-	private Color _wheelColor = Colors.White;
-	private Array<SelectionWheelSlot> _wheelSlots = new Array<SelectionWheelSlot>();
-	#endregion
 
-	#region Public Properties
-	[Export] public float WheelRotation
-	{
-		get => _wheelRotation;
-		set
-		{
-			_wheelRotation = value;
-			Update();
-		}
-	}
-
+	[Export] public float WheelRotation { get; set; } = 0.0f;
 	[Export] public float SegmentSpacing
 	{
 		get => _segmentSpacing;
-		set
-		{
-			_segmentSpacing = Mathf.Max(value, 0.0f);
-			Update();
-		}
+		set => _segmentSpacing = Mathf.Max(value, 0.0f);
 	}
-
-	[Export] public float WheelRadius
-	{
-		get => _wheelRadius;
-		set
-		{
-			_wheelRadius = value;
-			Update();
-		}
-	}
-
+	[Export] public float WheelRadius { get; set; } = 25.0f;
 	[Export] public float RingRadius
 	{
 		get => _ringRadius;
-		set
-		{
-			_ringRadius = Mathf.Max(value, 0.0f);
-			Update();
-		}
+		set => _ringRadius = Mathf.Max(value, 0.0f);
 	}
-
 	[Export] public float RingThickness
 	{
 		get => _ringThickness;
-		set
-		{
-			_ringThickness = Mathf.Max(value, 0.0f);
-			Update();
-		}
+		set => _ringThickness = Mathf.Max(value, 0.0f);
 	}
-
 	[Export] public int WheelResolution
 	{
 		get => _wheelResolution;
-		set
-		{
-			_wheelResolution = Mathf.Clamp(value, 3, 256);
-			Update();
-		}
+		set => _wheelResolution = Mathf.Clamp(value, 3, 256);
 	}
-
-	[Export] public Color RingColor
-	{
-		get => _ringColor;
-		set
-		{
-			_ringColor = value;
-			Update();
-		}
-	}
-
-	[Export] public Color WheelColor
-	{
-		get => _wheelColor;
-		set
-		{
-			_wheelColor = value;
-			Update();
-		}
-	}
-
-	[Export] public Array<SelectionWheelSlot> WheelSlots
-	{
-		get => _wheelSlots;
-		set
-		{
-			_wheelSlots = value;
-			Update();
-		}
-	}
-	#endregion
+	[Export] public Color DefaultRingColor { get; set; } = new Color(0.373f, 0.373f, 0.373f);
+	[Export] public Color WheelDefaultColor { get; set; } = new Color(0.373f, 0.373f, 0.373f);
+	[Export] public Array<SelectionWheelSlot> WheelSlots { get; set; } = new Array<SelectionWheelSlot>();
 
 	[ExportGroup("Node Refs")]
 	[Export] public Polygon2D WheelPolygon { get; set; }
@@ -172,8 +99,8 @@ public partial class SelectionWheel : Control
 		RingPolygon.Rotation = WheelRotation;
 
 		// Update colors.
-		WheelPolygon.Color = WheelColor;
-		RingPolygon.Color = RingColor;
+		WheelPolygon.Color = WheelDefaultColor;
+		RingPolygon.Color = DefaultRingColor;
 	}
 
 	private void DrawCircle()
@@ -374,8 +301,8 @@ public partial class SelectionWheel : Control
 		return true;
 	}
 
-	private void _on_selection_wheel_resource_changed()
-	{
-		Update();
-	}
+	// private void _on_selection_wheel_resource_changed()
+	// {
+	// 	Update();
+	// }
 }
