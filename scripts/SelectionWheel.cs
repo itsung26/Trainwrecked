@@ -15,7 +15,7 @@ public partial class SelectionWheel : Control
 	private int _wheelResolution = 32;
 	private Color _ringColor = Colors.White;
 	private Color _wheelColor = Colors.White;
-	private Dictionary<Resource, float> _wheelSlots = new();
+	private Array<SelectionWheelSlot> _wheelSlots = new Array<SelectionWheelSlot>();
 	#endregion
 
 	#region Public Properties
@@ -99,13 +99,12 @@ public partial class SelectionWheel : Control
 		}
 	}
 
-	[Export] public Dictionary<Resource, float> WheelSlots
+	[Export] public Array<SelectionWheelSlot> WheelSlots
 	{
 		get => _wheelSlots;
 		set
 		{
 			_wheelSlots = value;
-			Debug.Log(value.Keys.Count);
 			Update();
 		}
 	}
@@ -122,7 +121,7 @@ public partial class SelectionWheel : Control
 
 		if (string.IsNullOrEmpty(SceneFilePath))
 		{
-			warnings.Add("Should not be instanced directly.");
+			warnings.Add("Instance as scene.");
 		}
 
 		return warnings.ToArray<string>();
@@ -134,9 +133,15 @@ public partial class SelectionWheel : Control
 		Update();
     }
 
+    public override void _ExitTree()
+    {
+        
+    }
+
     public override void _Process(double delta)
     {
         LockWheelToCenter();
+		Update();
     }
 
 	/// Keeps the wheel in the center of this control's rectangle.
@@ -204,7 +209,7 @@ public partial class SelectionWheel : Control
 		}
 
 		float[] weights = GetSegmentWeights();
-		int segments = weights.Length;
+		int segments = GetSegmentCount();
 		int resolution = Mathf.Clamp(WheelResolution, 3, 256);
 		float radius = Mathf.Max(RingRadius, 0.0f);
 		float thickness = Mathf.Max(RingThickness, 0.0f);
@@ -295,52 +300,82 @@ public partial class SelectionWheel : Control
 		return Vector2.FromAngle(polarCoord.Y) * polarCoord.X;
 	}
 
-	/// Derive segment count from the amount of elements in WheelSlots.
+	/// Returns the count of non null elements in the slots array, or 1 if the array is empty or all null.
 	private int GetSegmentCount()
 	{
-		if (WheelSlots is null)
-		{
-			throw new InvalidOperationException();
-		}
-
-		if (WheelSlots.Count == 0)
+		if (WheelSlots is null || WheelSlots.Count == 0 || IsAllNull(WheelSlots))
 		{
 			return 1;
 		}
 
-		return WheelSlots.Count;
+		int count = 0;
+		foreach (SelectionWheelSlot slot in WheelSlots)
+		{
+			if (slot is not null && slot is SelectionWheelSlot)
+			{
+				count++;
+			}
+		}
+
+		return count;
 	}
 
 	/// Angular weights from WheelSlots values. Empty or all-zero falls back to equal shares.
 	private float[] GetSegmentWeights()
 	{
-		int segments = GetSegmentCount();
-		float[] weights = new float[segments];
-
-		if (WheelSlots.Count == 0)
+		if (WheelSlots is null || WheelSlots.Count == 0 || IsAllNull(WheelSlots))
 		{
-			weights[0] = 1.0f;
-			return weights;
+			return new float[] { 1.0f };
 		}
 
-		int index = 0;
+		float[] weights = new float[GetSegmentCount()];
+		int writeIndex = 0;
 		float total = 0.0f;
 
-		foreach (float weight in WheelSlots.Values)
+		for (int i = 0; i < WheelSlots.Count; i++)
 		{
-			weights[index] = Mathf.Max(weight, 0.0f);
-			total += weights[index];
-			index++;
+			SelectionWheelSlot slot = WheelSlots[i];
+			if (slot is null)
+			{
+				continue;
+			}
+
+			weights[writeIndex++] = slot.SpaceBias;
+			total += slot.SpaceBias;
 		}
 
-		if (total <= 0.0f)
+		if (Mathf.IsZeroApprox(total))
 		{
-			for (int i = 0; i < segments; i++)
+			for (int i = 0; i < weights.Length; i++)
 			{
 				weights[i] = 1.0f;
 			}
 		}
 
 		return weights;
+	}
+
+	/// Returns true if every element in arr is null, and false otherwise.
+	private static bool IsAllNull(Array<SelectionWheelSlot> arr)
+	{
+		if (arr is null)
+		{
+			return true;
+		}
+
+		foreach (SelectionWheelSlot item in arr)
+		{
+			if (item is not null)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private void _on_selection_wheel_resource_changed()
+	{
+		Update();
 	}
 }
