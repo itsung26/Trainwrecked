@@ -35,7 +35,7 @@ public partial class SelectionWheel : Control
 		set => _wheelResolution = Mathf.Clamp(value, 3, 256);
 	}
 	[Export] public Color WheelColor { get; set; } = new Color(0.373f, 0.373f, 0.373f);
-	[Export] public Array<SelectionWheelSegment> WheelSlots { get; set; } = new Array<SelectionWheelSegment>();
+	public NonNullableArray<SelectionWheelSegment> WheelSlots { get; set; } = new();
 
 	[ExportGroup("Node Refs")]
 	[Export] public Polygon2D WheelPolygon { get; set; }
@@ -238,47 +238,6 @@ public partial class SelectionWheel : Control
 		}
 	}
 
-	/// Adds or removes Polygon2D children under Ring.
-	/// Children are named by ring index: "0" .. "{count - 1}" matching WheelSlots indices.
-	private void SyncRingSegmentCount(int segmentCount)
-	{
-		while (Ring.GetChildCount() > segmentCount)
-		{
-			Node child = Ring.GetChild(Ring.GetChildCount() - 1);
-			Ring.RemoveChild(child);
-			child.QueueFree();
-		}
-
-		while (Ring.GetChildCount() < segmentCount)
-		{
-			int index = Ring.GetChildCount();
-			Polygon2D segment = new Polygon2D
-			{
-				Name = GetRingSegmentName(index)
-			};
-			Ring.AddChild(segment);
-		}
-
-		for (int i = 0; i < Ring.GetChildCount(); i++)
-		{
-			Ring.GetChild(i).Name = GetRingSegmentName(i);
-		}
-	}
-
-	private static string GetRingSegmentName(int ringIndex) => ringIndex.ToString();
-
-	private Polygon2D GetRingSegment(int ringIndex)
-	{
-		return Ring.GetNode<Polygon2D>(GetRingSegmentName(ringIndex));
-	}
-
-	private void ClearRingSegment(int ringIndex)
-	{
-		Polygon2D segment = GetRingSegment(ringIndex);
-		segment.Polygon = System.Array.Empty<Vector2>();
-		segment.Polygons = new Godot.Collections.Array();
-	}
-
 	/// Converts rectangular (x, y) to polar (radius, angle in radians).
 	private static Vector2 ToPolar(Vector2 point)
 	{
@@ -294,75 +253,12 @@ public partial class SelectionWheel : Control
 	/// Returns the count of non null elements in the slots array, or 1 if the array is empty or all null.
 	private int GetSegmentCount()
 	{
-		if (WheelSlots is null || WheelSlots.Count == 0 || IsAllNull(WheelSlots))
-		{
-			return 1;
-		}
-
-		int count = 0;
-		foreach (SelectionWheelSegment slot in WheelSlots)
-		{
-			if (slot is not null && slot is SelectionWheelSegment)
-			{
-				count++;
-			}
-		}
-
-		return count;
+		throw new NotImplementedException();
 	}
 
 	/// Angular weights from WheelSlots values. Empty or all-zero falls back to equal shares.
 	private float[] GetSegmentWeights()
 	{
-		if (WheelSlots is null || WheelSlots.Count == 0 || IsAllNull(WheelSlots))
-		{
-			return new float[] { 1.0f };
-		}
-
-		float[] weights = new float[GetSegmentCount()];
-		int writeIndex = 0;
-		float total = 0.0f;
-
-		for (int i = 0; i < WheelSlots.Count; i++)
-		{
-			SelectionWheelSegment slot = WheelSlots[i];
-			if (slot is null)
-			{
-				continue;
-			}
-
-			weights[writeIndex++] = slot.SpaceBias;
-			total += slot.SpaceBias;
-		}
-
-		if (Mathf.IsZeroApprox(total))
-		{
-			for (int i = 0; i < weights.Length; i++)
-			{
-				weights[i] = 1.0f;
-			}
-		}
-
-		return weights;
+		throw new NotImplementedException();
 	}
-
-	/// Returns true if every element in arr is null, and false otherwise.
-	private static bool IsAllNull(Array<SelectionWheelSegment> arr)
-	{
-		if (arr is null)
-		{
-			return true;
-		}
-
-		foreach (SelectionWheelSegment item in arr)
-		{
-			if (item is not null)
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 }
