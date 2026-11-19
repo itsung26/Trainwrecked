@@ -4,7 +4,7 @@ using System;
 
 public partial class ObjectCastingTestScene : Node2D
 {
-	[Export] Array<SelectionWheelSlot> testArr = new Array<SelectionWheelSlot>();
+	[Export] Array<SelectionWheelSegment> testArr = new Array<SelectionWheelSegment>();
 	public override void _Ready()
 	{
 	}
@@ -23,14 +23,14 @@ public partial class ObjectCastingTestScene : Node2D
 	}
 
 	/// Returns true if every element in arr is null, and false otherwise.
-	private static bool IsAllNull(Array<SelectionWheelSlot> arr)
+	private static bool IsAllNull(Array<SelectionWheelSegment> arr)
 	{
 		if (arr is null)
 		{
 			return true;
 		}
 
-		foreach (SelectionWheelSlot item in arr)
+		foreach (SelectionWheelSegment item in arr)
 		{
 			if (item is not null)
 			{

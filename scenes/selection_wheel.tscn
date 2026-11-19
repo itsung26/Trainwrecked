@@ -2,25 +2,6 @@
 
 [ext_resource type="Script" uid="uid://cmhre23v8s4vn" path="res://scripts/SelectionWheel.cs" id="1_nkeuc"]
 [ext_resource type="Shader" uid="uid://b4p2tuid4c8gc" path="res://assets/shaders/selection_wheel_screen_darken.gdshader" id="1_t3epp"]
-[ext_resource type="Script" uid="uid://ug54grtsno8j" path="res://scripts/SelectionWheelSlot.cs" id="2_u3aio"]
-
-[sub_resource type="Resource" id="Resource_01igl"]
-script = ExtResource("2_u3aio")
-metadata/_custom_type_script = "uid://ug54grtsno8j"
-
-[sub_resource type="Resource" id="Resource_pglco"]
-script = ExtResource("2_u3aio")
-metadata/_custom_type_script = "uid://ug54grtsno8j"
-
-[sub_resource type="Resource" id="Resource_eaakd"]
-script = ExtResource("2_u3aio")
-SpaceBias = 1.73
-metadata/_custom_type_script = "uid://ug54grtsno8j"
-
-[sub_resource type="Resource" id="Resource_ragjs"]
-script = ExtResource("2_u3aio")
-SpaceBias = 2.2
-metadata/_custom_type_script = "uid://ug54grtsno8j"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dehhp"]
 shader = ExtResource("1_t3epp")
@@ -38,7 +19,6 @@ WheelRadius = 243.655
 RingRadius = 285.705
 RingThickness = 109.44
 WheelResolution = 64
-WheelSlots = Array[ExtResource("2_u3aio")]([SubResource("Resource_01igl"), SubResource("Resource_pglco"), SubResource("Resource_eaakd"), SubResource("Resource_ragjs")])
 WheelPolygon = NodePath("WheelPolygon")
 Ring = NodePath("Ring")
 

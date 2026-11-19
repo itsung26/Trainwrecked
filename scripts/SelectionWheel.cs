@@ -11,6 +11,7 @@ public partial class SelectionWheel : Control
 	private float _ringThickness = 50.0f;
 	private int _wheelResolution = 32;
 
+	[Export] public bool Updating { get; set; } = true;
 	[Export] public float WheelRotation { get; set; } = 0.0f;
 	[Export] public float SegmentSpacing
 	{
@@ -33,9 +34,8 @@ public partial class SelectionWheel : Control
 		get => _wheelResolution;
 		set => _wheelResolution = Mathf.Clamp(value, 3, 256);
 	}
-	[Export] public Color DefaultRingColor { get; set; } = new Color(0.373f, 0.373f, 0.373f);
-	[Export] public Color WheelDefaultColor { get; set; } = new Color(0.373f, 0.373f, 0.373f);
-	[Export] public Array<SelectionWheelSlot> WheelSlots { get; set; } = new Array<SelectionWheelSlot>();
+	[Export] public Color WheelColor { get; set; } = new Color(0.373f, 0.373f, 0.373f);
+	[Export] public Array<SelectionWheelSegment> WheelSlots { get; set; } = new Array<SelectionWheelSegment>();
 
 	[ExportGroup("Node Refs")]
 	[Export] public Polygon2D WheelPolygon { get; set; }
@@ -57,13 +57,19 @@ public partial class SelectionWheel : Control
     public override void _Ready()
     {
         LockWheelToCenter();
-		Update();
+		if (Updating)
+		{
+			Update();
+		}
     }
 
     public override void _Process(double delta)
     {
         LockWheelToCenter();
-		Update();
+		if (Updating)
+		{
+			Update();
+		}
     }
 
 	/// Keeps the wheel in the center of this control's rectangle.
@@ -81,6 +87,7 @@ public partial class SelectionWheel : Control
 	}
 
 	/// Redraws the entire wheel based on exported parameters.
+	/// Called every frame.
 	private void Update()
 	{
 		if (WheelPolygon is null || Ring is null)
@@ -96,7 +103,7 @@ public partial class SelectionWheel : Control
 		Ring.Rotation = WheelRotation;
 
 		// Update colors.
-		WheelPolygon.Color = WheelDefaultColor;
+		WheelPolygon.Color = WheelColor;
 	}
 
 	private void DrawCircle()
@@ -133,9 +140,9 @@ public partial class SelectionWheel : Control
 
 		float[] weights = GetSegmentWeights();
 		int segments = GetSegmentCount();
-		int resolution = Mathf.Clamp(WheelResolution, 3, 256);
-		float radius = Mathf.Max(RingRadius, 0.0f);
-		float thickness = Mathf.Max(RingThickness, 0.0f);
+		int resolution = WheelResolution;
+		float radius = RingRadius;
+		float thickness = RingThickness;
 
 		if (Mathf.IsZeroApprox(thickness))
 		{
@@ -143,7 +150,29 @@ public partial class SelectionWheel : Control
 			return;
 		}
 
-		SyncRingSegmentCount(segments);
+		bool usingSlots = WheelSlots is not null && WheelSlots.Count > 0 && !IsAllNull(WheelSlots);
+		int ringChildCount = usingSlots ? WheelSlots.Count : 1;
+		SyncRingSegmentCount(ringChildCount);
+
+		int[] slotIndices = new int[segments];
+		if (usingSlots)
+		{
+			int writeIndex = 0;
+			for (int i = 0; i < WheelSlots.Count; i++)
+			{
+				if (WheelSlots[i] is null)
+				{
+					ClearRingSegment(i);
+					continue;
+				}
+
+				slotIndices[writeIndex++] = i;
+			}
+		}
+		else
+		{
+			slotIndices[0] = 0;
+		}
 
 		float totalWeight = 0.0f;
 		for (int i = 0; i < segments; i++)
@@ -201,7 +230,7 @@ public partial class SelectionWheel : Control
 				triangles.Add(new int[] { outer1, inner1, inner0 });
 			}
 
-			Polygon2D segmentPolygon = Ring.GetChild<Polygon2D>(segment);
+			Polygon2D segmentPolygon = GetRingSegment(slotIndices[segment]);
 			segmentPolygon.Polygon = vertices;
 			segmentPolygon.Polygons = triangles;
 
@@ -209,7 +238,8 @@ public partial class SelectionWheel : Control
 		}
 	}
 
-	/// Adds or removes Polygon2D children under Ring to match the segment count.
+	/// Adds or removes Polygon2D children under Ring.
+	/// Children are named by ring index: "0" .. "{count - 1}" matching WheelSlots indices.
 	private void SyncRingSegmentCount(int segmentCount)
 	{
 		while (Ring.GetChildCount() > segmentCount)
@@ -221,12 +251,32 @@ public partial class SelectionWheel : Control
 
 		while (Ring.GetChildCount() < segmentCount)
 		{
+			int index = Ring.GetChildCount();
 			Polygon2D segment = new Polygon2D
 			{
-				Name = $"Segment{Ring.GetChildCount()}"
+				Name = GetRingSegmentName(index)
 			};
 			Ring.AddChild(segment);
 		}
+
+		for (int i = 0; i < Ring.GetChildCount(); i++)
+		{
+			Ring.GetChild(i).Name = GetRingSegmentName(i);
+		}
+	}
+
+	private static string GetRingSegmentName(int ringIndex) => ringIndex.ToString();
+
+	private Polygon2D GetRingSegment(int ringIndex)
+	{
+		return Ring.GetNode<Polygon2D>(GetRingSegmentName(ringIndex));
+	}
+
+	private void ClearRingSegment(int ringIndex)
+	{
+		Polygon2D segment = GetRingSegment(ringIndex);
+		segment.Polygon = System.Array.Empty<Vector2>();
+		segment.Polygons = new Godot.Collections.Array();
 	}
 
 	/// Converts rectangular (x, y) to polar (radius, angle in radians).
@@ -250,9 +300,9 @@ public partial class SelectionWheel : Control
 		}
 
 		int count = 0;
-		foreach (SelectionWheelSlot slot in WheelSlots)
+		foreach (SelectionWheelSegment slot in WheelSlots)
 		{
-			if (slot is not null && slot is SelectionWheelSlot)
+			if (slot is not null && slot is SelectionWheelSegment)
 			{
 				count++;
 			}
@@ -275,7 +325,7 @@ public partial class SelectionWheel : Control
 
 		for (int i = 0; i < WheelSlots.Count; i++)
 		{
-			SelectionWheelSlot slot = WheelSlots[i];
+			SelectionWheelSegment slot = WheelSlots[i];
 			if (slot is null)
 			{
 				continue;
@@ -297,14 +347,14 @@ public partial class SelectionWheel : Control
 	}
 
 	/// Returns true if every element in arr is null, and false otherwise.
-	private static bool IsAllNull(Array<SelectionWheelSlot> arr)
+	private static bool IsAllNull(Array<SelectionWheelSegment> arr)
 	{
 		if (arr is null)
 		{
 			return true;
 		}
 
-		foreach (SelectionWheelSlot item in arr)
+		foreach (SelectionWheelSegment item in arr)
 		{
 			if (item is not null)
 			{
