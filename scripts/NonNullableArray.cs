@@ -14,7 +14,7 @@ using System.Linq;
 /// </remarks>
 public partial class NonNullableArray<[MustBeVariant] T> : RefCounted, IEnumerable<T>
 {
-	private readonly Array<T> _backer = new();
+	private readonly Array<T> _backer;
 
 	/// <summary>
 	/// Gets the number of elements in the array.
@@ -54,15 +54,16 @@ public partial class NonNullableArray<[MustBeVariant] T> : RefCounted, IEnumerab
 	/// <exception cref="ArgumentNullException">Thrown when <paramref name="items"/> is null or contains null.</exception>
 	public NonNullableArray(IEnumerable<T> items)
 	{
-        ArgumentNullException.ThrowIfNull(items);
-        foreach (var e in items)
-        {
-            if (e is null)
-            {
-                throw new ArgumentNullException(nameof(items), "Sequence contains a null element.");
-            }
-        }
-		_backer = new Array<T>(items);
+		ArgumentNullException.ThrowIfNull(items);
+		foreach (T item in items)
+		{
+			if (item is null)
+			{
+				throw new ArgumentNullException(nameof(items), "Sequence contains a null element.");
+			}
+
+			_backer.Add(item);
+		}
 	}
 
 	/// <summary>
@@ -85,9 +86,9 @@ public partial class NonNullableArray<[MustBeVariant] T> : RefCounted, IEnumerab
 	public void Insert(int index, T item)
 	{
         ArgumentNullException.ThrowIfNull(item);
-        if (index < 0 || index >= Count)
+        if (index < 0 || index > Count)
         {
-            throw new IndexOutOfRangeException(nameof(item));
+            throw new ArgumentOutOfRangeException(nameof(index));
         }
 		_backer.Insert(index, item);
 	}
@@ -100,7 +101,7 @@ public partial class NonNullableArray<[MustBeVariant] T> : RefCounted, IEnumerab
 	public bool Remove(T item)
 	{
         int num = IndexOf(item);
-        if (num > 0)
+        if (num >= 0)
         {
             _backer.Remove(item);
             return true;
