@@ -3,44 +3,58 @@ using System;
 using Godot.Collections;
 using System.Linq;
 
-[Tool]
+[GlobalClass, Tool]
 public partial class SelectionWheel : Control
 {
 	private float _segmentSpacing = 1.0f;
-	private float _ringRadius = 25.0f;
-	private float _ringThickness = 50.0f;
+	private float _ringRadius = 300.0f;
+	private float _ringThickness = 123.455f;
 	private int _wheelResolution = 32;
+    private int _frameUpdateInterval = 1;
 
-	[Export] public bool Updating { get; set; } = true;
-	[Export] public float WheelRotation { get; set; } = 0.0f;
-	[Export]
-	public float SegmentSpacing
+    [Export] public bool Updating { get; set; } = true;
+    /// <summary>
+    /// The wheel will update and redraw every {FrameUpdateInterval} frames. Set this to 
+    /// a higher value for increased performance at the cost of UI responsiveness.
+    /// </summary>
+    [Export] public int FrameUpdateInterval
+    {
+        get => _frameUpdateInterval;
+        set
+        {
+            _frameUpdateInterval = Mathf.Max(1, value);
+        }
+    }
+    [Export] public float WheelRotation { get; set; } = 0.0f;
+	[Export] public float SegmentSpacing
 	{
 		get => _segmentSpacing;
 		set => _segmentSpacing = Mathf.Max(value, 0.0f);
 	}
-	[Export] public float WheelRadius { get; set; } = 25.0f;
-	[Export]
-	public float RingRadius
+	[Export] public float WheelRadius { get; set; } = 272.0f;
+	[Export] public float RingRadius
 	{
 		get => _ringRadius;
 		set => _ringRadius = Mathf.Max(value, 0.0f);
 	}
-	[Export]
-	public float RingThickness
+	[Export] public float RingThickness
 	{
 		get => _ringThickness;
 		set => _ringThickness = Mathf.Max(value, 0.0f);
 	}
-	[Export]
-	public int WheelResolution
+	[Export] public int WheelResolution
 	{
 		get => _wheelResolution;
 		set => _wheelResolution = Mathf.Clamp(value, 3, 256);
 	}
 	[Export] public Color WheelColor { get; set; } = new Color(0.373f, 0.373f, 0.373f);
     public NonNullableArray<SelectionWheelSegment> Segments => GetSegments();
-	[Export] public SelectionWheelSegmentConfig SegmentConfiguration { get; set; }
+	/// <summary>
+	/// Configuration to be initially set for each segment that joins the ring.
+	/// Segments that already have a configuration assigned will not have their
+	/// configuration overridden.
+	/// </summary>
+	[Export] public SelectionWheelSegmentConfig InitialSegmentConfiguration { get; set; }
 
     [ExportGroup("Node Refs")]
 	[Export] public Polygon2D WheelPolygon { get; set; }
@@ -70,13 +84,13 @@ public partial class SelectionWheel : Control
 
 	public override void _Process(double delta)
 	{
-		GetNode<Label>("Label").Text = GetHoveredSegment().Name;
 		LockWheelToCenter();
 		if (Updating)
 		{
-			if (Engine.GetProcessFrames() % 1 == 0)
+			if (Engine.GetProcessFrames() % (ulong)FrameUpdateInterval == 0)
 			{
 				Update();
+				GetNode<Label>("Label").Text = GetHoveredSegment().Name;
 			}
 		}
 	}
@@ -120,10 +134,23 @@ public partial class SelectionWheel : Control
 		// Update polygon object transforms.
 		Ring.Rotation = WheelRotation;
 
-		// Update center circle color.
-		WheelPolygon.Color = WheelColor;
+		// Update center circle color and shader, if it is set.
+		WheelPolygon.Color = WheelColor;		
 
 		// Update currently hovered segment.
+		// Skip if in editor so selection does not become stale.
+		if (!Engine.IsEditorHint())
+		{
+			UpdateRingSegments();
+		}
+	}
+
+	/// <summary>
+	/// Updates the selected segment, which will in turn update its
+	/// own color.
+	/// </summary>
+	private void UpdateRingSegments()
+	{
 		SelectionWheelSegment hovered = GetHoveredSegment();
 		if (hovered is not null)
 		{
@@ -141,6 +168,17 @@ public partial class SelectionWheel : Control
 		}
 	}
 
+	/// <summary>
+	/// Polygon2D zeroes shader UVs unless a texture is assigned. A 1×1 white
+	/// texture lets us drive UV in normalized [0, 1] space without changing look.
+	/// </summary>
+	private static ImageTexture CreateUnitWhiteTexture()
+	{
+		Image image = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
+		image.Fill(Colors.White);
+		return ImageTexture.CreateFromImage(image);
+	}
+
 	private void DrawCircle()
 	{
 		int resolution = Mathf.Clamp(WheelResolution, 3, 256);
@@ -148,20 +186,29 @@ public partial class SelectionWheel : Control
 		if (Mathf.IsEqualApprox(WheelRadius, 0.0f))
 		{
 			WheelPolygon.Polygon = System.Array.Empty<Vector2>();
+			WheelPolygon.UV = System.Array.Empty<Vector2>();
 			return;
 		}
 
+		// Without a texture, Godot never uploads Polygon2D UVs: shader UV stays (0, 0).
+		WheelPolygon.Texture ??= CreateUnitWhiteTexture();
+
 		Vector2[] circle = new Vector2[resolution];
+		Vector2[] uvs = new Vector2[resolution];
 		float angle = 0.0f;
+		float invDiameter = 1.0f / (2.0f * WheelRadius);
 
 		for (int i = 0; i < circle.Length; i++)
 		{
 			Vector2 point = ToRectangular(new Vector2(WheelRadius, angle));
 			circle[i] = point;
+			// Axis-aligned planar unwrap into [0, 1]: (0,0) top-left, (0.5,0.5) center.
+			uvs[i] = point * invDiameter + new Vector2(0.5f, 0.5f);
 			angle += (2.0f * Mathf.Pi) / resolution;
 		}
 
 		WheelPolygon.Polygon = circle;
+		WheelPolygon.UV = uvs;
 	}
 
 	/// Builds a segmented ring onto each SelectionWheelSegment under Ring.
@@ -402,9 +449,38 @@ public partial class SelectionWheel : Control
 
 	private void _on_ring_child_entered_tree(Node node)
 	{
+		if (Engine.IsEditorHint())
+		{
+			return;
+		}
+		
 		if (node is SelectionWheelSegment segment)
 		{
-			Debug.Log(segment.Name);
+			// Segments that already have a config will be skipped.
+			if (InitialSegmentConfiguration is not null && segment.Configuration is null)
+			{
+				segment.Configuration = InitialSegmentConfiguration;
+			}
+		}
+	}
+
+	private void _on_visibility_changed()
+	{
+		if (Engine.IsEditorHint())
+		{
+			return;
+		}
+		
+		bool changedToVisible = (Visible == true);
+
+		if (changedToVisible)
+		{
+			Update();
+			Updating = true;
+		}
+		else
+		{
+			Updating = false;
 		}
 	}
 }
