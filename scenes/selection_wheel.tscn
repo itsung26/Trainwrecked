@@ -15,7 +15,8 @@ metadata/_custom_type_script = "uid://nvcax3cdluh7"
 shader = ExtResource("1_t3epp")
 
 [sub_resource type="Curve" id="Curve_gu6r8"]
-_data = [Vector2(0.3619632, 0), 0.0, 0.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(0.65337425, 0), 0.0, 0.0, 0, 0]
+_limits = [0.0, 1.0, 0.0, 0.5]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0]
 point_count = 3
 
 [sub_resource type="CurveTexture" id="CurveTexture_01igl"]
@@ -24,13 +25,13 @@ curve = SubResource("Curve_gu6r8")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_01igl"]
 shader = ExtResource("2_pglco")
-shader_parameter/base_color = Color(0, 0, 0, 1)
-shader_parameter/wave_size = 0.173
-shader_parameter/wave_amplitude = 0.081
-shader_parameter/wave_period = 8
+shader_parameter/base_color = Color(1, 1, 1, 1)
+shader_parameter/wave_size = 20.06
+shader_parameter/wave_amplitude = 0.0
+shader_parameter/wave_period = 0
 shader_parameter/wave_phase = 0.0
-shader_parameter/world_scale = 0.0130000006175
-shader_parameter/world_offset = Vector2(0, 0)
+shader_parameter/uv_scale = 4.0
+shader_parameter/uv_offset = Vector2(0, 0)
 shader_parameter/line_thickness = 0.1
 shader_parameter/line_thickness_falloff_ramp = SubResource("CurveTexture_01igl")
 
@@ -133,7 +134,7 @@ offset_top = 513.0
 offset_right = 1372.0
 offset_bottom = 591.0
 theme_override_font_sizes/font_size = 33
-text = "SelectionWheelSegment2"
+text = "SelectionWheelSegment1"
 
 [node name="SelectionWheelAnimator" type="AnimationPlayer" parent="." unique_id=1897852524]
 libraries/ = SubResource("AnimationLibrary_01igl")

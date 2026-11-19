@@ -5,13 +5,10 @@ uniform float wave_size = 1.0;
 uniform float wave_amplitude = 0.0;
 uniform int wave_period = 0;
 uniform float wave_phase = 0.0;
-uniform float world_scale : hint_range(0.0, 0.05) = 0.001;
-uniform vec2 world_offset;
+uniform float uv_scale : hint_range(0.0, 4.0) = 1.0;
+uniform vec2 uv_offset;
 uniform float line_thickness = 0.1;
 uniform sampler2D line_thickness_falloff_ramp : repeat_enable;
-
-varying vec2 world_position;
-varying vec2 world_origin;
 
 float sample_falloff_ramp(float x) {
 	float col = texture(line_thickness_falloff_ramp, vec2(x, 0.5)).r;
@@ -34,16 +31,12 @@ float sample_polar_func(float radius, float theta) {
 	return final_col;
 }
 
-void vertex() {
-	world_position = (MODEL_MATRIX * vec4(VERTEX, 0.0, 1.0)).xy;
-	world_origin = MODEL_MATRIX[3].xy;
-}
-
 void fragment() {
-	vec2 WORLD_CENTERED = ((world_position - world_origin) * world_scale) + world_offset;
-	vec2 WORLD_POLAR = to_polar(WORLD_CENTERED);
-	float wave = sample_polar_func(WORLD_POLAR.x, WORLD_POLAR.y);
+	// UV unwrap is [0,1] with (0.5, 0.5) at center. *2 maps the circle rim to radius 1.
+	vec2 UV_CENTERED = ((UV - vec2(0.5)) * 2.0 * uv_scale) + uv_offset;
+	vec2 UV_POLAR = to_polar(UV_CENTERED);
+	float wave = sample_polar_func(UV_POLAR.x, UV_POLAR.y);
 
-	vec3 COLOR_FINAL = vec3(UV + vec2(0.25, 0.0), 0.0);
+	vec3 COLOR_FINAL = vec3(sample_polar_func(UV_POLAR.x, UV_POLAR.y));
 	COLOR = vec4(COLOR_FINAL, 1.0);
 }
