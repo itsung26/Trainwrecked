@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cmhre23v8s4vn" path="res://scripts/SelectionWheel.cs" id="1_nkeuc"]
 [ext_resource type="Shader" uid="uid://b4p2tuid4c8gc" path="res://assets/shaders/selection_wheel_screen_darken.gdshader" id="1_t3epp"]
+[ext_resource type="Script" uid="uid://sfjhup7i1jbb" path="res://scripts/SelectionWheelSegment.cs" id="3_u3aio"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dehhp"]
 shader = ExtResource("1_t3epp")
@@ -14,12 +15,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_nkeuc")
-Updating = false
-SegmentSpacing = 3.316
+SegmentSpacing = 1.277
 WheelRadius = 243.655
 RingRadius = 285.705
 RingThickness = 109.44
-WheelResolution = 64
+WheelResolution = 54
+UseAntiAliasing = true
 WheelPolygon = NodePath("WheelPolygon")
 Ring = NodePath("Ring")
 
@@ -36,7 +37,60 @@ grow_vertical = 2
 position = Vector2(960, 540)
 color = Color(0.373, 0.373, 0.373, 1)
 antialiased = true
-polygon = PackedVector2Array(243.655, 0, 242.48174, 23.882366, 238.97324, 47.534733, 233.1633, 70.72931, 225.10786, 93.24274, 214.88452, 114.85817, 202.59172, 135.36746, 188.34787, 154.57309, 172.29012, 172.2901, 154.5731, 188.34785, 135.36748, 202.59172, 114.85818, 214.88452, 93.24273, 225.10786, 70.7293, 233.1633, 47.53471, 238.97324, 23.882336, 242.48174, -3.969644e-05, 243.655, -23.882416, 242.48174, -47.53479, 238.97324, -70.729385, 233.16327, -93.242805, 225.10783, -114.858246, 214.88449, -135.36754, 202.59167, -154.57318, 188.3478, -172.29019, 172.29002, -188.34795, 154.573, -202.59181, 135.36736, -214.88458, 114.85804, -225.10793, 93.242584, -233.16335, 70.72916, -238.97327, 47.534557, -242.48175, 23.882181, -243.655, -0.00019557663, -242.48172, -23.88257, -238.9732, -47.534943, -233.16322, -70.72953, -225.10777, -93.24295, -214.88441, -114.85838, -202.5916, -135.36768, -188.3477, -154.5733, -172.28992, -172.2903, -154.57292, -188.348, -135.36732, -202.59183, -114.858055, -214.88458, -93.24266, -225.10791, -70.72928, -233.1633, -47.534748, -238.97324, -23.88243, -242.48174, -0.000113278205, -243.655, 23.882204, -242.48175, 47.534527, -238.97327, 70.729065, -233.16338, 93.24245, -225.10799, 114.857864, -214.88469, 135.36713, -202.59195, 154.57274, -188.34814, 172.28975, -172.29047, 188.3475, -154.57352, 202.59138, -135.36797, 214.88423, -114.85874, 225.1076, -93.24337, 233.16309, -70.73002, 238.97308, -47.535507, 242.48164, -23.883202)
+polygon = PackedVector2Array(243.655, 0, 242.00748, 28.28662, 237.08725, 56.19071, 228.9608, 83.334915, 217.73807, 109.352165, 203.57077, 133.89061, 186.65056, 156.61842, 167.2062, 177.22823, 145.50067, 195.44135, 121.82749, 211.01143, 96.506805, 223.72795, 69.88103, 233.41893, 42.31023, 239.95334, 14.167254, 243.24278, -14.167306, 243.24277, -42.310276, 239.95332, -69.88107, 233.41891, -96.50685, 223.72794, -121.827515, 211.01141, -145.50067, 195.44135, -167.20618, 177.22824, -186.65051, 156.61847, -203.57072, 133.89069, -217.738, 109.352264, -228.96075, 83.335045, -237.0872, 56.190865, -242.00748, 28.286804, -243.655, 0.00021106651, -242.0075, -28.286385, -237.08731, -56.190456, -228.9609, -83.33465, -217.73819, -109.35188, -203.57097, -133.89032, -186.65079, -156.61815, -167.2065, -177.22795, -145.50096, -195.44112, -121.827774, -211.01126, -96.50708, -223.72783, -69.88129, -233.41885, -42.310463, -239.9533, -14.167465, -243.24277, 14.167123, -243.24278, 42.310127, -239.95335, 69.88096, -233.41896, 96.50677, -223.72797, 121.82748, -211.01143, 145.50069, -195.44133, 167.20624, -177.2282, 186.6506, -156.61836, 203.57085, -133.89052, 217.73811, -109.352036, 228.96086, -83.334755, 237.0873, -56.190506, 242.0075, -28.286379)
 
 [node name="Ring" type="Node2D" parent="." unique_id=101104144]
 position = Vector2(960, 540)
+
+[node name="SelectionWheelSegment1" type="Polygon2D" parent="Ring" unique_id=1136924849]
+polygon = PackedVector2Array(395.12045, 4.4033756, 392.6399, 44.423763, 386.1163, 83.98671, 375.61682, 122.68484, 361.24957, 160.11967, 343.1625, 195.90573, 321.54187, 229.67455, 296.61026, 261.07837, 268.62445, 289.79385, 285.68726, 3.1838093, 283.8937, 32.120087, 279.17688, 60.725613, 271.58536, 88.70585, 261.1973, 115.77267, 248.11966, 141.64735, 232.4871, 166.0635, 214.4606, 188.76967, 194.22578, 209.53206)
+polygons = [PackedInt32Array(0, 1, 9), PackedInt32Array(1, 10, 9), PackedInt32Array(1, 2, 10), PackedInt32Array(2, 11, 10), PackedInt32Array(2, 3, 11), PackedInt32Array(3, 12, 11), PackedInt32Array(3, 4, 12), PackedInt32Array(4, 13, 12), PackedInt32Array(4, 5, 13), PackedInt32Array(5, 14, 13), PackedInt32Array(5, 6, 14), PackedInt32Array(6, 15, 14), PackedInt32Array(6, 7, 15), PackedInt32Array(7, 16, 15), PackedInt32Array(7, 8, 16), PackedInt32Array(8, 17, 16)]
+script = ExtResource("3_u3aio")
+SpaceBias = 1.255
+metadata/_custom_type_script = "uid://sfjhup7i1jbb"
+
+[node name="SelectionWheelSegment2" type="Polygon2D" parent="Ring" unique_id=1433702301]
+polygon = PackedVector2Array(262.09937, 295.70844, 228.98781, 322.03128, 193.25214, 344.66385, 155.30191, 363.34677, 115.57203, 377.86594, 74.51771, 388.055, 32.609554, 393.79712, 189.5079, 213.80855, 165.56697, 232.84099, 139.72871, 249.2052, 112.28924, 262.71365, 83.56301, 273.21158, 53.87916, 280.57864, 23.57796, 284.73044)
+polygons = [PackedInt32Array(0, 1, 7), PackedInt32Array(1, 8, 7), PackedInt32Array(1, 2, 8), PackedInt32Array(2, 9, 8), PackedInt32Array(2, 3, 9), PackedInt32Array(3, 10, 9), PackedInt32Array(3, 4, 10), PackedInt32Array(4, 11, 10), PackedInt32Array(4, 5, 11), PackedInt32Array(5, 12, 11), PackedInt32Array(5, 6, 12), PackedInt32Array(6, 13, 12)]
+script = ExtResource("3_u3aio")
+metadata/_custom_type_script = "uid://sfjhup7i1jbb"
+
+[node name="SelectionWheelSegment3" type="Polygon2D" parent="Ring" unique_id=1736773054]
+polygon = PackedVector2Array(23.825293, 394.42606, -17.78503, 394.74454, -59.198124, 390.68546, -99.954735, 382.29388, -139.60289, 369.6628, -177.70291, 352.93234, -213.8323, 332.288, -247.59035, 307.95874, -278.60275, 280.21432, -306.52557, 249.36249, -331.04913, 215.7453, -351.90152, 179.7356, -368.85147, 141.73271, 17.2266, 285.18518, -12.859259, 285.41547, -42.802517, 282.4806, -72.2711, 276.41315, -100.93825, 267.2804, -128.48602, 255.18361, -154.60896, 240.25697, -179.01732, 222.66599, -201.44048, 202.6057, -221.62975, 180.29865, -239.36122, 155.99213, -254.4383, 129.95573, -266.69376, 102.47818)
+polygons = [PackedInt32Array(0, 1, 13), PackedInt32Array(1, 14, 13), PackedInt32Array(1, 2, 14), PackedInt32Array(2, 15, 14), PackedInt32Array(2, 3, 15), PackedInt32Array(3, 16, 15), PackedInt32Array(3, 4, 16), PackedInt32Array(4, 17, 16), PackedInt32Array(4, 5, 17), PackedInt32Array(5, 18, 17), PackedInt32Array(5, 6, 18), PackedInt32Array(6, 19, 18), PackedInt32Array(6, 7, 19), PackedInt32Array(7, 20, 19), PackedInt32Array(7, 8, 20), PackedInt32Array(8, 21, 20), PackedInt32Array(8, 9, 21), PackedInt32Array(9, 22, 21), PackedInt32Array(9, 10, 22), PackedInt32Array(10, 23, 22), PackedInt32Array(10, 11, 23), PackedInt32Array(11, 24, 23), PackedInt32Array(11, 12, 24), PackedInt32Array(12, 25, 24)]
+script = ExtResource("3_u3aio")
+SpaceBias = 1.935
+Selected = true
+metadata/_custom_type_script = "uid://sfjhup7i1jbb"
+
+[node name="SelectionWheelSegment4" type="Polygon2D" parent="Ring" unique_id=514538692]
+polygon = PackedVector2Array(-371.91855, 133.4772, -384.37445, 91.62878, -392.13724, 48.661594, -395.11206, 5.100254, -393.26266, -38.523266, -386.61157, -81.676506, -375.24002, -123.832504, -359.28683, -164.47652, -338.94684, -203.11229, -314.46838, -239.26804, -268.91138, 96.50913, -277.91748, 66.25112, -283.53027, 35.184196, -285.68118, 3.6876793, -284.344, -27.853798, -279.535, -59.05525, -271.31293, -89.53565, -259.77817, -118.92284, -245.07156, -146.85799, -227.37271, -172.99997)
+polygons = [PackedInt32Array(0, 1, 10), PackedInt32Array(1, 11, 10), PackedInt32Array(1, 2, 11), PackedInt32Array(2, 12, 11), PackedInt32Array(2, 3, 12), PackedInt32Array(3, 13, 12), PackedInt32Array(3, 4, 13), PackedInt32Array(4, 14, 13), PackedInt32Array(4, 5, 14), PackedInt32Array(5, 15, 14), PackedInt32Array(5, 6, 15), PackedInt32Array(6, 16, 15), PackedInt32Array(6, 7, 16), PackedInt32Array(7, 17, 16), PackedInt32Array(7, 8, 17), PackedInt32Array(8, 18, 17), PackedInt32Array(8, 9, 18), PackedInt32Array(9, 19, 18)]
+script = ExtResource("3_u3aio")
+SpaceBias = 1.53
+metadata/_custom_type_script = "uid://sfjhup7i1jbb"
+
+[node name="SelectionWheelSegment5" type="Polygon2D" parent="Ring" unique_id=784170893]
+position = Vector2(0, -1)
+polygon = PackedVector2Array(-309.05792, -246.21693, -279.58792, -279.23135, -246.61105, -308.7435, -210.54105, -334.38306, -171.83026, -355.82852, -130.96425, -372.81085, -88.45555, -385.1171, -44.837383, -392.5929, -0.65682644, -395.14444, 43.53197, -392.73978, 87.17475, -385.40903, 129.72412, -373.24417, 170.64638, -356.39777, 209.42825, -335.08115, 245.58328, -309.56165, 278.65802, -280.15936, 308.2376, -247.24309, -223.46072, -178.02429, -202.15279, -201.89499, -178.30925, -223.2334, -152.22926, -241.77177, -124.23987, -257.27765, -94.69217, -269.55655, -63.95676, -278.45444, -32.419147, -283.8597, -0.47491074, -285.7046, 31.475285, -283.9659, 63.03069, -278.66553, 93.79552, -269.86987, 123.38387, -257.68927, 151.42465, -242.27654, 177.56613, -223.82495, 201.48044, -202.56598, 222.86761, -178.76624)
+polygons = [PackedInt32Array(0, 1, 17), PackedInt32Array(1, 18, 17), PackedInt32Array(1, 2, 18), PackedInt32Array(2, 19, 18), PackedInt32Array(2, 3, 19), PackedInt32Array(3, 20, 19), PackedInt32Array(3, 4, 20), PackedInt32Array(4, 21, 20), PackedInt32Array(4, 5, 21), PackedInt32Array(5, 22, 21), PackedInt32Array(5, 6, 22), PackedInt32Array(6, 23, 22), PackedInt32Array(6, 7, 23), PackedInt32Array(7, 24, 23), PackedInt32Array(7, 8, 24), PackedInt32Array(8, 25, 24), PackedInt32Array(8, 9, 25), PackedInt32Array(9, 26, 25), PackedInt32Array(9, 10, 26), PackedInt32Array(10, 27, 26), PackedInt32Array(10, 11, 27), PackedInt32Array(11, 28, 27), PackedInt32Array(11, 12, 28), PackedInt32Array(12, 29, 28), PackedInt32Array(12, 13, 29), PackedInt32Array(13, 30, 29), PackedInt32Array(13, 14, 30), PackedInt32Array(14, 31, 30), PackedInt32Array(14, 15, 31), PackedInt32Array(15, 32, 31), PackedInt32Array(15, 16, 32), PackedInt32Array(16, 33, 32)]
+script = ExtResource("3_u3aio")
+SpaceBias = 2.73
+metadata/_custom_type_script = "uid://sfjhup7i1jbb"
+
+[node name="SelectionWheelSegment6" type="Polygon2D" parent="Ring" unique_id=388683713]
+polygon = PackedVector2Array(313.6711, -240.3123, 337.56213, -205.4054, 357.58487, -168.14464, 373.50983, -128.95723, 385.15466, -88.29186, 392.3858, -46.61472, 395.12045, -4.4033995, 226.79625, -173.75502, 244.07037, -148.51598, 258.54758, -121.57503, 270.06192, -93.24102, 278.4816, -63.838406, 283.71, -33.70423, 285.68726, -3.1838267)
+polygons = [PackedInt32Array(0, 1, 7), PackedInt32Array(1, 8, 7), PackedInt32Array(1, 2, 8), PackedInt32Array(2, 9, 8), PackedInt32Array(2, 3, 9), PackedInt32Array(3, 10, 9), PackedInt32Array(3, 4, 10), PackedInt32Array(4, 11, 10), PackedInt32Array(4, 5, 11), PackedInt32Array(5, 12, 11), PackedInt32Array(5, 6, 12), PackedInt32Array(6, 13, 12)]
+script = ExtResource("3_u3aio")
+metadata/_custom_type_script = "uid://sfjhup7i1jbb"
+
+[node name="Label" type="Label" parent="." unique_id=100104075]
+layout_mode = 0
+offset_left = 756.0
+offset_top = 513.0
+offset_right = 1372.0
+offset_bottom = 591.0
+theme_override_font_sizes/font_size = 33
+text = "SelectionWheelSegment3"
+
+[connection signal="child_entered_tree" from="Ring" to="." method="_on_ring_child_entered_tree"]

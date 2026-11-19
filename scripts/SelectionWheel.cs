@@ -13,38 +13,43 @@ public partial class SelectionWheel : Control
 
 	[Export] public bool Updating { get; set; } = true;
 	[Export] public float WheelRotation { get; set; } = 0.0f;
-	[Export] public float SegmentSpacing
+	[Export]
+	public float SegmentSpacing
 	{
 		get => _segmentSpacing;
 		set => _segmentSpacing = Mathf.Max(value, 0.0f);
 	}
 	[Export] public float WheelRadius { get; set; } = 25.0f;
-	[Export] public float RingRadius
+	[Export]
+	public float RingRadius
 	{
 		get => _ringRadius;
 		set => _ringRadius = Mathf.Max(value, 0.0f);
 	}
-	[Export] public float RingThickness
+	[Export]
+	public float RingThickness
 	{
 		get => _ringThickness;
 		set => _ringThickness = Mathf.Max(value, 0.0f);
 	}
-	[Export] public int WheelResolution
+	[Export]
+	public int WheelResolution
 	{
 		get => _wheelResolution;
 		set => _wheelResolution = Mathf.Clamp(value, 3, 256);
 	}
 	[Export] public Color WheelColor { get; set; } = new Color(0.373f, 0.373f, 0.373f);
-	public NonNullableArray<SelectionWheelSegment> WheelSlots { get; set; } = new();
+    public NonNullableArray<SelectionWheelSegment> Segments => GetSegments();
+	[Export] public SelectionWheelSegmentConfig SegmentConfiguration { get; set; }
 
-	[ExportGroup("Node Refs")]
+    [ExportGroup("Node Refs")]
 	[Export] public Polygon2D WheelPolygon { get; set; }
 	[Export] public Node2D Ring { get; set; }
 
-    public override string[] _GetConfigurationWarnings()
-    {
+	public override string[] _GetConfigurationWarnings()
+	{
 		string[] baseWarnings = base._GetConfigurationWarnings() ?? System.Array.Empty<string>();
-        Array<string> warnings = new Array<string>(baseWarnings);
+		Array<string> warnings = new Array<string>(baseWarnings);
 
 		if (string.IsNullOrEmpty(SceneFilePath))
 		{
@@ -52,25 +57,38 @@ public partial class SelectionWheel : Control
 		}
 
 		return warnings.ToArray<string>();
-    }
+	}
 
-    public override void _Ready()
-    {
-        LockWheelToCenter();
+	public override void _Ready()
+	{
+		LockWheelToCenter();
 		if (Updating)
 		{
 			Update();
 		}
-    }
+	}
 
-    public override void _Process(double delta)
-    {
-        LockWheelToCenter();
+	public override void _Process(double delta)
+	{
+		GetNode<Label>("Label").Text = GetHoveredSegment().Name;
+		LockWheelToCenter();
 		if (Updating)
 		{
-			Update();
+			if (Engine.GetProcessFrames() % 1 == 0)
+			{
+				Update();
+			}
 		}
-    }
+	}
+
+	private Vector2 GetMousePosPolar()
+	{
+		// Offset from wheel center in local pixels (not Size-normalized — that warps angles
+		// on non-square controls). Flip Y so up is positive to match the mouse convention.
+		Vector2 fromCenter = GetLocalMousePosition() - GetRect().GetCenter();
+		fromCenter.Y = -fromCenter.Y;
+		return ToPolar(fromCenter);
+	}
 
 	/// Keeps the wheel in the center of this control's rectangle.
 	private void LockWheelToCenter()
@@ -102,8 +120,25 @@ public partial class SelectionWheel : Control
 		// Update polygon object transforms.
 		Ring.Rotation = WheelRotation;
 
-		// Update colors.
+		// Update center circle color.
 		WheelPolygon.Color = WheelColor;
+
+		// Update currently hovered segment.
+		SelectionWheelSegment hovered = GetHoveredSegment();
+		if (hovered is not null)
+		{
+			foreach (var segment in Segments)
+			{
+				if (!ReferenceEquals(segment, hovered))
+				{
+					segment.Selected = false;
+				}
+				else
+				{
+					segment.Selected = true;
+				}
+			}
+		}
 	}
 
 	private void DrawCircle()
@@ -129,8 +164,8 @@ public partial class SelectionWheel : Control
 		WheelPolygon.Polygon = circle;
 	}
 
-	/// Builds a segmented ring as one Polygon2D child per segment under Ring.
-	/// Each WheelSlots float is an angular weight; spans are normalized around the ring.
+	/// Builds a segmented ring onto each SelectionWheelSegment under Ring.
+	/// Each segment's SpaceBias is an angular weight; spans are normalized around the ring.
 	private void DrawRing()
 	{
 		if (Ring is null)
@@ -138,75 +173,64 @@ public partial class SelectionWheel : Control
 			throw new InvalidOperationException();
 		}
 
+		// Segments are Ring children in tree order (clockwise around the wheel).
+		NonNullableArray<SelectionWheelSegment> segments = Segments;
+		int segmentCount = segments.Count;
 		float[] weights = GetSegmentWeights();
-		int segments = GetSegmentCount();
 		int resolution = WheelResolution;
 		float radius = RingRadius;
 		float thickness = RingThickness;
 
-		if (Mathf.IsZeroApprox(thickness))
+		// Nothing to draw: clear any leftover polygon data on existing segments.
+		if (segmentCount == 0 || Mathf.IsZeroApprox(thickness))
 		{
-			SyncRingSegmentCount(0);
+			for (int i = 0; i < segmentCount; i++)
+			{
+				segments[i].Polygon = System.Array.Empty<Vector2>();
+				segments[i].Polygons = new Godot.Collections.Array();
+			}
 			return;
 		}
 
-		bool usingSlots = WheelSlots is not null && WheelSlots.Count > 0 && !IsAllNull(WheelSlots);
-		int ringChildCount = usingSlots ? WheelSlots.Count : 1;
-		SyncRingSegmentCount(ringChildCount);
-
-		int[] slotIndices = new int[segments];
-		if (usingSlots)
-		{
-			int writeIndex = 0;
-			for (int i = 0; i < WheelSlots.Count; i++)
-			{
-				if (WheelSlots[i] is null)
-				{
-					ClearRingSegment(i);
-					continue;
-				}
-
-				slotIndices[writeIndex++] = i;
-			}
-		}
-		else
-		{
-			slotIndices[0] = 0;
-		}
-
 		float totalWeight = 0.0f;
-		for (int i = 0; i < segments; i++)
+		for (int i = 0; i < segmentCount; i++)
 		{
 			totalWeight += weights[i];
 		}
 
 		float innerRadius = radius;
 		float outerRadius = radius + thickness;
-		float baseGap = segments == 1 ? 0.0f : Mathf.DegToRad(SegmentSpacing);
+		// Single segment fills the full ring; gaps only make sense between neighbors.
+		float baseGap = segmentCount == 1 ? 0.0f : Mathf.DegToRad(SegmentSpacing);
 
-		float[] segmentSpans = new float[segments];
-		float[] gaps = new float[segments];
-		float[] arcSpans = new float[segments];
-		int[] steps = new int[segments];
+		float[] segmentSpans = new float[segmentCount];
+		float[] gaps = new float[segmentCount];
+		float[] arcSpans = new float[segmentCount];
+		int[] steps = new int[segmentCount];
 
-		for (int i = 0; i < segments; i++)
+		// Convert weights into angular budgets, then carve out spacing from each budget.
+		for (int i = 0; i < segmentCount; i++)
 		{
 			segmentSpans[i] = weights[i] / totalWeight * Mathf.Tau;
+			// Cap gap so a tiny/zero-weight segment cannot invert into a negative arc.
 			gaps[i] = Mathf.Min(baseGap, segmentSpans[i] * 0.95f);
 			arcSpans[i] = segmentSpans[i] - gaps[i];
+			// More resolution for larger wedges so curve quality stays roughly even.
 			steps[i] = Mathf.Max(2, Mathf.CeilToInt(resolution * (segmentSpans[i] / Mathf.Tau)));
 		}
 
 		float angleCursor = 0.0f;
 
-		for (int segment = 0; segment < segments; segment++)
+		for (int segment = 0; segment < segmentCount; segment++)
 		{
 			int stepsPerSegment = steps[segment];
 			int pointsPerSegment = stepsPerSegment + 1;
+			// Center the gap on the segment boundary so spacing is shared with neighbors.
 			float startAngle = angleCursor + gaps[segment] * 0.5f;
 			const int outerBase = 0;
 			int innerBase = pointsPerSegment;
 
+			// Vertex layout: [outer arc...][inner arc...], then triangulate as quads.
 			Vector2[] vertices = new Vector2[pointsPerSegment * 2];
 			Godot.Collections.Array triangles = new Godot.Collections.Array();
 
@@ -230,12 +254,50 @@ public partial class SelectionWheel : Control
 				triangles.Add(new int[] { outer1, inner1, inner0 });
 			}
 
-			Polygon2D segmentPolygon = GetRingSegment(slotIndices[segment]);
-			segmentPolygon.Polygon = vertices;
-			segmentPolygon.Polygons = triangles;
+			segments[segment].Polygon = vertices;
+			segments[segment].Polygons = triangles;
 
 			angleCursor += segmentSpans[segment];
 		}
+	}
+
+	public void AddSelectionWheelSegment(SelectionWheelSegment newSegment, int index = -1)
+	{
+		index = index == -1 ? Segments.Count - 1 : index;
+
+		if (index < 0 || index >= Segments.Count)
+		{
+			throw new IndexOutOfRangeException();
+		}
+
+
+		Ring.AddChild(newSegment);
+		Ring.MoveChild(newSegment, index);
+	}
+
+	public void RemoveSelectionWheelSegment(int index)
+	{
+		if (index < 0 || index >= Segments.Count)
+		{
+			throw new IndexOutOfRangeException();
+		}
+
+		Ring.GetChild(index).QueueFree();
+	}
+
+	public void MoveSelectionWheelSegment(int from, int to)
+	{
+		if (from < 0 || from >= Segments.Count)
+		{
+			throw new IndexOutOfRangeException();
+		}
+
+		if (to < 0 || to >= Segments.Count)
+		{
+			throw new IndexOutOfRangeException();
+		}
+
+		Ring.MoveChild(Segments[from], to);
 	}
 
 	/// Converts rectangular (x, y) to polar (radius, angle in radians).
@@ -250,15 +312,99 @@ public partial class SelectionWheel : Control
 		return Vector2.FromAngle(polarCoord.Y) * polarCoord.X;
 	}
 
-	/// Returns the count of non null elements in the slots array, or 1 if the array is empty or all null.
 	private int GetSegmentCount()
 	{
-		throw new NotImplementedException();
+		return Segments.Count;
 	}
 
-	/// Angular weights from WheelSlots values. Empty or all-zero falls back to equal shares.
+	/// Angular weights from each segment's SpaceBias. All-zero falls back to equal shares.
 	private float[] GetSegmentWeights()
 	{
-		throw new NotImplementedException();
+		NonNullableArray<SelectionWheelSegment> segments = Segments;
+		float[] weights = new float[segments.Count];
+		float totalWeight = 0.0f;
+
+		for (int i = 0; i < segments.Count; i++)
+		{
+			weights[i] = segments[i].SpaceBias;
+			totalWeight += weights[i];
+		}
+
+		if (Mathf.IsZeroApprox(totalWeight))
+		{
+			for (int i = 0; i < weights.Length; i++)
+			{
+				weights[i] = 1.0f;
+			}
+		}
+
+		return weights;
+	}
+
+	/// <summary>
+	/// Returns the segment that the mouse is in the area of.
+	/// Only the angle of the mouse's polar pos is taken into account.
+	/// </summary>
+	private SelectionWheelSegment GetHoveredSegment()
+	{
+		NonNullableArray<SelectionWheelSegment> segments = Segments;
+		int segmentCount = segments.Count;
+		if (segmentCount == 0)
+		{
+			return null;
+		}
+
+		// Mouse polar is Y-up; ring geometry uses Godot FromAngle (Y-down). Negate to match,
+		// then undo WheelRotation so the angle is in ring-local space.
+		float angle = Mathf.PosMod(-GetMousePosPolar().Y - WheelRotation, Mathf.Tau);
+
+		float[] weights = GetSegmentWeights();
+		float totalWeight = 0.0f;
+		for (int i = 0; i < segmentCount; i++)
+		{
+			totalWeight += weights[i];
+		}
+
+		float angleCursor = 0.0f;
+		for (int i = 0; i < segmentCount; i++)
+		{
+			float span = weights[i] / totalWeight * Mathf.Tau;
+			if (angle >= angleCursor && angle < angleCursor + span)
+			{
+				return segments[i];
+			}
+
+			angleCursor += span;
+		}
+
+		// Angle landed exactly on Tau after PosMod edge cases — last segment owns the wrap.
+		return segments[segmentCount - 1];
+	}
+
+	private NonNullableArray<SelectionWheelSegment> GetSegments()
+	{
+		Array<Node> children = Ring.GetChildren();
+		NonNullableArray<SelectionWheelSegment> segments = new NonNullableArray<SelectionWheelSegment>();
+
+		foreach (var child in children)
+		{
+			if (child is SelectionWheelSegment newSegment)
+			{
+				if (!newSegment.IsQueuedForDeletion())
+				{
+					segments.Add(newSegment);
+				}
+			}
+		}
+
+		return segments;
+	}
+
+	private void _on_ring_child_entered_tree(Node node)
+	{
+		if (node is SelectionWheelSegment segment)
+		{
+			Debug.Log(segment.Name);
+		}
 	}
 }

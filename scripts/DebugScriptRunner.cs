@@ -12,5 +12,8 @@ public partial class DebugScriptRunner : Node
     {
     }
 
+    public override void _Process(double delta)
+    {
+    }
     
 }
